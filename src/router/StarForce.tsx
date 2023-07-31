@@ -14,7 +14,7 @@ const Star = styled.div`
     grid-template-rows: repeat(9, 30px);
     gap: 20px;
     padding-top: 5%;
-    font-size : 15px;
+    font-size: 15px;
 `;
 
 const StarBtn = styled.button`
@@ -287,7 +287,13 @@ const StarForce = () => {
                     </label>
                 </div>
                 <div>소모 메소 : {comma(meso)}메소</div>
-                <div>누적 소모 메소 : {formatting(currentmeso)}메소</div>
+                <div>
+                    누적 소모 메소 :{' '}
+                    {currentmeso >= 100000000
+                        ? formatting(currentmeso)
+                        : comma(currentmeso)}
+                    메소
+                </div>
                 <div>누적 강화 횟수 : {reinforcenum}번</div>
                 <StarContent>
                     <StarBtn onClick={() => enforceTry(percentage)}>
