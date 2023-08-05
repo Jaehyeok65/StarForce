@@ -9,10 +9,10 @@ const StarBack = styled.div`
     justify-content: center;
 `;
 
-const Star = styled.div`
+const Star = styled.div<{ $row: number }>`
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(11, 30px);
+    grid-template-rows: repeat(${(props) => props.$row}, 30px);
     gap: 20px;
     padding-top: 5%;
     font-size: 15px;
@@ -30,6 +30,20 @@ const StarBtn = styled.button`
 const StarContent = styled.div`
     display: flex;
     justify-content: space-aroud;
+`;
+
+const ModalContent = styled.div`
+    display: flex;
+    justify-content: center;
+    margin-top: 5%;
+    margin-bottom: 5%;
+`;
+
+const Back = styled.div`
+    margin: 5% 5% 5% 5%;
+    border: 1px solid gray;
+    border-radius: 12px;
+    padding: 5% 5% 5% 5%;
 `;
 
 const selectlevel = [110, 120, 130, 135, 140, 145, 150, 160, 200, 250];
@@ -68,9 +82,10 @@ const StarForce = () => {
     const [destorynum, setDestroynum] = useState<number>(0); //현재까지 터진 횟수
     const [success, setSuccess] = useState<number>(0); //성공 횟수
     const [fail, setFail] = useState<number>(0); //실패 횟수
-    const [toggle, setToggle] = useState<boolean>(false);
+    const [goal, setGoal] = useState<number>(0); //목표 스타포스 수치
 
-    const enforce = (per: number): 0 | 1 | 2 => {
+
+    const enforce = (per: number, destroy: number): 0 | 1 | 2 => {
         const num = Math.floor(Math.random() * 100) + 1; // 1 ~ 100까지 난수 생성
         if (starcatch) {
             //스타캐치 한다면 강화확률 * 0.05 증가
@@ -121,7 +136,7 @@ const StarForce = () => {
                     } 강화 소모메소는 ${meso}메소이며 강화 확률은 ${percentage}%입니다. 강화하시겠습니까?`
                 )
             ) {
-                const success = enforce(per);
+                const success = enforce(per, destroy);
                 if (success === 0) {
                     window.alert('강화에 성공하셨습니다.');
                 } else if (success === 1) {
@@ -168,21 +183,7 @@ const StarForce = () => {
         //레벨과 강화수치에 따라 소모 메소, 강화 확률, 파괴 확률 초기화
         setPercentage(rate(current));
         setMeso(Math.floor(eventmeso(discountmeso(consume(current, level)))));
-        if (current >= 15 && current <= 17) {
-            setDestroy(2.1);
-        } else if (current >= 18 && current <= 19) {
-            setDestroy(2.8);
-        } else if (current >= 20 && current <= 21) {
-            setDestroy(7.0);
-        } else if (current === 22) {
-            setDestroy(19.4);
-        } else if (current === 23) {
-            setDestroy(29.4);
-        } else if (current === 24) {
-            setDestroy(39.6);
-        } else {
-            setDestroy(0);
-        }
+        setDestroy(destroypercent(current));
     };
 
     const renewalDestoryGuard = (current: number, success: 0 | 1 | 2) => {
@@ -237,6 +238,24 @@ const StarForce = () => {
         }
     };
 
+    const destroypercent = (current: number): number => {
+        if (current >= 15 && current <= 17) {
+            return 2.1;
+        } else if (current >= 18 && current <= 19) {
+            return 2.8;
+        } else if (current >= 20 && current <= 21) {
+            return 7.0;
+        } else if (current === 22) {
+            return 19.4;
+        } else if (current === 23) {
+            return 29.4;
+        } else if (current === 24) {
+            return 39.6;
+        } else {
+            return 0;
+        }
+    };
+
     const discountmeso = (meso: number): number => {
         if (current > 17) {
             return meso;
@@ -287,6 +306,61 @@ const StarForce = () => {
         );
     };
 
+    const simulate = (current: number, goal: number) => {
+        // 목표 스타포스까지 시뮬레이터
+        let count = 0;
+        let success = 0;
+        let fail = 0;
+        let destroy = 0;
+        let destroynum = 0;
+        let meso = 0;
+        let per = rate(current);
+        let i = 0;
+        current = current === 22 ? 0 : current;
+        //한번에 계산 후 setState 호출하기 위한 지역변수 선언
+
+        while (current < goal) {
+            if (
+                (event['15-16'] || event['샤이닝 스타포스']) &&
+                (current === 5 || current === 10 || current === 15)
+            ) {
+                i = 0; //1516일 경우 무조건 성공
+            } else {
+                i = enforce(per, destroy);
+            }
+            if (i === 0) {
+                //성공
+                success = success + 1;
+                current = current + 1;
+            } else if (i === 1) {
+                //실패
+                fail = fail + 1;
+                if (current > 15 && current !== 20) {
+                    //current
+                    current = current - 1;
+                }
+            } else {
+                //파괴
+                destroynum = destroynum + 1;
+                current = 12;
+                meso = meso + spare; //파괴시 스페어 메소 추가
+            }
+            count = count + 1;
+            per = rate(current); //current가 바뀌었으므로 확률 재갱신
+            meso =
+                meso +
+                Math.floor(eventmeso(discountmeso(consume(current, level))));
+            destroy = destroypercent(current);
+        }
+
+        setSuccess(success);
+        setCurrentmeso(meso);
+        setFail(fail);
+        setDestroynum(destroynum);
+        setReinforcenum(count);
+        setCurrent(current);
+    };
+
     const formatting = (param: number): string => {
         return `${Math.floor(param / 100000000)}억 ${comma(param % 100000000)}`;
     };
@@ -329,8 +403,18 @@ const StarForce = () => {
         setDestroyGuard((prev) => !prev);
     };
 
-    const onToggle = () => {
-        setToggle((prev) => !prev);
+    const onGoalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        if (Number(value) > 25) {
+            window.alert('25이하의 수치를 입력하세요');
+            setGoal(0);
+            return;
+        }
+        setGoal(Number(value));
+    };
+
+    const onSimulate = () => {
+        simulate(current, goal);
     };
 
     useEffect(() => {
@@ -343,7 +427,7 @@ const StarForce = () => {
 
     return (
         <StarBack>
-            <Star>
+            <Star $row={11}>
                 <div>장비 레벨 선택</div>
                 <div>
                     <select onChange={onSelectChange}>
@@ -360,10 +444,10 @@ const StarForce = () => {
                 </div>
                 <div>현재 강화 수치 : {current}</div>
                 <div>현재 강화 확률 : {percentage}%</div>
-                <div>누적 성공 횟수 : {success}</div>
-                <div>누적 실패 횟수 : {fail}</div>
+                <div>누적 성공 횟수 : {success}번</div>
+                <div>누적 실패 횟수 : {fail}번</div>
                 <div>현재 파괴 확률 : {destroy}%</div>
-                <div>현재까지 터진 횟수 : {destorynum}번</div>
+                <div>누적 파괴 횟수 : {destorynum}번</div>
                 <div>할인 체크</div>
                 <div>
                     {Object.keys(discount).map((item, index) => (
@@ -422,10 +506,15 @@ const StarForce = () => {
                 </StarContent>
                 <div>강화 시뮬레이터</div>
                 <StarContent>
-                    <StarBtn onClick={onToggle}>시뮬레이팅하기</StarBtn>
+                    <StarBtn onClick={onSimulate}>시뮬레이팅하기</StarBtn>
                 </StarContent>
+                <div>목표 스타포스 수치 : </div>
+                        <input
+                            type="number"
+                            value={goal}
+                            onChange={onGoalChange}
+                        />
             </Star>
-            <Modal toggle={toggle}>하이</Modal>
         </StarBack>
     );
 };
