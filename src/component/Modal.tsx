@@ -37,7 +37,7 @@ const fadeout = keyframes`
     }
 `;
 
-const BackgroundModal = styled.div<{disappear : boolean}>`
+const BackgroundModal = styled.div<{$disappear : boolean}>`
     position: fixed;
     top: 0;
     width: 100vw;
@@ -50,7 +50,7 @@ const BackgroundModal = styled.div<{disappear : boolean}>`
     animation-name: ${fadein};
 
     ${(props) =>
-        props.disappear &&
+        props.$disappear &&
         css`
             animation-duration: 0.5s;
             animation-name: ${fadeout};
@@ -58,7 +58,7 @@ const BackgroundModal = styled.div<{disappear : boolean}>`
         `}
 `;
 
-const Modals = styled.div<{disappear : boolean}>`
+const Modals = styled.div<{$disappear : boolean}>`
     position: absolute;
     top: 20%;
     left: 33%;
@@ -75,7 +75,7 @@ const Modals = styled.div<{disappear : boolean}>`
     animation-name: ${slideup};
 
     ${(props) =>
-        props.disappear &&
+        props.$disappear &&
         css`
             animation-duration: 0.5s;
             animation-name: ${slidedown};
@@ -105,8 +105,8 @@ const Modal = ({ toggle, children } : { toggle : boolean, children : React.React
     }
 
     return (
-        <BackgroundModal disappear={!toggle}>
-            <Modals disappear={!toggle}>{children}</Modals>
+        <BackgroundModal $disappear={!toggle}>
+            <Modals $disappear={!toggle}>{children}</Modals>
         </BackgroundModal>
     );
 };
