@@ -12,7 +12,7 @@ const Star = styled.div<{ $row: number }>`
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(${(props) => props.$row}, 30px);
-    gap: 15px;
+    gap: 12px;
     padding-top: 5%;
     font-size: 15px;
 `;
@@ -73,6 +73,9 @@ const StarForce = () => {
     const [start, setStart] = useState<number>(0); //시작 스타포스 수치
     const [goal, setGoal] = useState<number>(0); //목표 스타포스 수치
     const [simulateguard, setSimulateGuard] = useState<boolean>(false);
+    const [simulatenum, setSimulatenum] = useState<number>(0);
+    const [simulatemeso, setSimulatemeso] = useState<number>(0);
+    const [accumulate, setAccumulate] = useState<number>(0);
 
     const enforce = (
         per: number,
@@ -456,6 +459,14 @@ const StarForce = () => {
             return;
         }
         simulate(start, goal);
+        setSimulatenum(prev => prev + 1);
+        //onAverageMeso();
+    };
+
+    const onAverageMeso = () => { //시뮬레이팅 메소 평균
+        const meso = accumulate + currentmeso; //비동기적으로 업데이트되기 때문에 setState를 사용하지 않음
+        setAccumulate(meso);
+        setSimulatemeso(meso === 0 ? 0 : Math.floor(meso / simulatenum));
     };
 
     useEffect(() => {
@@ -466,9 +477,15 @@ const StarForce = () => {
         renewal(current, level);
     }, [current, level, destoryguard, discount, event]);
 
+    useEffect(() => {
+        onAverageMeso();
+    }, [simulatenum]);
+
+    
+
     return (
         <StarBack>
-            <Star $row={12}>
+            <Star $row={14}>
                 <div>장비 레벨 선택</div>
                 <div>
                     <select onChange={onSelectChange}>
@@ -565,6 +582,8 @@ const StarForce = () => {
                 <input type="number" value={start} onChange={onStartChange} />
                 <div>목표 스타포스 수치 : </div>
                 <input type="number" value={goal} onChange={onGoalChange} />
+                <div>누적 시뮬레이팅 횟수 : {simulatenum}</div>
+                <div>시뮬레이팅 평균 메소 : {formatting(simulatemeso)}</div>
             </Star>
         </StarBack>
     );
