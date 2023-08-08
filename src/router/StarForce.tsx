@@ -582,8 +582,8 @@ const StarForce = () => {
                 <input type="number" value={start} onChange={onStartChange} />
                 <div>목표 스타포스 수치 : </div>
                 <input type="number" value={goal} onChange={onGoalChange} />
-                <div>누적 시뮬레이팅 횟수 : {simulatenum}</div>
-                <div>시뮬레이팅 평균 메소 : {formatting(simulatemeso)}</div>
+                <div>누적 시뮬레이팅 횟수 : {simulatenum}번</div>
+                <div>시뮬레이팅 평균 메소 : {formatting(simulatemeso)}메소</div>
             </Star>
         </StarBack>
     );
