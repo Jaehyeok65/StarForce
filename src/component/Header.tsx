@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 
 const HeaderBar = styled.div`
@@ -14,6 +15,11 @@ const HeaderContent = styled.div`
     display: flex;
     justify-content: center;
     font-size : 18px;
+`;
+
+const StyledLink = styled(Link)`
+    color : inherit;
+    text-decoration : none;
 `;
 
 const Header = () => {
@@ -36,7 +42,7 @@ const Header = () => {
 
     return (
         <HeaderBar>
-            <HeaderContent>{subject}</HeaderContent>
+            <HeaderContent><StyledLink to={'/'}>{subject}</StyledLink></HeaderContent>
         </HeaderBar>
     );
 };
