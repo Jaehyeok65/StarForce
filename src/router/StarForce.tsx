@@ -1,3 +1,4 @@
+import Modal from 'component/Modal';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
@@ -30,8 +31,15 @@ const StarContent = styled.div`
     display: flex;
     justify-content: space-aroud;
     > div {
-        font-size : 13px;
+        font-size: 13px;
     }
+`;
+
+const ModalContent = styled.div`
+    display: flex;
+    justify-content: center;
+    margin-top: 5%;
+    margin-bottom: 5%;
 `;
 
 const selectlevel = [110, 120, 130, 135, 140, 145, 150, 160, 200, 250];
@@ -43,6 +51,15 @@ interface discount {
 interface event {
     [key: string]: boolean;
 }
+
+type simulateresult = {
+    success: number;
+    currentmeso: number;
+    fail: number;
+    destorynum: number;
+    reinforcenum: number;
+    current: number;
+};
 
 const StarForce = () => {
     const [percentage, setPercentage] = useState<number>(30); //현재 강화 확률
@@ -74,13 +91,13 @@ const StarForce = () => {
     const [goal, setGoal] = useState<number>(0); //목표 스타포스 수치
     const [simulateguard, setSimulateGuard] = useState<boolean>(false);
     const [simulatenum, setSimulatenum] = useState<number>(0);
+    const [totalsimulate, setTotalSimulate] = useState<number>(0);
     const [simulatemeso, setSimulatemeso] = useState<number>(0);
     const [accumulate, setAccumulate] = useState<number>(0);
+    const [toggle, setToggle] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
-    const enforce = (
-        per: number,
-        destroy: number
-    ): 0 | 1 | 2 => {
+    const enforce = (per: number, destroy: number): 0 | 1 | 2 => {
         const num = Math.floor(Math.random() * 100) + 1; // 1 ~ 100까지 난수 생성
         if (starcatch) {
             //스타캐치 한다면 강화확률 * 0.05 증가
@@ -97,7 +114,6 @@ const StarForce = () => {
                 return 1;
             }
         } else {
-
             //성공 확률이 파괴 확률보다 적을 때
             if (num <= per) {
                 return 0;
@@ -109,7 +125,7 @@ const StarForce = () => {
         }
     };
 
-    const enforceTry = (per: number, destroy : number, current : number) => {
+    const enforceTry = (per: number, destroy: number, current: number) => {
         if (event['15-16'] || event['샤이닝 스타포스']) {
             //이벤트라면
             if (current === 5 || current === 10 || current === 15) {
@@ -145,7 +161,10 @@ const StarForce = () => {
                     } 강화 소모메소는 ${meso}메소이며 강화 확률은 ${percentage}%입니다. 강화하시겠습니까?`
                 )
             ) {
-                const success = (destoryguard && (current === 15 || current === 16)) ? enforce(per, 0) : enforce(per, destroy);
+                const success =
+                    destoryguard && (current === 15 || current === 16)
+                        ? enforce(per, 0)
+                        : enforce(per, destroy);
                 if (success === 0) {
                     window.alert('강화에 성공하셨습니다.');
                 } else if (success === 1) {
@@ -188,14 +207,21 @@ const StarForce = () => {
         renewalDestoryGuard(current, success);
     };
 
-    const enforceMeso = (current : number, simulate : boolean) : number => {
-        return Math.floor(eventmeso(discountmeso(onDestroyGuard(consume(current, level),current,simulate),current)));
+    const enforceMeso = (current: number, simulate: boolean): number => {
+        return Math.floor(
+            eventmeso(
+                discountmeso(
+                    onDestroyGuard(consume(current, level), current, simulate),
+                    current
+                )
+            )
+        );
     };
 
     const renewal = (current: number, level: number) => {
         //레벨과 강화수치에 따라 소모 메소, 강화 확률, 파괴 확률 초기화
         setPercentage(rate(current));
-        setMeso(enforceMeso(current,false));
+        setMeso(enforceMeso(current, false));
         setDestroy(destroypercent(current));
     };
 
@@ -249,14 +275,17 @@ const StarForce = () => {
         }
     };
 
-    const onDestroyGuard = (meso : number, current : number, simulate : boolean) : number => {
-        if(simulate) {
-            if((current === 15 || current === 16) && simulateguard) {
+    const onDestroyGuard = (
+        meso: number,
+        current: number,
+        simulate: boolean
+    ): number => {
+        if (simulate) {
+            if ((current === 15 || current === 16) && simulateguard) {
                 return meso * 2;
             }
-        }
-        else {
-            if((current === 15 || current === 16) && destoryguard) {
+        } else {
+            if ((current === 15 || current === 16) && destoryguard) {
                 return meso * 2;
             }
         }
@@ -281,7 +310,7 @@ const StarForce = () => {
         }
     };
 
-    const discountmeso = (meso: number, current : number): number => {
+    const discountmeso = (meso: number, current: number): number => {
         if (current > 17) {
             return meso;
         }
@@ -331,7 +360,7 @@ const StarForce = () => {
         );
     };
 
-    const simulate = (currents: number, goal: number) => {
+    const simulate = (currents: number, goal: number): simulateresult => {
         // 목표 스타포스까지 시뮬레이터
         let count = 0;
         let success = 0;
@@ -351,7 +380,10 @@ const StarForce = () => {
             ) {
                 i = 0; //1516일 경우 무조건 성공
             } else {
-                i =  (simulateguard && (currents === 15 || currents === 16)) ? enforce(per, 0) : enforce(per, destroy); //파괴방지 염두에 둠
+                i =
+                    simulateguard && (currents === 15 || currents === 16)
+                        ? enforce(per, 0)
+                        : enforce(per, destroy); //파괴방지 염두에 둠
             }
             if (i === 0) {
                 //성공
@@ -372,16 +404,18 @@ const StarForce = () => {
             }
             count = count + 1;
             per = rate(currents); //current가 바뀌었으므로 확률 재갱신
-            meso = meso + enforceMeso(currents,true);
+            meso = meso + enforceMeso(currents, true);
             destroy = destroypercent(currents);
         }
 
-        setSuccess(success);
-        setCurrentmeso(meso);
-        setFail(fail);
-        setDestroynum(destroynum);
-        setReinforcenum(count);
-        setCurrent(currents);
+        return {
+            success: success,
+            currentmeso: meso,
+            fail: fail,
+            destorynum: destroynum,
+            reinforcenum: count,
+            current: currents,
+        };
     };
 
     const formatting = (param: number): string => {
@@ -428,7 +462,6 @@ const StarForce = () => {
         });
     };
 
-
     const onGoalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         if (Number(value) > 25) {
@@ -441,32 +474,88 @@ const StarForce = () => {
 
     const onStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
-        if (Number(value) >= goal) {
-            window.alert(
-                '목표 스타포스 수치보다 높거나 같습니다 다시 입력해주세요!'
-            );
-            setStart(0);
-            return;
-        }
         setStart(Number(value));
     };
 
-    const onSimulate = () => {
+    const onSimulateNumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        if (Number(value) > 100000) {
+            window.alert('최대 10만회까지 가능합니다!');
+            setSimulatenum(100000);
+            return;
+        }
+        setSimulatenum(Number(value));
+    };
+
+    const onSimulate = (num: number) => {
         if (start >= goal) {
             window.alert(
                 '목표 강화 수치가 현재 강화 수치보다 낮거나 같습니다. 다시 입력해주세요.'
             );
+            setToggle((prev) => !prev);
             return;
         }
-        simulate(start, goal);
-        setSimulatenum(prev => prev + 1);
-        //onAverageMeso();
+        let result: simulateresult = {
+            success: 0,
+            currentmeso: 0,
+            fail: 0,
+            destorynum: 0,
+            reinforcenum: 0,
+            current: goal,
+        };
+        
+        for (let i = 0; i < num; i++) {
+            const next = simulate(start, goal);
+            result = onSimulateResultAdd(result, next);
+        }
+
+        onSetResult(result);
+        setTotalSimulate((prev) => prev + num);
+        setToggle((prev) => !prev);
     };
 
-    const onAverageMeso = () => { //시뮬레이팅 메소 평균
+    const onSetResult = (result: simulateresult) => {
+        setSuccess(result.success);
+        setCurrentmeso(result.currentmeso);
+        setFail(result.fail);
+        setDestroynum(result.destorynum);
+        setReinforcenum(result.reinforcenum);
+        setCurrent(result.current);
+    };
+
+    const onSimulateResultAdd = (
+        prev: simulateresult,
+        next: simulateresult
+    ): simulateresult => {
+        const tmp = { ...prev };
+
+        tmp.currentmeso += next.currentmeso;
+        tmp.destorynum += next.destorynum;
+        tmp.fail += next.fail;
+        tmp.reinforcenum += next.reinforcenum;
+        tmp.success += next.success;
+
+        return tmp;
+    };
+
+    const onAverageMeso = () => {
+        //시뮬레이팅 메소 평균
         const meso = accumulate + currentmeso; //비동기적으로 업데이트되기 때문에 setState를 사용하지 않음
         setAccumulate(meso);
         setSimulatemeso(meso === 0 ? 0 : Math.floor(meso / simulatenum));
+    };
+
+    const onInitialize = () => {
+        setCurrent(0);
+        setCurrentmeso(0);
+        setSuccess(0);
+        setFail(0);
+        setDestroynum(0);
+        setAccumulate(0);
+        setSimulatemeso(0);
+        setSimulatenum(0);
+        setTotalSimulate(0);
+        setReinforcenum(0);
     };
 
     useEffect(() => {
@@ -479,113 +568,177 @@ const StarForce = () => {
 
     useEffect(() => {
         onAverageMeso();
-    }, [simulatenum]);
+    }, [totalsimulate]);
 
-    
 
     return (
-        <StarBack>
-            <Star $row={14}>
-                <div>장비 레벨 선택</div>
-                <div>
-                    <select onChange={onSelectChange}>
-                        {selectlevel.map((item) => (
-                            <option value={item} key={item}>
-                                {item}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div>스페어 가격 입력 : </div>
-                <div>
-                    <input type="text" value={spare} onChange={onSpareChange} />
-                </div>
-                <div>현재 강화 수치 : {current}</div>
-                <div>현재 강화 확률 : {percentage}%</div>
-                <div>누적 성공 횟수 : {success}번</div>
-                <div>누적 실패 횟수 : {fail}번</div>
-                <div>현재 파괴 확률 : {destroy}%</div>
-                <div>누적 파괴 횟수 : {destorynum}번</div>
-                <div>할인 체크</div>
-                <div style={{fontSize : "13px"}}>
-                    {Object.keys(discount).map((item, index) => (
-                        <label key={index}>
+        <React.Fragment>
+            {loading ? (
+                <div>로딩중...</div>
+            ) : (
+                <StarBack>
+                    <Star $row={14}>
+                        <div>장비 레벨 선택</div>
+                        <div>
+                            <select onChange={onSelectChange}>
+                                {selectlevel.map((item) => (
+                                    <option value={item} key={item}>
+                                        {item}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>스페어 가격 입력 : </div>
+                        <div>
                             <input
-                                type="checkbox"
-                                name={item}
-                                onChange={onCheckChange}
+                                type="text"
+                                value={spare}
+                                onChange={onSpareChange}
                             />
-                            {item}
-                        </label>
-                    ))}
-                </div>
-                <div>스타포스 이벤트</div>
-                <div style={{fontSize : "13px"}}>
-                    {Object.keys(event).map((item, index) => (
-                        <label key={index}>
-                            <input
-                                type="checkbox"
-                                name={item}
-                                onChange={onEventChange}
-                            />
-                            {item}
-                        </label>
-                    ))}
-                </div>
-                <div>스타캐치 : </div>
-                <div>
-                    <label>
-                        <input type="checkbox" onChange={() => setStarcatch(prev => !prev)} />
-                    </label>
-                </div>
-                <div>파괴방지 : </div>
-                <div>
-                    <label>
+                        </div>
+                        <div>현재 강화 수치 : {current}</div>
+                        <div>현재 강화 확률 : {percentage}%</div>
+                        <div>누적 성공 횟수 : {success}번</div>
+                        <div>누적 실패 횟수 : {fail}번</div>
+                        <div>현재 파괴 확률 : {destroy}%</div>
+                        <div>누적 파괴 횟수 : {destorynum}번</div>
+                        <div>할인 체크</div>
+                        <div style={{ fontSize: '13px' }}>
+                            {Object.keys(discount).map((item, index) => (
+                                <label key={index}>
+                                    <input
+                                        type="checkbox"
+                                        name={item}
+                                        onChange={onCheckChange}
+                                    />
+                                    {item}
+                                </label>
+                            ))}
+                        </div>
+                        <div>스타포스 이벤트</div>
+                        <div style={{ fontSize: '13px' }}>
+                            {Object.keys(event).map((item, index) => (
+                                <label key={index}>
+                                    <input
+                                        type="checkbox"
+                                        name={item}
+                                        onChange={onEventChange}
+                                    />
+                                    {item}
+                                </label>
+                            ))}
+                        </div>
+                        <div>스타캐치 : </div>
+                        <div>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    onChange={() =>
+                                        setStarcatch((prev) => !prev)
+                                    }
+                                />
+                            </label>
+                        </div>
+                        <div>파괴방지 : </div>
+                        <div>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    onChange={() =>
+                                        setDestroyGuard((prev) => !prev)
+                                    }
+                                    disabled={current !== 15 && current !== 16}
+                                />
+                            </label>
+                        </div>
+                        <div>소모 메소 : {comma(meso)}메소</div>
+                        <div>
+                            누적 소모 메소 : {formatting(currentmeso)}메소
+                        </div>
+                        <div>누적 강화 횟수 : {reinforcenum}번</div>
+                        <StarContent>
+                            <StarBtn
+                                onClick={() =>
+                                    enforceTry(percentage, destroy, current)
+                                }
+                            >
+                                강화하기
+                            </StarBtn>
+                            &nbsp;
+                            <StarBtn onClick={onInitialize}>초기화하기</StarBtn>
+                        </StarContent>
+                        <div>강화 시뮬레이터</div>
+                        <StarContent>
+                            <StarBtn onClick={() => setToggle((prev) => !prev)}>
+                                시뮬레이팅하기
+                            </StarBtn>
+                            <div>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        onChange={() =>
+                                            setStarcatch((prev) => !prev)
+                                        }
+                                    />
+                                </label>
+                            </div>
+                            <div>모두 스타캐치</div>
+                            <div>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        onChange={() =>
+                                            setSimulateGuard((prev) => !prev)
+                                        }
+                                    />
+                                </label>
+                            </div>
+                            <div>모두 파괴방지</div>
+                        </StarContent>
+                        <div>시작 스타포스 수치 : </div>
                         <input
-                            type="checkbox"
-                            onChange={() => setDestroyGuard(prev => !prev)}
-                            disabled={current !== 15 && current !== 16}
+                            type="number"
+                            value={start}
+                            onChange={onStartChange}
                         />
-                    </label>
-                </div>
-                <div>소모 메소 : {comma(meso)}메소</div>
-                <div>누적 소모 메소 : {formatting(currentmeso)}메소</div>
-                <div>누적 강화 횟수 : {reinforcenum}번</div>
-                <StarContent>
-                    <StarBtn onClick={() => enforceTry(percentage,destroy,current)}>
-                        강화하기
-                    </StarBtn>
-                </StarContent>
-                <div>강화 시뮬레이터</div>
-                <StarContent>
-                    <StarBtn onClick={onSimulate}>시뮬레이팅하기</StarBtn>
-                    <div>
-                        <label>
+                        <div>목표 스타포스 수치 : </div>
+                        <input
+                            type="number"
+                            value={goal}
+                            onChange={onGoalChange}
+                        />
+                        <div>누적 시뮬레이팅 횟수 : {totalsimulate}번</div>
+                        <div>
+                            시뮬레이팅 평균 메소 : {formatting(simulatemeso)}
+                            메소
+                        </div>
+                    </Star>
+                    <Modal toggle={toggle}>
+                        <ModalContent>
+                            <div>스타포스 시뮬레이터</div>
+                        </ModalContent>
+                        <ModalContent>
+                            <div>시뮬레이팅 횟수 입력 : </div>
+                            &nbsp;
                             <input
-                                type="checkbox"
-                                onChange={() => setStarcatch(prev => !prev)}
+                                type="number"
+                                value={simulatenum}
+                                onChange={onSimulateNumChange}
                             />
-                        </label>
-                    </div>
-                    <div>모두 스타캐치</div>
-                    <div>
-                        <label>
-                            <input
-                                type="checkbox"
-                                onChange={() => setSimulateGuard(prev => !prev)}
-                            />
-                        </label>
-                    </div>
-                    <div>모두 파괴방지</div>
-                </StarContent>
-                <div>시작 스타포스 수치 : </div>
-                <input type="number" value={start} onChange={onStartChange} />
-                <div>목표 스타포스 수치 : </div>
-                <input type="number" value={goal} onChange={onGoalChange} />
-                <div>누적 시뮬레이팅 횟수 : {simulatenum}번</div>
-                <div>시뮬레이팅 평균 메소 : {formatting(simulatemeso)}메소</div>
-            </Star>
-        </StarBack>
+                        </ModalContent>
+                        <ModalContent>
+                            <StarBtn onClick={() => onSimulate(simulatenum)}>
+                                시뮬레이팅하기
+                            </StarBtn>
+                            &nbsp;
+                            <StarBtn onClick={() => setToggle((prev) => !prev)}>
+                                닫기
+                            </StarBtn>
+                        </ModalContent>
+                    </Modal>
+                </StarBack>
+            )}
+        </React.Fragment>
     );
 };
 
