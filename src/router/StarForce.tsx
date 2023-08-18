@@ -93,7 +93,6 @@ const StarForce = () => {
     const [simulatenum, setSimulatenum] = useState<number>(0);
     const [totalsimulate, setTotalSimulate] = useState<number>(0);
     const [simulatemeso, setSimulatemeso] = useState<number>(0);
-    const [accumulate, setAccumulate] = useState<number>(0);
     const [toggle, setToggle] = useState<boolean>(false);
     const [calculating, setCalculating] = useState<boolean>(false);
 
@@ -503,12 +502,12 @@ const StarForce = () => {
             reinforcenum: 0,
             current: goal,
         };
-        setCalculating(prev => !prev);
+        setCalculating((prev) => !prev);
 
         setTimeout(() => onSimulating(result, num), 1000);
     };
 
-    const onSimulating = (result : simulateresult, num : number) => {
+    const onSimulating = (result: simulateresult, num: number) => {
         for (let i = 0; i < num; i++) {
             const next = simulate(start, goal);
             result = onSimulateResultAdd(result, next);
@@ -516,15 +515,15 @@ const StarForce = () => {
         onSetResult(result);
         setTotalSimulate((prev) => prev + num);
         setToggle((prev) => !prev);
-        setCalculating(prev => !prev);
+        setCalculating((prev) => !prev);
     };
 
     const onSetResult = (result: simulateresult) => {
-        setSuccess(result.success);
-        setCurrentmeso(result.currentmeso);
-        setFail(result.fail);
-        setDestroynum(result.destorynum);
-        setReinforcenum(result.reinforcenum);
+        setSuccess((prev) => prev + result.success);
+        setCurrentmeso((prev) => prev + result.currentmeso);
+        setFail((prev) => prev + result.fail);
+        setDestroynum((prev) => prev + result.destorynum);
+        setReinforcenum((prev) => prev + result.reinforcenum);
         setCurrent(result.current);
     };
 
@@ -545,9 +544,7 @@ const StarForce = () => {
 
     const onAverageMeso = () => {
         //시뮬레이팅 메소 평균
-        const meso = accumulate + currentmeso; //비동기적으로 업데이트되기 때문에 setState를 사용하지 않음
-        setAccumulate(meso);
-        setSimulatemeso(meso === 0 ? 0 : Math.floor(meso / totalsimulate));
+        setSimulatemeso(currentmeso === 0 ? 0 : Math.floor(currentmeso / totalsimulate));
     };
 
     const onInitialize = () => {
@@ -556,7 +553,6 @@ const StarForce = () => {
         setSuccess(0);
         setFail(0);
         setDestroynum(0);
-        setAccumulate(0);
         setSimulatemeso(0);
         setSimulatenum(0);
         setTotalSimulate(0);
@@ -574,10 +570,6 @@ const StarForce = () => {
     useEffect(() => {
         onAverageMeso();
     }, [totalsimulate]);
-
-    console.log(discount.PC방);
-
-
 
     return (
         <React.Fragment>
@@ -700,7 +692,7 @@ const StarForce = () => {
                                 <label>
                                     <input
                                         type="checkbox"
-                                        checked={destoryguard}
+                                        checked={simulateguard}
                                         onChange={() =>
                                             setSimulateGuard((prev) => !prev)
                                         }
