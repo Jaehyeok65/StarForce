@@ -95,7 +95,7 @@ const StarForce = () => {
     const [simulatemeso, setSimulatemeso] = useState<number>(0);
     const [accumulate, setAccumulate] = useState<number>(0);
     const [toggle, setToggle] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [calculating, setCalculating] = useState<boolean>(false);
 
     const enforce = (per: number, destroy: number): 0 | 1 | 2 => {
         const num = Math.floor(Math.random() * 100) + 1; // 1 ~ 100까지 난수 생성
@@ -503,15 +503,20 @@ const StarForce = () => {
             reinforcenum: 0,
             current: goal,
         };
-        
+        setCalculating(prev => !prev);
+
+        setTimeout(() => onSimulating(result, num), 1000);
+    };
+
+    const onSimulating = (result : simulateresult, num : number) => {
         for (let i = 0; i < num; i++) {
             const next = simulate(start, goal);
             result = onSimulateResultAdd(result, next);
         }
-
         onSetResult(result);
         setTotalSimulate((prev) => prev + num);
         setToggle((prev) => !prev);
+        setCalculating(prev => !prev);
     };
 
     const onSetResult = (result: simulateresult) => {
@@ -542,7 +547,7 @@ const StarForce = () => {
         //시뮬레이팅 메소 평균
         const meso = accumulate + currentmeso; //비동기적으로 업데이트되기 때문에 setState를 사용하지 않음
         setAccumulate(meso);
-        setSimulatemeso(meso === 0 ? 0 : Math.floor(meso / simulatenum));
+        setSimulatemeso(meso === 0 ? 0 : Math.floor(meso / totalsimulate));
     };
 
     const onInitialize = () => {
@@ -570,17 +575,20 @@ const StarForce = () => {
         onAverageMeso();
     }, [totalsimulate]);
 
+    console.log(discount.PC방);
+
+
 
     return (
         <React.Fragment>
-            {loading ? (
-                <div>로딩중...</div>
+            {calculating ? (
+                <div>시뮬레이팅중...</div>
             ) : (
                 <StarBack>
                     <Star $row={14}>
                         <div>장비 레벨 선택</div>
                         <div>
-                            <select onChange={onSelectChange}>
+                            <select value={level} onChange={onSelectChange}>
                                 {selectlevel.map((item) => (
                                     <option value={item} key={item}>
                                         {item}
@@ -608,6 +616,7 @@ const StarForce = () => {
                                 <label key={index}>
                                     <input
                                         type="checkbox"
+                                        checked={discount[item]}
                                         name={item}
                                         onChange={onCheckChange}
                                     />
@@ -621,6 +630,7 @@ const StarForce = () => {
                                 <label key={index}>
                                     <input
                                         type="checkbox"
+                                        checked={event[item]}
                                         name={item}
                                         onChange={onEventChange}
                                     />
@@ -633,6 +643,7 @@ const StarForce = () => {
                             <label>
                                 <input
                                     type="checkbox"
+                                    checked={starcatch}
                                     onChange={() =>
                                         setStarcatch((prev) => !prev)
                                     }
@@ -644,6 +655,7 @@ const StarForce = () => {
                             <label>
                                 <input
                                     type="checkbox"
+                                    checked={destoryguard}
                                     onChange={() =>
                                         setDestroyGuard((prev) => !prev)
                                     }
@@ -676,6 +688,7 @@ const StarForce = () => {
                                 <label>
                                     <input
                                         type="checkbox"
+                                        checked={starcatch}
                                         onChange={() =>
                                             setStarcatch((prev) => !prev)
                                         }
@@ -687,6 +700,7 @@ const StarForce = () => {
                                 <label>
                                     <input
                                         type="checkbox"
+                                        checked={destoryguard}
                                         onChange={() =>
                                             setSimulateGuard((prev) => !prev)
                                         }
