@@ -1,6 +1,8 @@
 import Modal from 'component/Modal';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import Loading from 'component/Loading';
+import worker_script from './worker';
 
 const StarBack = styled.div`
     width: 100%;
@@ -359,7 +361,7 @@ const StarForce = () => {
         );
     };
 
-    const simulate = (currents: number, goal: number): simulateresult => {
+    /*const simulate = (currents: number, goal: number): simulateresult => {
         // 목표 스타포스까지 시뮬레이터
         let count = 0;
         let success = 0;
@@ -415,7 +417,7 @@ const StarForce = () => {
             reinforcenum: count,
             current: currents,
         };
-    };
+    };*/
 
     const formatting = (param: number): string => {
         if (param >= 1000000000000) {
@@ -502,12 +504,38 @@ const StarForce = () => {
             reinforcenum: 0,
             current: goal,
         };
+
         setCalculating((prev) => !prev);
 
-        setTimeout(() => onSimulating(result, num), 1000);
+        const worker = new Worker(worker_script);
+
+        worker.postMessage({
+            starcatch: starcatch,
+            event: event,
+            simulateguard: simulateguard,
+            spare: spare,
+            destoryguard: destoryguard,
+            discount: discount,
+            level: level,
+            start: start,
+            goal: goal,
+            result: result,
+            num: num,
+        });
+
+        worker.onmessage = (e) => {
+            onSetResult(e.data);
+            setTotalSimulate((prev) => prev + num);
+            setToggle((prev) => !prev);
+            setCalculating((prev) => !prev);
+        };
+
+        //setCalculating((prev) => !prev);
+
+        //setTimeout(() => onSimulating(result, num), 1000);
     };
 
-    const onSimulating = (result: simulateresult, num: number) => {
+    /*const onSimulating = (result: simulateresult, num: number) => {
         for (let i = 0; i < num; i++) {
             const next = simulate(start, goal);
             result = onSimulateResultAdd(result, next);
@@ -516,7 +544,7 @@ const StarForce = () => {
         setTotalSimulate((prev) => prev + num);
         setToggle((prev) => !prev);
         setCalculating((prev) => !prev);
-    };
+    };*/
 
     const onSetResult = (result: simulateresult) => {
         setSuccess((prev) => prev + result.success);
@@ -527,7 +555,7 @@ const StarForce = () => {
         setCurrent(result.current);
     };
 
-    const onSimulateResultAdd = (
+    /*const onSimulateResultAdd = (
         prev: simulateresult,
         next: simulateresult
     ): simulateresult => {
@@ -540,11 +568,13 @@ const StarForce = () => {
         tmp.success += next.success;
 
         return tmp;
-    };
+    };*/
 
     const onAverageMeso = () => {
         //시뮬레이팅 메소 평균
-        setSimulatemeso(currentmeso === 0 ? 0 : Math.floor(currentmeso / totalsimulate));
+        setSimulatemeso(
+            currentmeso === 0 ? 0 : Math.floor(currentmeso / totalsimulate)
+        );
     };
 
     const onInitialize = () => {
@@ -574,7 +604,12 @@ const StarForce = () => {
     return (
         <React.Fragment>
             {calculating ? (
-                <div>시뮬레이팅중...</div>
+                <Loading
+                    height="100px"
+                    width="100px"
+                    marginTop="5%"
+                    marginBottom="5%"
+                />
             ) : (
                 <StarBack>
                     <Star $row={14}>
