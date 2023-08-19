@@ -12,6 +12,7 @@ const workerCode = () => {
 
   onmessage = e => {
     const { starcatch, event, simulateguard, spare, destoryguard, discount, level, start, goal, result, num } = e.data;
+    let array = [false,false,false,false,false,false,false,false,false,false];
 
     const rate = (current: number): number => {
       //현재 강화수치에 따라 강화확률 반환
@@ -233,12 +234,26 @@ const workerCode = () => {
 
     const onSimulating = (result: simulateresult, num: number): simulateresult => {
       for (let i = 0; i < num; i++) {
+        const progress = onProgress(i,num);
+        onRetrunProgress(progress, array);
         const next = simulate(start, goal);
         result = onSimulateResultAdd(result, next);
       }
 
       return result;
     };
+
+    const onProgress = (i : number, num : number) : number => {
+      return Math.floor(((i / num) * 100));
+    };
+
+    const onRetrunProgress = (progress : number, array : Array<boolean>) => {
+      const index = Math.floor((progress / 10)) - 1;
+      if(array[index] === false) {
+        array[index] = true;
+        postMessage(progress);
+      }
+    }
 
 
     const onSimulateResultAdd = (

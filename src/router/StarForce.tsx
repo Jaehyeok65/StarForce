@@ -44,6 +44,14 @@ const ModalContent = styled.div`
     margin-bottom: 5%;
 `;
 
+const Progress = styled.div`
+    display: flex;
+    justify-content: center;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    font-size : 19px;
+`;
+
 const selectlevel = [110, 120, 130, 135, 140, 145, 150, 160, 200, 250];
 
 interface discount {
@@ -97,6 +105,7 @@ const StarForce = () => {
     const [simulatemeso, setSimulatemeso] = useState<number>(0);
     const [toggle, setToggle] = useState<boolean>(false);
     const [calculating, setCalculating] = useState<boolean>(false);
+    const [progress, setProgress] = useState<number>(0);
 
     const enforce = (per: number, destroy: number): 0 | 1 | 2 => {
         const num = Math.floor(Math.random() * 100) + 1; // 1 ~ 100까지 난수 생성
@@ -361,64 +370,6 @@ const StarForce = () => {
         );
     };
 
-    /*const simulate = (currents: number, goal: number): simulateresult => {
-        // 목표 스타포스까지 시뮬레이터
-        let count = 0;
-        let success = 0;
-        let fail = 0;
-        let destroy = destroypercent(currents);
-        let destroynum = 0;
-        let meso = 0;
-        let per = rate(currents);
-        let i = 0;
-        //currents = currents === start ? 0 : currents;
-        //한번에 계산 후 setState 호출하기 위한 지역변수 선언
-
-        while (currents < goal) {
-            if (
-                (event['15-16'] || event['샤이닝 스타포스']) &&
-                (currents === 5 || currents === 10 || currents === 15)
-            ) {
-                i = 0; //1516일 경우 무조건 성공
-            } else {
-                i =
-                    simulateguard && (currents === 15 || currents === 16)
-                        ? enforce(per, 0)
-                        : enforce(per, destroy); //파괴방지 염두에 둠
-            }
-            if (i === 0) {
-                //성공
-                success = success + 1;
-                currents = currents + 1;
-            } else if (i === 1) {
-                //실패
-                fail = fail + 1;
-                if (currents > 15 && currents !== 20) {
-                    //current
-                    currents = currents - 1;
-                }
-            } else {
-                //파괴
-                destroynum = destroynum + 1;
-                currents = 12;
-                meso = meso + spare; //파괴시 스페어 메소 추가
-            }
-            count = count + 1;
-            per = rate(currents); //current가 바뀌었으므로 확률 재갱신
-            meso = meso + enforceMeso(currents, true);
-            destroy = destroypercent(currents);
-        }
-
-        return {
-            success: success,
-            currentmeso: meso,
-            fail: fail,
-            destorynum: destroynum,
-            reinforcenum: count,
-            current: currents,
-        };
-    };*/
-
     const formatting = (param: number): string => {
         if (param >= 1000000000000) {
             return `${Math.floor(param / 1000000000000)}조 ${Math.floor(
@@ -524,27 +475,18 @@ const StarForce = () => {
         });
 
         worker.onmessage = (e) => {
-            onSetResult(e.data);
-            setTotalSimulate((prev) => prev + num);
-            setToggle((prev) => !prev);
-            setCalculating((prev) => !prev);
+            //onsole.log(typeof e.data);
+            if (typeof e.data === 'number') {
+                setProgress(e.data);
+            } else if (typeof e.data === 'object') {
+                onSetResult(e.data);
+                setProgress(0); //완료되었기 때문에 진행상황 다시 0으로 초기화
+                setTotalSimulate((prev) => prev + num);
+                setToggle((prev) => !prev);
+                setCalculating((prev) => !prev);
+            }
         };
-
-        //setCalculating((prev) => !prev);
-
-        //setTimeout(() => onSimulating(result, num), 1000);
     };
-
-    /*const onSimulating = (result: simulateresult, num: number) => {
-        for (let i = 0; i < num; i++) {
-            const next = simulate(start, goal);
-            result = onSimulateResultAdd(result, next);
-        }
-        onSetResult(result);
-        setTotalSimulate((prev) => prev + num);
-        setToggle((prev) => !prev);
-        setCalculating((prev) => !prev);
-    };*/
 
     const onSetResult = (result: simulateresult) => {
         setSuccess((prev) => prev + result.success);
@@ -554,21 +496,6 @@ const StarForce = () => {
         setReinforcenum((prev) => prev + result.reinforcenum);
         setCurrent(result.current);
     };
-
-    /*const onSimulateResultAdd = (
-        prev: simulateresult,
-        next: simulateresult
-    ): simulateresult => {
-        const tmp = { ...prev };
-
-        tmp.currentmeso += next.currentmeso;
-        tmp.destorynum += next.destorynum;
-        tmp.fail += next.fail;
-        tmp.reinforcenum += next.reinforcenum;
-        tmp.success += next.success;
-
-        return tmp;
-    };*/
 
     const onAverageMeso = () => {
         //시뮬레이팅 메소 평균
@@ -604,12 +531,17 @@ const StarForce = () => {
     return (
         <React.Fragment>
             {calculating ? (
-                <Loading
-                    height="100px"
-                    width="100px"
-                    marginTop="5%"
-                    marginBottom="5%"
-                />
+                <div>
+                    <Loading
+                        height="100px"
+                        width="100px"
+                        marginTop="5%"
+                        marginBottom="5%"
+                    />
+                    <Progress>
+                        {progress}%...
+                    </Progress>
+                </div>
             ) : (
                 <StarBack>
                     <Star $row={14}>
