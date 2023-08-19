@@ -47,7 +47,6 @@ const ModalContent = styled.div`
 const Progress = styled.div`
     display: flex;
     justify-content: center;
-    margin-top: 5%;
     margin-bottom: 5%;
     font-size : 19px;
 `;
@@ -533,8 +532,8 @@ const StarForce = () => {
             {calculating ? (
                 <div>
                     <Loading
-                        height="100px"
-                        width="100px"
+                        height="50px"
+                        width="50px"
                         marginTop="5%"
                         marginBottom="5%"
                     />
