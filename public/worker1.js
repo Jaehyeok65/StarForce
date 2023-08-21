@@ -1,20 +1,8 @@
-
-const workerCode = () => {
-
-  type simulateresult = {
-    success: number;
-    currentmeso: number;
-    fail: number;
-    destorynum: number;
-    reinforcenum: number;
-    current: number;
-  };
-
-  onmessage = e => {
+self.onmessage = e => {
     const { starcatch, event, simulateguard, spare, destoryguard, discount, level, start, goal, result, num } = e.data;
     let array = [false,false,false,false,false,false,false,false,false,false];
 
-    const rate = (current: number): number => {
+    const rate = (current) => {
       //현재 강화수치에 따라 강화확률 반환
       if (current < 3) {
         return 95 - 5 * current;
@@ -31,7 +19,7 @@ const workerCode = () => {
       }
     };
 
-    const discountmeso = (meso: number, current: number): number => {
+    const discountmeso = (meso, current) => {
       if (current > 17) {
         return meso;
       }
@@ -62,8 +50,8 @@ const workerCode = () => {
       }
     };
 
-    const eventmeso = (meso: number): number => {
-      if (event['15-16'] || event['샤이닝 스타포스']) {
+    const eventmeso = (meso) => {
+      if (event['30%'] || event['샤이닝 스타포스']) {
         return meso - meso * 0.3;
       } else {
         return meso;
@@ -71,10 +59,10 @@ const workerCode = () => {
     };
 
     const onDestroyGuard = (
-      meso: number,
-      current: number,
-      simulate: boolean
-    ): number => {
+      meso,
+      current,
+      simulate
+    ) => {
       if (simulate) {
         if ((current === 15 || current === 16) && simulateguard) {
           return meso * 2;
@@ -87,7 +75,7 @@ const workerCode = () => {
       return meso;
     };
 
-    const destroypercent = (current: number): number => {
+    const destroypercent = (current) => {
       if (current >= 15 && current <= 17) {
         return 2.1;
       } else if (current >= 18 && current <= 19) {
@@ -105,7 +93,7 @@ const workerCode = () => {
       }
     };
 
-    const enforce = (per: number, destroy: number, starcatch: boolean): 0 | 1 | 2 => {
+    const enforce = (per, destroy, starcatch) => {
       const num = Math.floor(Math.random() * 100) + 1; // 1 ~ 100까지 난수 생성
       if (starcatch) {
         //스타캐치 한다면 강화확률 * 0.05 증가
@@ -134,17 +122,17 @@ const workerCode = () => {
     };
 
     const starforcemeso = (
-      current: number,
-      level: number,
-      denominater: number
-    ): number => {
+      current,
+      level,
+      denominater
+    ) => {
       return (
         1000 +
         (Math.pow(level, 3) * Math.pow(current + 1, 2.7)) / denominater
       );
     };
 
-    const consume = (current: number, level: number): number => {
+    const consume = (current, level) => {
       //현재 강화수치와 아이템 레벨에 따라 소모 메소 반환
       if (current < 10) {
         return 1000 + (Math.pow(level, 3) * (current + 1)) / 25;
@@ -163,7 +151,7 @@ const workerCode = () => {
       }
     };
 
-    const enforceMeso = (current: number, simulate: boolean): number => {
+    const enforceMeso = (current, simulate) => {
       return Math.floor(
         eventmeso(
           discountmeso(
@@ -174,7 +162,7 @@ const workerCode = () => {
       );
     };
 
-    const simulate = (currents: number, goal: number): simulateresult => {
+    const simulate = (currents, goal) => {
       // 목표 스타포스까지 시뮬레이터
       let count = 0;
       let success = 0;
@@ -232,7 +220,7 @@ const workerCode = () => {
       };
     };
 
-    const onSimulating = (result: simulateresult, num: number): simulateresult => {
+    const onSimulating = (result, num) => {
       for (let i = 0; i < num; i++) {
         const progress = onProgress(i,num);
         onRetrunProgress(progress, array);
@@ -243,11 +231,11 @@ const workerCode = () => {
       return result;
     };
 
-    const onProgress = (i : number, num : number) : number => {
+    const onProgress = (i, num) => {
       return Math.floor(((i / num) * 100));
     };
 
-    const onRetrunProgress = (progress : number, array : Array<boolean>) => {
+    const onRetrunProgress = (progress, array) => {
       const index = Math.floor((progress / 10)) - 1;
       if(array[index] === false) {
         array[index] = true;
@@ -257,9 +245,9 @@ const workerCode = () => {
 
 
     const onSimulateResultAdd = (
-      prev: simulateresult,
-      next: simulateresult
-    ): simulateresult => {
+      prev,
+      next
+    ) => {
       const tmp = { ...prev };
 
       tmp.currentmeso += next.currentmeso;
@@ -272,16 +260,5 @@ const workerCode = () => {
     };
 
     const simulresult = onSimulating(result, num);
-    postMessage(simulresult);
+    self.postMessage(simulresult);
   };
-};
-
-
-
-let code = workerCode.toString();
-code = code.substring(code.indexOf('{') + 1, code.lastIndexOf('}'));
-
-const blob = new Blob([code], { type: 'application/javascript' });
-const worker_script = URL.createObjectURL(blob);
-
-export default worker_script;

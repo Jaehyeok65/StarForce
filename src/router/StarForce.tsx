@@ -2,7 +2,6 @@ import Modal from 'component/Modal';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Loading from 'component/Loading';
-import worker_script from './worker';
 
 const StarBack = styled.div`
     width: 100%;
@@ -48,7 +47,7 @@ const Progress = styled.div`
     display: flex;
     justify-content: center;
     margin-bottom: 5%;
-    font-size : 19px;
+    font-size: 19px;
 `;
 
 const selectlevel = [110, 120, 130, 135, 140, 145, 150, 160, 200, 250];
@@ -99,7 +98,7 @@ const StarForce = () => {
     const [start, setStart] = useState<number>(0); //시작 스타포스 수치
     const [goal, setGoal] = useState<number>(0); //목표 스타포스 수치
     const [simulateguard, setSimulateGuard] = useState<boolean>(false);
-    const [simulatenum, setSimulatenum] = useState<number>(0);
+    const [simulatenum, setSimulatenum] = useState<number>(100000);
     const [totalsimulate, setTotalSimulate] = useState<number>(0);
     const [simulatemeso, setSimulatemeso] = useState<number>(0);
     const [toggle, setToggle] = useState<boolean>(false);
@@ -351,7 +350,7 @@ const StarForce = () => {
     };
 
     const eventmeso = (meso: number): number => {
-        if (event['15-16'] || event['샤이닝 스타포스']) {
+        if (event['30%'] || event['샤이닝 스타포스']) {
             return meso - meso * 0.3;
         } else {
             return meso;
@@ -457,7 +456,7 @@ const StarForce = () => {
 
         setCalculating((prev) => !prev);
 
-        const worker = new Worker(worker_script);
+        const worker = new Worker(`${process.env.PUBLIC_URL}/worker1.js`);
 
         worker.postMessage({
             starcatch: starcatch,
@@ -474,7 +473,6 @@ const StarForce = () => {
         });
 
         worker.onmessage = (e) => {
-            //onsole.log(typeof e.data);
             if (typeof e.data === 'number') {
                 setProgress(e.data);
             } else if (typeof e.data === 'object') {
@@ -510,7 +508,6 @@ const StarForce = () => {
         setFail(0);
         setDestroynum(0);
         setSimulatemeso(0);
-        setSimulatenum(0);
         setTotalSimulate(0);
         setReinforcenum(0);
     };
@@ -530,17 +527,17 @@ const StarForce = () => {
     return (
         <React.Fragment>
             {calculating ? (
-                <div>
-                    <Loading
-                        height="50px"
-                        width="50px"
-                        marginTop="5%"
-                        marginBottom="5%"
-                    />
-                    <Progress>
-                        {progress}%...
-                    </Progress>
-                </div>
+                   <div>
+                   <Loading
+                       height="50px"
+                       width="50px"
+                       marginTop="5%"
+                       marginBottom="5%"
+                   />
+                   <Progress>
+                       {progress}%...
+                   </Progress>
+               </div>
             ) : (
                 <StarBack>
                     <Star $row={14}>
