@@ -68,6 +68,23 @@ const Button = styled.button`
     backgroud-color: white;
 `;
 
+const Background = styled.div`
+    width: 60%;
+    margin: 0 auto;
+
+    @media screen and (max-width : 767px) {
+        width : 100%;
+        margin : 0 auto;
+    };
+`;
+
+const Back = styled.div`
+    margin: 5% 5% 5% 5%;
+    border: 1px solid gray;
+    border-radius: 12px;
+    padding: 5% 5% 5% 5%;
+`;
+
 const SolErda = () => {
     const [main, setMain] = useState<Array<boolean>>([
         false,
@@ -373,6 +390,8 @@ const SolErda = () => {
     }, [accumalte, piece]);
 
     return (
+        <Background>
+            <Back>
         <MainBack>
             <MainImage>
                 <img src={imgsrc} alt="솔 에르다 조각" />
@@ -466,6 +485,8 @@ const SolErda = () => {
                 </div>
             )}
         </MainBack>
+        </Back>
+        </Background>
     );
 };
 

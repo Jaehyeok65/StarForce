@@ -50,6 +50,23 @@ const Progress = styled.div`
     font-size: 19px;
 `;
 
+const Background = styled.div`
+    width: 60%;
+    margin: 0 auto;
+
+    @media screen and (max-width : 767px) {
+        width : 100%;
+        margin : 0 auto;
+    };
+`;
+
+const Back = styled.div`
+    margin: 5% 5% 5% 5%;
+    border: 1px solid gray;
+    border-radius: 12px;
+    padding: 5% 5% 5% 5%;
+`;
+
 const selectlevel = [110, 120, 130, 135, 140, 145, 150, 160, 200, 250];
 
 interface discount {
@@ -525,7 +542,8 @@ const StarForce = () => {
     }, [totalsimulate]);
 
     return (
-        <React.Fragment>
+        <Background>
+            <Back>
             {calculating ? (
                    <div>
                    <Loading
@@ -707,7 +725,8 @@ const StarForce = () => {
                     </Modal>
                 </StarBack>
             )}
-        </React.Fragment>
+        </Back>
+        </Background>
     );
 };
 
