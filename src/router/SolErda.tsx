@@ -319,10 +319,12 @@ const SolErda = () => {
         window.alert("저장된 헥사스텟 정보가 없습니다. 정보를 저장한 뒤 다시 이용해주세요!");
        }
        else {
-            const value = JSON.parse(tmp);
-            onSetUp(value.main, value.sub1, value.sub2, false);
-            setInit(value.init);
-            setAccumalte(value.accumalte);
+            if(window.confirm("저장된 정보를 불러오시겠습니까?")) {
+                const value = JSON.parse(tmp);
+                onSetUp(value.main, value.sub1, value.sub2, false);
+                setInit(value.init);
+                setAccumalte(value.accumalte);
+            }
        }
     };
 
