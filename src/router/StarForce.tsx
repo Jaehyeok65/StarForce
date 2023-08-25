@@ -54,10 +54,10 @@ const Background = styled.div`
     width: 60%;
     margin: 0 auto;
 
-    @media screen and (max-width : 767px) {
-        width : 100%;
-        margin : 0 auto;
-    };
+    @media screen and (max-width: 767px) {
+        width: 100%;
+        margin: 0 auto;
+    }
 `;
 
 const Back = styled.div`
@@ -544,119 +544,72 @@ const StarForce = () => {
     return (
         <Background>
             <Back>
-            {calculating ? (
-                   <div>
-                   <Loading
-                       height="50px"
-                       width="50px"
-                       marginTop="5%"
-                       marginBottom="5%"
-                   />
-                   <Progress>
-                       {progress}%...
-                   </Progress>
-               </div>
-            ) : (
-                <StarBack>
-                    <Star $row={14}>
-                        <div>장비 레벨 선택</div>
-                        <div>
-                            <select value={level} onChange={onSelectChange}>
-                                {selectlevel.map((item) => (
-                                    <option value={item} key={item}>
+                {calculating ? (
+                    <div>
+                        <Loading
+                            height="50px"
+                            width="50px"
+                            marginTop="5%"
+                            marginBottom="5%"
+                        />
+                        <Progress>{progress}%...</Progress>
+                    </div>
+                ) : (
+                    <StarBack>
+                        <Star $row={14}>
+                            <div>장비 레벨 선택</div>
+                            <div>
+                                <select value={level} onChange={onSelectChange}>
+                                    {selectlevel.map((item) => (
+                                        <option value={item} key={item}>
+                                            {item}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>스페어 가격 입력 : </div>
+                            <div>
+                                <input
+                                    type="text"
+                                    value={spare}
+                                    onChange={onSpareChange}
+                                />
+                            </div>
+                            <div>현재 강화 수치 : {current}</div>
+                            <div>현재 강화 확률 : {percentage}%</div>
+                            <div>누적 성공 횟수 : {success}번</div>
+                            <div>누적 실패 횟수 : {fail}번</div>
+                            <div>현재 파괴 확률 : {destroy}%</div>
+                            <div>누적 파괴 횟수 : {destorynum}번</div>
+                            <div>할인 체크</div>
+                            <div style={{ fontSize: '13px' }}>
+                                {Object.keys(discount).map((item, index) => (
+                                    <label key={index}>
+                                        <input
+                                            type="checkbox"
+                                            checked={discount[item]}
+                                            name={item}
+                                            onChange={onCheckChange}
+                                        />
                                         {item}
-                                    </option>
+                                    </label>
                                 ))}
-                            </select>
-                        </div>
-                        <div>스페어 가격 입력 : </div>
-                        <div>
-                            <input
-                                type="text"
-                                value={spare}
-                                onChange={onSpareChange}
-                            />
-                        </div>
-                        <div>현재 강화 수치 : {current}</div>
-                        <div>현재 강화 확률 : {percentage}%</div>
-                        <div>누적 성공 횟수 : {success}번</div>
-                        <div>누적 실패 횟수 : {fail}번</div>
-                        <div>현재 파괴 확률 : {destroy}%</div>
-                        <div>누적 파괴 횟수 : {destorynum}번</div>
-                        <div>할인 체크</div>
-                        <div style={{ fontSize: '13px' }}>
-                            {Object.keys(discount).map((item, index) => (
-                                <label key={index}>
-                                    <input
-                                        type="checkbox"
-                                        checked={discount[item]}
-                                        name={item}
-                                        onChange={onCheckChange}
-                                    />
-                                    {item}
-                                </label>
-                            ))}
-                        </div>
-                        <div>스타포스 이벤트</div>
-                        <div style={{ fontSize: '13px' }}>
-                            {Object.keys(event).map((item, index) => (
-                                <label key={index}>
-                                    <input
-                                        type="checkbox"
-                                        checked={event[item]}
-                                        name={item}
-                                        onChange={onEventChange}
-                                    />
-                                    {item}
-                                </label>
-                            ))}
-                        </div>
-                        <div>스타캐치 : </div>
-                        <div>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={starcatch}
-                                    onChange={() =>
-                                        setStarcatch((prev) => !prev)
-                                    }
-                                />
-                            </label>
-                        </div>
-                        <div>파괴방지 : </div>
-                        <div>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={destoryguard}
-                                    onChange={() =>
-                                        setDestroyGuard((prev) => !prev)
-                                    }
-                                    disabled={current !== 15 && current !== 16}
-                                />
-                            </label>
-                        </div>
-                        <div>소모 메소 : {comma(meso)}메소</div>
-                        <div>
-                            누적 소모 메소 : {formatting(currentmeso)}메소
-                        </div>
-                        <div>누적 강화 횟수 : {reinforcenum}번</div>
-                        <StarContent>
-                            <StarBtn
-                                onClick={() =>
-                                    enforceTry(percentage, destroy, current)
-                                }
-                            >
-                                강화하기
-                            </StarBtn>
-                            &nbsp;
-                            <StarBtn onClick={onInitialize}>초기화하기</StarBtn>
-                        </StarContent>
-                        <div>강화 시뮬레이터</div>
-                        <StarContent>
-                            <StarBtn onClick={() => setToggle((prev) => !prev)}>
-                                시뮬레이팅하기
-                            </StarBtn>
+                            </div>
+                            <div>스타포스 이벤트</div>
+                            <div style={{ fontSize: '13px' }}>
+                                {Object.keys(event).map((item, index) => (
+                                    <label key={index}>
+                                        <input
+                                            type="checkbox"
+                                            checked={event[item]}
+                                            name={item}
+                                            onChange={onEventChange}
+                                        />
+                                        {item}
+                                    </label>
+                                ))}
+                            </div>
+                            <div>스타캐치 : </div>
                             <div>
                                 <label>
                                     <input
@@ -668,64 +621,122 @@ const StarForce = () => {
                                     />
                                 </label>
                             </div>
-                            <div>모두 스타캐치</div>
+                            <div>파괴방지 : </div>
                             <div>
                                 <label>
                                     <input
                                         type="checkbox"
-                                        checked={simulateguard}
+                                        checked={destoryguard}
                                         onChange={() =>
-                                            setSimulateGuard((prev) => !prev)
+                                            setDestroyGuard((prev) => !prev)
+                                        }
+                                        disabled={
+                                            current !== 15 && current !== 16
                                         }
                                     />
                                 </label>
                             </div>
-                            <div>모두 파괴방지</div>
-                        </StarContent>
-                        <div>시작 스타포스 수치 : </div>
-                        <input
-                            type="number"
-                            value={start}
-                            onChange={onStartChange}
-                        />
-                        <div>목표 스타포스 수치 : </div>
-                        <input
-                            type="number"
-                            value={goal}
-                            onChange={onGoalChange}
-                        />
-                        <div>누적 시뮬레이팅 횟수 : {totalsimulate}번</div>
-                        <div>
-                            시뮬레이팅 평균 메소 : {formatting(simulatemeso)}
-                            메소
-                        </div>
-                    </Star>
-                    <Modal toggle={toggle}>
-                        <ModalContent>
-                            <div>스타포스 시뮬레이터</div>
-                        </ModalContent>
-                        <ModalContent>
-                            <div>시뮬레이팅 횟수 입력 : </div>
-                            &nbsp;
+                            <div>소모 메소 : {comma(meso)}메소</div>
+                            <div>
+                                누적 소모 메소 : {formatting(currentmeso)}메소
+                            </div>
+                            <div>누적 강화 횟수 : {reinforcenum}번</div>
+                            <StarContent>
+                                <StarBtn
+                                    onClick={() =>
+                                        enforceTry(percentage, destroy, current)
+                                    }
+                                >
+                                    강화하기
+                                </StarBtn>
+                                &nbsp;
+                                <StarBtn onClick={onInitialize}>
+                                    초기화하기
+                                </StarBtn>
+                            </StarContent>
+                            <div>강화 시뮬레이터</div>
+                            <StarContent>
+                                <StarBtn
+                                    onClick={() => setToggle((prev) => !prev)}
+                                >
+                                    시뮬레이팅하기
+                                </StarBtn>
+                                <div>
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            checked={starcatch}
+                                            onChange={() =>
+                                                setStarcatch((prev) => !prev)
+                                            }
+                                        />
+                                    </label>
+                                </div>
+                                <div>모두 스타캐치</div>
+                                <div>
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            checked={simulateguard}
+                                            onChange={() =>
+                                                setSimulateGuard(
+                                                    (prev) => !prev
+                                                )
+                                            }
+                                        />
+                                    </label>
+                                </div>
+                                <div>모두 파괴방지</div>
+                            </StarContent>
+                            <div>시작 스타포스 수치 : </div>
                             <input
                                 type="number"
-                                value={simulatenum}
-                                onChange={onSimulateNumChange}
+                                value={start}
+                                onChange={onStartChange}
                             />
-                        </ModalContent>
-                        <ModalContent>
-                            <StarBtn onClick={() => onSimulate(simulatenum)}>
-                                시뮬레이팅하기
-                            </StarBtn>
-                            &nbsp;
-                            <StarBtn onClick={() => setToggle((prev) => !prev)}>
-                                닫기
-                            </StarBtn>
-                        </ModalContent>
-                    </Modal>
-                </StarBack>
-            )}
-        </Back>
+                            <div>목표 스타포스 수치 : </div>
+                            <input
+                                type="number"
+                                value={goal}
+                                onChange={onGoalChange}
+                            />
+                            <div>누적 시뮬레이팅 횟수 : {totalsimulate}번</div>
+                            <div>
+                                시뮬레이팅 평균 메소 :{' '}
+                                {formatting(simulatemeso)}
+                                메소
+                            </div>
+                        </Star>
+                        <Modal toggle={toggle}>
+                            <ModalContent>
+                                <div>스타포스 시뮬레이터</div>
+                            </ModalContent>
+                            <ModalContent>
+                                <div>시뮬레이팅 횟수 입력 : </div>
+                                &nbsp;
+                                <input
+                                    type="number"
+                                    value={simulatenum}
+                                    onChange={onSimulateNumChange}
+                                />
+                            </ModalContent>
+                            <ModalContent>
+                                <StarBtn
+                                    onClick={() => onSimulate(simulatenum)}
+                                >
+                                    시뮬레이팅하기
+                                </StarBtn>
+                                &nbsp;
+                                <StarBtn
+                                    onClick={() => setToggle((prev) => !prev)}
+                                >
+                                    닫기
+                                </StarBtn>
+                            </ModalContent>
+                        </Modal>
+                    </StarBack>
+                )}
+            </Back>
         </Background>
     );
 };

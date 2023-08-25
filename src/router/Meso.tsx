@@ -2,7 +2,6 @@ import Modal from 'component/Modal';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-
 const Head = styled.div`
     display: flex;
     justify-content: center;

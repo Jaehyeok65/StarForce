@@ -72,10 +72,10 @@ const Background = styled.div`
     width: 60%;
     margin: 0 auto;
 
-    @media screen and (max-width : 767px) {
-        width : 100%;
-        margin : 0 auto;
-    };
+    @media screen and (max-width: 767px) {
+        width: 100%;
+        margin: 0 auto;
+    }
 `;
 
 const Back = styled.div`
@@ -127,7 +127,7 @@ const SolErda = () => {
     const [sub2level, setSub2level] = useState<number>(0);
     const [tmpmain, setTmpMain] = useState<number>(0);
     const [tmpsub1, setTmpSub1] = useState<number>(0);
-    const[tmpsub2, setTmpSub2] = useState<number>(0);
+    const [tmpsub2, setTmpSub2] = useState<number>(0);
     const [mainpercent, setMainpercent] = useState<number>(0);
     const [sub1percent, setSub1percent] = useState<number>(0);
     const [sub2percent, setSub2percent] = useState<number>(0);
@@ -288,61 +288,73 @@ const SolErda = () => {
         onSetAccumalate(consume);
     };
 
-    const onMainChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+    const onMainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
-        if(Number(value) > 10 || Number(value) < 0) {
-            window.alert("설정 가능한 범위를 벗어났습니다! (0 ~ 10)");
+        if (Number(value) > 10 || Number(value) < 0) {
+            window.alert('설정 가능한 범위를 벗어났습니다! (0 ~ 10)');
             return;
-        };
+        }
         setTmpMain(Number(value));
     };
 
-    const onSub1Change = (e : React.ChangeEvent<HTMLInputElement>) => {
+    const onSub1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
-        if(Number(value) > 10 || Number(value) < 0) {
-            window.alert("설정 가능한 범위를 벗어났습니다! (0 ~ 10)");
+        if (Number(value) > 10 || Number(value) < 0) {
+            window.alert('설정 가능한 범위를 벗어났습니다! (0 ~ 10)');
             return;
-        };
+        }
         setTmpSub1(Number(value));
     };
 
-    const onSub2Change = (e : React.ChangeEvent<HTMLInputElement>) => {
+    const onSub2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
-        if(Number(value) > 10 || Number(value) < 0) {
-            window.alert("설정 가능한 범위를 벗어났습니다! (0 ~ 10)");
+        if (Number(value) > 10 || Number(value) < 0) {
+            window.alert('설정 가능한 범위를 벗어났습니다! (0 ~ 10)');
             return;
-        };
+        }
         setTmpSub2(Number(value));
     };
 
-    const onSetUp = (main: number, sub1: number, sub2: number, set : boolean) => {
+    const onSetUp = (
+        main: number,
+        sub1: number,
+        sub2: number,
+        set: boolean
+    ) => {
         setMainlevel(main);
         setSub1level(sub1);
         setSub2level(sub2);
         setAccumalte(0); //설정 후에는 조각 개수 초기화 == 시뮬레이터이므로
-        set && setToggle2(prev => !prev);
+        set && setToggle2((prev) => !prev);
     };
 
-    const onSave = (main : number, sub1 : number, sub2 : number) => {
-        if(window.confirm("저장하시겠습니까?")) {
-            const value = { main : main, sub1 : sub1, sub2 : sub2, accumalte : accumalte, init : init};
-            window.localStorage.setItem("hexa",JSON.stringify(value));
+    const onSave = (main: number, sub1: number, sub2: number) => {
+        if (window.confirm('저장하시겠습니까?')) {
+            const value = {
+                main: main,
+                sub1: sub1,
+                sub2: sub2,
+                accumalte: accumalte,
+                init: init,
+            };
+            window.localStorage.setItem('hexa', JSON.stringify(value));
         }
     };
 
     const onCall = () => {
-       const tmp = localStorage.getItem("hexa");
-       if(!tmp) {
-        window.alert("저장된 헥사스텟 정보가 없습니다. 정보를 저장한 뒤 다시 이용해주세요!");
-       }
-       else {
-            if(window.confirm("저장된 정보를 불러오시겠습니까?")) {
+        const tmp = localStorage.getItem('hexa');
+        if (!tmp) {
+            window.alert(
+                '저장된 헥사스텟 정보가 없습니다. 정보를 저장한 뒤 다시 이용해주세요!'
+            );
+        } else {
+            if (window.confirm('저장된 정보를 불러오시겠습니까?')) {
                 const value = JSON.parse(tmp);
                 onSetUp(value.main, value.sub1, value.sub2, false);
                 setInit(value.init);
                 setAccumalte(value.accumalte);
             }
-       }
+        }
     };
 
     const comma = (param: number): string => {
@@ -392,100 +404,129 @@ const SolErda = () => {
     return (
         <Background>
             <Back>
-        <MainBack>
-            <MainImage>
-                <img src={imgsrc} alt="솔 에르다 조각" />
-            </MainImage>
-            <MainDisplay>
-                <BlockContainer>
-                    {main.map((item, index) => (
-                        <Block key={index} $color={item} />
-                    ))}
-                </BlockContainer>
-                <Level>{mainpercent}%</Level>
-                <Level>{mainlevel}</Level>
-            </MainDisplay>
-            <MainDisplay>
-                <BlockContainer>
-                    {sub1.map((item, index) => (
-                        <Block key={index} $color={item} />
-                    ))}
-                </BlockContainer>
-                <Level>{sub1percent}%</Level>
-                <Level>{sub1level}</Level>
-            </MainDisplay>
-            <MainDisplay>
-                <BlockContainer>
-                    {sub2.map((item, index) => (
-                        <Block key={index} $color={item} />
-                    ))}
-                </BlockContainer>
-                <Level>{sub2percent}%</Level>
-                <Level>{sub2level}</Level>
-            </MainDisplay>
-            <MainContent>
-                <div>소모되는 조각 개수 : {consume}개</div>
-            </MainContent>
-            <MainContent>
-                <div>누적 소모 개수 : {accumalte}개</div>
-            </MainContent>
-            <MainContent>
-                <div>누적 초기화 횟수 : {init}번</div>
-            </MainContent>
-            <MainContent>
-                <MainGrid>
-                    <Button
-                        onClick={() =>
-                            enforceTry(mainlevel, sub1level, sub2level)
-                        }
-                    >
-                        강화하기
-                    </Button>
-                    <Button onClick={onInitialize}>초기화하기</Button>
-                    <Button onClick={() => setToggle2((prev) => !prev)}>
-                        설정하기
-                    </Button>
-                    <Button onClick={() => onSave(mainlevel,sub1level,sub2level)}>저장하기</Button>
-                    <Button onClick={onCall}>불러오기</Button>
-                    <Button onClick={() => setToggle((prev) => !prev)}>
-                        누적 소모 메소
-                    </Button>
-                </MainGrid>
-            </MainContent>
-            {toggle && (
-                <div>
+                <MainBack>
+                    <MainImage>
+                        <img src={imgsrc} alt="솔 에르다 조각" />
+                    </MainImage>
+                    <MainDisplay>
+                        <BlockContainer>
+                            {main.map((item, index) => (
+                                <Block key={index} $color={item} />
+                            ))}
+                        </BlockContainer>
+                        <Level>{mainpercent}%</Level>
+                        <Level>{mainlevel}</Level>
+                    </MainDisplay>
+                    <MainDisplay>
+                        <BlockContainer>
+                            {sub1.map((item, index) => (
+                                <Block key={index} $color={item} />
+                            ))}
+                        </BlockContainer>
+                        <Level>{sub1percent}%</Level>
+                        <Level>{sub1level}</Level>
+                    </MainDisplay>
+                    <MainDisplay>
+                        <BlockContainer>
+                            {sub2.map((item, index) => (
+                                <Block key={index} $color={item} />
+                            ))}
+                        </BlockContainer>
+                        <Level>{sub2percent}%</Level>
+                        <Level>{sub2level}</Level>
+                    </MainDisplay>
                     <MainContent>
-                        <div>조각 값 입력 : &nbsp;&nbsp;</div>
-                        <input
-                            type="number"
-                            value={piece}
-                            onChange={onPieceChange}
-                        />
-                        &nbsp;&nbsp;메소
+                        <div>소모되는 조각 개수 : {consume}개</div>
                     </MainContent>
                     <MainContent>
-                        <div>누적 소모 메소 : {formatting(meso)} 메소</div>
+                        <div>누적 소모 개수 : {accumalte}개</div>
                     </MainContent>
-                </div>
-            )}
-            {toggle2 && (
-                <div>
-                    <MainInput>
-                        메인 : &nbsp; <input type="number" value={tmpmain} onChange={onMainChange} />
-                    </MainInput>
-                    <MainInput>
-                        서브 : &nbsp; <input type="number" value={tmpsub1} onChange={onSub1Change}/>
-                    </MainInput>
-                    <MainInput>
-                        서브 : &nbsp; <input type="number" value={tmpsub2} onChange={onSub2Change}/>
-                    </MainInput>
-                    <MainInput>
-                        <Button onClick={() => onSetUp(tmpmain,tmpsub1,tmpsub2,true)}>설정하기</Button>
-                    </MainInput>
-                </div>
-            )}
-        </MainBack>
-        </Back>
+                    <MainContent>
+                        <div>누적 초기화 횟수 : {init}번</div>
+                    </MainContent>
+                    <MainContent>
+                        <MainGrid>
+                            <Button
+                                onClick={() =>
+                                    enforceTry(mainlevel, sub1level, sub2level)
+                                }
+                            >
+                                강화하기
+                            </Button>
+                            <Button onClick={onInitialize}>초기화하기</Button>
+                            <Button onClick={() => setToggle2((prev) => !prev)}>
+                                설정하기
+                            </Button>
+                            <Button
+                                onClick={() =>
+                                    onSave(mainlevel, sub1level, sub2level)
+                                }
+                            >
+                                저장하기
+                            </Button>
+                            <Button onClick={onCall}>불러오기</Button>
+                            <Button onClick={() => setToggle((prev) => !prev)}>
+                                누적 소모 메소
+                            </Button>
+                        </MainGrid>
+                    </MainContent>
+                    {toggle && (
+                        <div>
+                            <MainContent>
+                                <div>조각 값 입력 : &nbsp;&nbsp;</div>
+                                <input
+                                    type="number"
+                                    value={piece}
+                                    onChange={onPieceChange}
+                                />
+                                &nbsp;&nbsp;메소
+                            </MainContent>
+                            <MainContent>
+                                <div>
+                                    누적 소모 메소 : {formatting(meso)} 메소
+                                </div>
+                            </MainContent>
+                        </div>
+                    )}
+                    {toggle2 && (
+                        <div>
+                            <MainInput>
+                                메인 : &nbsp;{' '}
+                                <input
+                                    type="number"
+                                    value={tmpmain}
+                                    onChange={onMainChange}
+                                />
+                            </MainInput>
+                            <MainInput>
+                                서브 : &nbsp;{' '}
+                                <input
+                                    type="number"
+                                    value={tmpsub1}
+                                    onChange={onSub1Change}
+                                />
+                            </MainInput>
+                            <MainInput>
+                                서브 : &nbsp;{' '}
+                                <input
+                                    type="number"
+                                    value={tmpsub2}
+                                    onChange={onSub2Change}
+                                />
+                            </MainInput>
+                            <MainInput>
+                                <Button
+                                    onClick={() =>
+                                        onSetUp(tmpmain, tmpsub1, tmpsub2, true)
+                                    }
+                                >
+                                    설정하기
+                                </Button>
+                            </MainInput>
+                        </div>
+                    )}
+                </MainBack>
+            </Back>
         </Background>
     );
 };
