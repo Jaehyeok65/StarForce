@@ -199,7 +199,6 @@ const SolErda = () => {
     };
 
     const enforce = (mainpercent: number): 0 | 1 | 2 => {
-        //강화시도에 현재 강화 정보도 가져와야함 === 10레벨 이후에는 못하므로
         const num = Math.floor(Math.random() * 100) + 1; // 1 ~ 100까지 난수 생성
 
         if (num <= mainpercent) {
@@ -299,13 +298,32 @@ const SolErda = () => {
         setTmpSub2(Number(value));
     };
 
-    const onSetUp = (main: number, sub1: number, sub2: number) => {
-        //
+    const onSetUp = (main: number, sub1: number, sub2: number, set : boolean) => {
         setMainlevel(main);
         setSub1level(sub1);
         setSub2level(sub2);
         setAccumalte(0); //설정 후에는 조각 개수 초기화 == 시뮬레이터이므로
-        setToggle2(prev => !prev);
+        set && setToggle2(prev => !prev);
+    };
+
+    const onSave = (main : number, sub1 : number, sub2 : number) => {
+        if(window.confirm("저장하시겠습니까?")) {
+            const value = { main : main, sub1 : sub1, sub2 : sub2, accumalte : accumalte, init : init};
+            window.localStorage.setItem("hexa",JSON.stringify(value));
+        }
+    };
+
+    const onCall = () => {
+       const tmp = localStorage.getItem("hexa");
+       if(!tmp) {
+        window.alert("저장된 헥사스텟 정보가 없습니다. 정보를 저장한 뒤 다시 이용해주세요!");
+       }
+       else {
+            const value = JSON.parse(tmp);
+            onSetUp(value.main, value.sub1, value.sub2, false);
+            setInit(value.init);
+            setAccumalte(value.accumalte);
+       }
     };
 
     const comma = (param: number): string => {
@@ -406,8 +424,8 @@ const SolErda = () => {
                     <Button onClick={() => setToggle2((prev) => !prev)}>
                         설정하기
                     </Button>
-                    <Button>저장하기</Button>
-                    <Button>불러오기</Button>
+                    <Button onClick={() => onSave(mainlevel,sub1level,sub2level)}>저장하기</Button>
+                    <Button onClick={onCall}>불러오기</Button>
                     <Button onClick={() => setToggle((prev) => !prev)}>
                         누적 소모 메소
                     </Button>
@@ -441,7 +459,7 @@ const SolErda = () => {
                         서브 : &nbsp; <input type="number" value={tmpsub2} onChange={onSub2Change}/>
                     </MainInput>
                     <MainInput>
-                        <Button onClick={() => onSetUp(tmpmain,tmpsub1,tmpsub2)}>설정하기</Button>
+                        <Button onClick={() => onSetUp(tmpmain,tmpsub1,tmpsub2,true)}>설정하기</Button>
                     </MainInput>
                 </div>
             )}
