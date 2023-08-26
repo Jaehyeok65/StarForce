@@ -2,6 +2,7 @@ import Modal from 'component/Modal';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import ModalProperty from 'component/ModalProperty';
 
 const Head = styled.div`
     display: flex;
@@ -262,52 +263,10 @@ const Meso = () => {
                     </Content>
                 </Back>
             </Background>
-            <Modal toggle={totalpropertytoggle}>
-                <ModalHead>
-                    오늘 획득한 재화를 입력해주세요. 
-                </ModalHead>
-                <ModalContent>
-                    <div>
-                        <img src={src1} width="30px" alt="재획" /> &nbsp;&nbsp;&nbsp;: 
-                    </div>
-                    <div>
-                        <Input type='number' onChange={(e) => onInputChange(e,setPropertyNum)} />
-                    </div>
-                    <div>
-                        {propertynum}&nbsp;회
-                    </div>
-                    <div>
-                        <img src={src3} width="30px" alt="메소" /> &nbsp;&nbsp;&nbsp;: 
-                    </div>
-                    <div>
-                        <Input type='number' onChange={(e) => onInputChange(e,setTotalProperty)} />
-                    </div>
-                    <div>
-                        {formatting(totalproperty)}&nbsp;메소
-                    </div>
-                    <div>
-                        <img src={src4} width="35px" alt="조각" /> &nbsp;&nbsp;:
-                    </div>
-                    <div>
-                        <Input type="number" onChange={(e) => onInputChange(e,setErda)} />
-                    </div>
-                    <div>
-                        {erda}&nbsp;개
-                    </div>
-                    <div>
-                        <img src={src5} width="35px" alt="코젬" /> &nbsp;&nbsp;:
-                    </div>
-                    <div>
-                        <Input type="number" onChange={(e) => onInputChange(e,setGem)} />
-                    </div>
-                    <div>
-                        {gem}&nbsp;개
-                    </div>
-                </ModalContent>
-                <Head>
-                    <Button width="100px" onClick={() => setTotalPropertyToggle(prev => !prev)}>닫기</Button>
-                </Head>
-            </Modal>
+            <ModalProperty src1={src1} src3={src3} src4={src4} src5={src5} totalpropertytoggle={totalpropertytoggle} totalproperty={totalproperty} propertynum={propertynum}
+            erda={erda} gem={gem} onInputChange={onInputChange} setPropertyNum={setPropertyNum} setErda={setErda} setGem={setGem} setTotalProperty={setTotalProperty} setTotalPropertyToggle={setTotalPropertyToggle}
+            formatting={formatting} total={false}
+            />
             <Modal toggle={bossmesotoggle}>
                 하이
             </Modal>
