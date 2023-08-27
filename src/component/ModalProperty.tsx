@@ -46,22 +46,27 @@ interface ModalPropertyProps {
     src3: string;
     src4: string;
     src5: string;
-    totalpropertytoggle: boolean;
+    toggle: boolean;
     propertynum: number;
-    totalproperty: number;
+    property: number;
     erda: number;
     gem: number;
+    totalproperty : number;
+    totalerda : number;
+    totalgem : number
     total: boolean;
+    
     onInputChange: (
         e: React.ChangeEvent<HTMLInputElement>,
         setState: React.Dispatch<React.SetStateAction<number>>
     ) => void;
     setPropertyNum: React.Dispatch<React.SetStateAction<number>>;
-    setTotalProperty: React.Dispatch<React.SetStateAction<number>>;
+    setProperty: React.Dispatch<React.SetStateAction<number>>;
     setErda: React.Dispatch<React.SetStateAction<number>>;
     setGem: React.Dispatch<React.SetStateAction<number>>;
-    setTotalPropertyToggle: React.Dispatch<React.SetStateAction<boolean>>;
+    setToggle: React.Dispatch<React.SetStateAction<boolean>>;
     formatting: (param: number) => string;
+    onPropertyPlus : () => void;
 }
 
 const ModalProperty: React.FC<ModalPropertyProps> = ({
@@ -69,22 +74,26 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
     src3,
     src4,
     src5,
-    totalpropertytoggle,
+    toggle,
     propertynum,
-    totalproperty,
+    property,
     erda,
     gem,
+    totalproperty,
+    totalerda,
+    totalgem,
+    total,
     onInputChange,
     setPropertyNum,
-    setTotalProperty,
+    setProperty,
     setErda,
     setGem,
-    setTotalPropertyToggle,
+    setToggle,
     formatting,
-    total,
+    onPropertyPlus
 }) => {
     return (
-        <Modal toggle={totalpropertytoggle}>
+        <Modal toggle={toggle}>
             {total ? (
                 <ModalHead>오늘 획득한 재화를 입력해주세요.</ModalHead>
             ) : (
@@ -113,10 +122,10 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                 <div>
                     <Input
                         type="number"
-                        onChange={(e) => onInputChange(e, setTotalProperty)}
+                        onChange={(e) => onInputChange(e, setProperty)}
                     />
                 </div>
-                <div>{formatting(totalproperty)}&nbsp;메소</div>
+                <div>{total ? formatting(totalproperty) : formatting(property)}&nbsp;메소</div>
                 <div>
                     <img src={src4} width="35px" alt="조각" /> &nbsp;&nbsp;:
                 </div>
@@ -126,7 +135,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                         onChange={(e) => onInputChange(e, setErda)}
                     />
                 </div>
-                <div>{erda}&nbsp;개</div>
+                <div>{total ? totalerda : erda}&nbsp;개</div>
                 <div>
                     <img src={src5} width="35px" alt="코젬" /> &nbsp;&nbsp;:
                 </div>
@@ -136,12 +145,20 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                         onChange={(e) => onInputChange(e, setGem)}
                     />
                 </div>
-                <div>{gem}&nbsp;개</div>
+                <div>{total ? totalgem : gem}&nbsp;개</div>
             </ModalContent>
             <Head>
+                {!total && (
+                    <Button
+                        width="100px"
+                        onClick={() => onPropertyPlus()}
+                    >
+                        적용하기
+                    </Button>
+                )}
                 <Button
                     width="100px"
-                    onClick={() => setTotalPropertyToggle((prev) => !prev)}
+                    onClick={() => setToggle((prev) => !prev)}
                 >
                     닫기
                 </Button>
