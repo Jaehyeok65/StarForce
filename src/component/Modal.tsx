@@ -82,7 +82,12 @@ const Modals = styled.div<{$disappear : boolean}>`
             animation-timing-function: ease-out;
         `}
 
-    @media screen and (max-width: 600px) {
+    @media screen and (max-width: 967px) {
+        width: 60%;
+        left: 20%;
+    }
+
+    @media screen and (max-width: 667px) {
         width: 80%;
         left: 10%;
     }

@@ -19,7 +19,17 @@ const Background = styled.div`
     width: 40%;
     margin: 0 auto;
 
-    @media screen and (max-width: 1080px) {
+    @media screen and (max-width: 1067px) {
+        width: 60%;
+        margin: 0 auto;
+    }
+
+    @media screen and (max-width: 867px) {
+        width: 80%;
+        margin: 0 auto;
+    }
+
+    @media screen and (max-width: 667px) {
         width: 100%;
         margin: 0 auto;
     }
