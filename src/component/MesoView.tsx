@@ -45,6 +45,7 @@ interface MesoViewProps {
     num: number;
     name: string;
     total: number;
+    array : Array<number>;
     setNum: React.Dispatch<React.SetStateAction<number>>;
     setToggle: React.Dispatch<React.SetStateAction<boolean>>;
     setTotalToggle: React.Dispatch<React.SetStateAction<boolean>>;
@@ -56,13 +57,18 @@ interface MesoViewProps {
     ) => void;
     onMinusClick: (
         setNum: React.Dispatch<React.SetStateAction<number>>,
-        setToggle: React.Dispatch<React.SetStateAction<boolean>>,
         onMinus: (prev: number) => number,
+        setTotal : React.Dispatch<React.SetStateAction<number>>,
+        setArray : React.Dispatch<React.SetStateAction<Array<number>>>,
+        array : Array<number>,  
         num: number
     ) => void;
     formatting: (param: number) => string;
     onPlus : (prev : number) => number;
     onMinus : (prev : number) => number;
+    onUpdate : () => void;
+    setTotal : React.Dispatch<React.SetStateAction<number>>;
+    setArray : React.Dispatch<React.SetStateAction<Array<number>>>;
 }
 
 const MesoView: React.FC<MesoViewProps> = ({
@@ -70,6 +76,7 @@ const MesoView: React.FC<MesoViewProps> = ({
     num,
     name,
     total,
+    array,
     setToggle,
     setTotalToggle,
     onPlusClick,
@@ -77,7 +84,10 @@ const MesoView: React.FC<MesoViewProps> = ({
     formatting,
     setNum,
     onPlus,
-    onMinus
+    onMinus,
+    setArray,
+    setTotal,
+    onUpdate
 }) => {
     return (
         <>
@@ -89,11 +99,11 @@ const MesoView: React.FC<MesoViewProps> = ({
                         <Button width="25px" onClick={() => onPlusClick(setNum, setToggle, onPlus, num)}>
                             <FaAngleUp />
                         </Button>
-                        <Button width="25px" onClick={() => onMinusClick(setNum, setToggle, onMinus, num)}>
+                        <Button width="25px" onClick={() => onMinusClick(setNum, onMinus, setTotal, setArray, array, num)}>
                             <FaAngleDown />
                         </Button>
                     </ButtonWrapper>
-                    <DivBtn onClick={() => setToggle((prev) => !prev)}>
+                    <DivBtn onClick={() => onUpdate()}>
                         수정
                     </DivBtn>
                     <DivBtn onClick={() => setTotalToggle((prev) => !prev)}>

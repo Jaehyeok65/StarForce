@@ -55,13 +55,12 @@ interface ModalPropertyProps {
     totalerda : number;
     totalgem : number
     total: boolean;
-    
     onInputChange: (
         e: React.ChangeEvent<HTMLInputElement>,
         setState: React.Dispatch<React.SetStateAction<number>>
     ) => void;
     setPropertyNum: React.Dispatch<React.SetStateAction<number>>;
-    setProperty: React.Dispatch<React.SetStateAction<number>>;
+    setProperty : React.Dispatch<React.SetStateAction<number>>;
     setErda: React.Dispatch<React.SetStateAction<number>>;
     setGem: React.Dispatch<React.SetStateAction<number>>;
     setToggle: React.Dispatch<React.SetStateAction<boolean>>;
@@ -110,6 +109,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                     <div>
                         <Input
                             type="number"
+                            value={propertynum}
                             onChange={(e) => onInputChange(e, setPropertyNum)}
                         />
                     </div>
@@ -122,6 +122,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                 <div>
                     <Input
                         type="number"
+                        value={total ? totalproperty : property}
                         onChange={(e) => onInputChange(e, setProperty)}
                     />
                 </div>
@@ -132,16 +133,18 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                 <div>
                     <Input
                         type="number"
+                        value={total ? totalerda : erda}
                         onChange={(e) => onInputChange(e, setErda)}
                     />
                 </div>
-                <div>{total ? totalerda : erda}&nbsp;개</div>
+                <div>{total ? totalerda : erda }&nbsp;개</div>
                 <div>
                     <img src={src5} width="35px" alt="코젬" /> &nbsp;&nbsp;:
                 </div>
                 <div>
                     <Input
                         type="number"
+                        value={total ? totalgem : gem}
                         onChange={(e) => onInputChange(e, setGem)}
                     />
                 </div>

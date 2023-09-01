@@ -64,7 +64,11 @@ const Meso = () => {
     const [totalerda, setTotalErda] = useState<number>(0);
     const [gem, setGem] = useState<number>(0);
     const [totalgem, setTotalGem] = useState<number>(0);
-    const [update, setUpdate] = useState<boolean>(false);
+    const [PropertyArray, setPropertyArray] = useState<Array<number>>([]);
+    const [BossMesoArray, setBossMesoArray] = useState<Array<number>>([]);
+    const [GemArray, setGemArray] = useState<Array<number>>([]);
+    const [ErdaArray, setErdaArray] = useState<Array<number>>([]);
+
 
     const getDayItem = (day: string) => {
         const tmp = window.localStorage.getItem(day);
@@ -125,6 +129,10 @@ const Meso = () => {
         getDayItem(day.toLocaleDateString('ko-KR'));
     }, [day]);
 
+    useEffect(() => {
+        onSetTotalProperty();
+    }, [PropertyArray, GemArray, ErdaArray])
+
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         setDay(new Date(value));
@@ -138,14 +146,40 @@ const Meso = () => {
         setState(Number(value));
     };
 
+    const onArrayChange = (
+        num : number,
+        index : number,
+        array : Array<number>,
+        setState: React.Dispatch<React.SetStateAction<Array<number>>>
+    ) => {
+        if(index > array.length) { //추가
+            setState(prev => [...prev, num]);
+        }
+        else {
+            setState(prev => prev.map((item, index1) => index1 === index -1 ? num : item));
+        }
+    };
+
     const onPropertyPlus = () => {
-        setTotalProperty(prev => prev + property);
-        setTotalGem(prev => prev + gem);
-        setTotalErda(prev => prev + erda);
-        setPropertyToggle(prev => !prev);
+        onArrayChange(property, propertynum, PropertyArray ,setPropertyArray);
+        onArrayChange(gem, propertynum, GemArray ,setGemArray);
+        onArrayChange(erda, propertynum, ErdaArray ,setErdaArray);
+        setPropertyToggle((prev) => !prev);
         setProperty(0);
         setGem(0);
         setErda(0);
+    };
+
+    const onSetTotalProperty = () => {
+        let property = 0;
+        let gem = 0;
+        let erda = 0;
+        PropertyArray.map(item => property += item);
+        GemArray.map(item => gem += item);
+        ErdaArray.map(item => erda += item);
+        setTotalProperty(property);
+        setTotalGem(gem);
+        setTotalErda(erda);
     };
 
     const onPlusClick = (
@@ -158,14 +192,26 @@ const Meso = () => {
         setToggle((prev) => !prev);
     };
 
+    const onPropertyUpdate = () => {
+        setPropertyToggle(prev => !prev);
+        console.log(PropertyArray);
+        setProperty(PropertyArray[propertynum-1]);
+        setGem(GemArray[propertynum-1]);
+        setErda(ErdaArray[propertynum-1]);
+    };
+
     const onMinusClick = (
         setNum: React.Dispatch<React.SetStateAction<number>>,
-        setToggle: React.Dispatch<React.SetStateAction<boolean>>,
         onMinus: (prev: number) => number,
+        setTotal : React.Dispatch<React.SetStateAction<number>>,
+        setArray : React.Dispatch<React.SetStateAction<Array<number>>>,
+        array : Array<number>,
         num: number
     ) => {
+        if(num < 1) return;
         setNum(onMinus(num));
-        setToggle((prev) => !prev);
+        setTotal(prev => prev - array[num-1]);
+        setArray(prev => prev.filter((value,index) => index !== num-1));
     };
 
     return (
@@ -195,6 +241,10 @@ const Meso = () => {
                         formatting={formatting}
                         onPlus={onPlus}
                         onMinus={onMinus}
+                        array={PropertyArray}
+                        setArray={setPropertyArray}
+                        setTotal={setTotalProperty}
+                        onUpdate={onPropertyUpdate}
                     />
                     <MesoView
                         src={src2}
@@ -209,6 +259,10 @@ const Meso = () => {
                         formatting={formatting}
                         onPlus={onPlus}
                         onMinus={onMinus}
+                        array={BossMesoArray}
+                        setArray={setBossMesoArray}
+                        setTotal={setTotalBossMeso}
+                        onUpdate={onPropertyUpdate}
                     />
                 </Back>
             </Background>
