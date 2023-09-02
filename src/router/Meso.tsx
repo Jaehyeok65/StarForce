@@ -106,7 +106,9 @@ const Meso = () => {
     };
 
     const comma = (param: number): string => {
-        return param.toLocaleString();
+            return param.toLocaleString();
+        
+        
     };
 
     const src1 =
@@ -182,22 +184,32 @@ const Meso = () => {
         setTotalErda(erda);
     };
 
+
     const onPlusClick = (
         setNum: React.Dispatch<React.SetStateAction<number>>,
         setToggle: React.Dispatch<React.SetStateAction<boolean>>,
         onPlus: (prev: number) => number,
+        onInit : () => void,
         num: number
     ) => {
         setNum(onPlus(num));
         setToggle((prev) => !prev);
+        onInit();
+    };
+
+    const onPropertyInit = () => {
+        setProperty(0);
+        setGem(0);
+        setErda(0);
     };
 
     const onPropertyUpdate = () => {
         setPropertyToggle(prev => !prev);
-        console.log(PropertyArray);
-        setProperty(PropertyArray[propertynum-1]);
-        setGem(GemArray[propertynum-1]);
-        setErda(ErdaArray[propertynum-1]);
+        if(PropertyArray[propertynum-1]) {
+            setProperty(PropertyArray[propertynum-1]);
+            setGem(GemArray[propertynum-1]);
+            setErda(ErdaArray[propertynum-1]);
+        }
     };
 
     const onMinusClick = (
@@ -245,6 +257,7 @@ const Meso = () => {
                         setArray={setPropertyArray}
                         setTotal={setTotalProperty}
                         onUpdate={onPropertyUpdate}
+                        onInit={onPropertyInit}
                     />
                     <MesoView
                         src={src2}
@@ -263,6 +276,7 @@ const Meso = () => {
                         setArray={setBossMesoArray}
                         setTotal={setTotalBossMeso}
                         onUpdate={onPropertyUpdate}
+                        onInit={onPropertyInit}
                     />
                 </Back>
             </Background>
