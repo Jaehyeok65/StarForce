@@ -65,11 +65,11 @@ const Modals = styled.div<{$disappear : boolean}>`
     margin: 0;
     padding: 0;
     width: 33%;
-    height: 60vh;
+    max-height: 60vh;
     background-color: white;
     z-index: 29999;
     border-radius: 8px;
-
+    overflow-y : auto;
     animation-duration: 0.5s;
     animation-timing-function: ease-out;
     animation-name: ${slideup};

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import ModalProperty from 'component/ModalProperty';
 import MesoView from 'component/MesoView';
+import ModalBoss from 'component/ModalBoss';
 
 const Head = styled.div`
     display: flex;
@@ -326,7 +327,7 @@ const Meso = () => {
                 total={false}
                 onPropertyPlus={onPropertyPlus}
             />
-            <Modal toggle={bossmesotoggle}>하이</Modal>
+            <ModalBoss toggle={bossmesotoggle} total={false} setToggle={setBossMesoToggle} />
         </React.Fragment>
     );
 };
