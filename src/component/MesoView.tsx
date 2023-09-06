@@ -50,11 +50,8 @@ interface MesoViewProps {
     setToggle: React.Dispatch<React.SetStateAction<boolean>>;
     setTotalToggle: React.Dispatch<React.SetStateAction<boolean>>;
     onPlusClick: (
-        setNum: React.Dispatch<React.SetStateAction<number>>,
         setToggle: React.Dispatch<React.SetStateAction<boolean>>,
-        onPlus: (prev: number) => number,
         onInit : () => void,
-        num: number
     ) => void;
     onMinusClick: (
         setNum: React.Dispatch<React.SetStateAction<number>>,
@@ -99,7 +96,7 @@ const MesoView: React.FC<MesoViewProps> = ({
                     <img src={src} width="30px" alt="이미지" />
                     &nbsp; {name} &nbsp; x {num}{' '}
                     <ButtonWrapper>
-                        <Button width="25px" onClick={() => onPlusClick(setNum, setToggle, onPlus, onInit, num)}>
+                        <Button width="25px" onClick={() => onPlusClick(setToggle,onInit)}>
                             <FaAngleUp />
                         </Button>
                         <Button width="25px" onClick={() => onMinusClick(setNum, onMinus, setTotal, setArray, array, num)}>

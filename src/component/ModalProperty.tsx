@@ -6,6 +6,7 @@ const ModalContent = styled.div`
     display: grid;
     grid-template-columns: 10% 35% 55%;
     gap: 40px;
+    row-gap: 30px;
     margin: 10% 20% 10% 20%;
 
     > div {
@@ -39,6 +40,7 @@ const Input = styled.input`
 const Head = styled.div`
     display: flex;
     justify-content: center;
+    margin-bottom : 10%;
 `;
 
 interface ModalPropertyProps {
@@ -66,6 +68,7 @@ interface ModalPropertyProps {
     setToggle: React.Dispatch<React.SetStateAction<boolean>>;
     formatting: (param: number) => string;
     onPropertyPlus : () => void;
+    onCancle : (onToggle: React.Dispatch<React.SetStateAction<boolean>>) => void;
 }
 
 const ModalProperty: React.FC<ModalPropertyProps> = ({
@@ -89,7 +92,8 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
     setGem,
     setToggle,
     formatting,
-    onPropertyPlus
+    onPropertyPlus,
+    onCancle
 }) => {
     return (
         <Modal toggle={toggle}>
@@ -161,7 +165,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                 )}
                 <Button
                     width="100px"
-                    onClick={() => setToggle((prev) => !prev)}
+                    onClick={() => onCancle(setToggle)}
                 >
                     닫기
                 </Button>

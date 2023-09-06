@@ -234,7 +234,7 @@ const Meso = () => {
     const [ErdaArray, setErdaArray] = useState<Array<number>>([]);
     const [reboot, setReboot] = useState<boolean>(false);
     const [boss, setBoss] = useState<Array<Boss>>(array);
-
+    const [update, setUpdate] = useState<boolean>(false);
 
     const getDayItem = (day: string) => {
         const tmp = window.localStorage.getItem(day);
@@ -272,9 +272,7 @@ const Meso = () => {
     };
 
     const comma = (param: number): string => {
-            return param.toLocaleString();
-        
-        
+        return param.toLocaleString();
     };
 
     const src1 =
@@ -299,7 +297,11 @@ const Meso = () => {
 
     useEffect(() => {
         onSetTotalProperty();
-    }, [PropertyArray, GemArray, ErdaArray])
+    }, [PropertyArray, GemArray, ErdaArray]);
+
+    useEffect(() => {
+        onSetBossProperty();
+    }, [BossMesoArray])
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
@@ -315,50 +317,82 @@ const Meso = () => {
     };
 
     const onArrayChange = (
-        num : number,
+        num: number,
         index : number,
-        array : Array<number>,
+        update : boolean,
         setState: React.Dispatch<React.SetStateAction<Array<number>>>
     ) => {
-        if(index > array.length) { //추가
-            setState(prev => [...prev, num]);
-        }
-        else {
-            setState(prev => prev.map((item, index1) => index1 === index -1 ? num : item));
+        if (!update) {
+            //추가
+            setState((prev) => [...prev, num]);
+        } else {
+            setState((prev) =>
+                prev.map((item, index1) => (index1 === index - 1 ? num : item))
+            );
         }
     };
 
     const onPropertyPlus = () => {
-        onArrayChange(property, propertynum, PropertyArray ,setPropertyArray);
-        onArrayChange(gem, propertynum, GemArray ,setGemArray);
-        onArrayChange(erda, propertynum, ErdaArray ,setErdaArray);
+        onArrayChange(property, propertynum, update, setPropertyArray);
+        onArrayChange(gem, propertynum, update, setGemArray);
+        onArrayChange(erda, propertynum, update, setErdaArray);
         setPropertyToggle((prev) => !prev);
         setProperty(0);
         setGem(0);
         setErda(0);
+        if(!update) {
+            setPropertyNum(prev => prev + 1);
+        }
+        setUpdate(false);
     };
+
+    const onBossMesoPlus = () => {
+        let tmp = 0;
+        boss.forEach((item) => {
+            if (item.check) {
+                tmp += item.meso;
+            }
+        });
+        if(reboot) {
+            tmp = tmp * 5;
+        }
+        onArrayChange(tmp, bossmesonum, update, setBossMesoArray);
+        onBossInit();
+        setBossMesoToggle((prev) => !prev);
+        if(!update) {
+            setBossMesoNum(prev => prev + 1);
+        }
+        setUpdate(false);
+    };
+
+    const onBossInit = () => {
+        const tmp = [...boss];
+        tmp.forEach(item => item.check = false);
+        setBoss(tmp);
+    }
 
     const onSetTotalProperty = () => {
         let property = 0;
         let gem = 0;
         let erda = 0;
-        PropertyArray.map(item => property += item);
-        GemArray.map(item => gem += item);
-        ErdaArray.map(item => erda += item);
+        PropertyArray.map((item) => (property += item));
+        GemArray.map((item) => (gem += item));
+        ErdaArray.map((item) => (erda += item));
         setTotalProperty(property);
         setTotalGem(gem);
         setTotalErda(erda);
     };
 
+    const onSetBossProperty = () => {
+        let bossmeso = 0;
+        BossMesoArray.forEach(item => bossmeso += item);
+        setTotalBossMeso(bossmeso);
+    };
 
     const onPlusClick = (
-        setNum: React.Dispatch<React.SetStateAction<number>>,
         setToggle: React.Dispatch<React.SetStateAction<boolean>>,
-        onPlus: (prev: number) => number,
-        onInit : () => void,
-        num: number
+        onInit: () => void,
     ) => {
-        setNum(onPlus(num));
         setToggle((prev) => !prev);
         onInit();
     };
@@ -370,39 +404,45 @@ const Meso = () => {
     };
 
     const onPropertyUpdate = () => {
-        setPropertyToggle(prev => !prev);
-        if(PropertyArray[propertynum-1]) {
-            setProperty(PropertyArray[propertynum-1]);
-            setGem(GemArray[propertynum-1]);
-            setErda(ErdaArray[propertynum-1]);
+        setPropertyToggle((prev) => !prev);
+        setUpdate(prev => !prev);
+        if (PropertyArray[propertynum - 1]) {
+            setProperty(PropertyArray[propertynum - 1]);
+            setGem(GemArray[propertynum - 1]);
+            setErda(ErdaArray[propertynum - 1]);
         }
+    };
+
+    const onCancle = (onToggle : React.Dispatch<React.SetStateAction<boolean>>) => {
+        onToggle(prev => !prev);
+        setUpdate(false);
     };
 
     const onMinusClick = (
         setNum: React.Dispatch<React.SetStateAction<number>>,
         onMinus: (prev: number) => number,
-        setTotal : React.Dispatch<React.SetStateAction<number>>,
-        setArray : React.Dispatch<React.SetStateAction<Array<number>>>,
-        array : Array<number>,
+        setTotal: React.Dispatch<React.SetStateAction<number>>,
+        setArray: React.Dispatch<React.SetStateAction<Array<number>>>,
+        array: Array<number>,
         num: number
     ) => {
-        if(num < 1) return;
+        if (num < 1) return;
+        console.log(array);
         setNum(onMinus(num));
-        setTotal(prev => prev - array[num-1]);
-        setArray(prev => prev.filter((value,index) => index !== num-1));
+        setTotal((prev) => prev - array[num - 1]);
+        setArray((prev) => prev.filter((value, index) => index !== num - 1));
     };
 
-
-    const onCheckChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+    const onCheckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name } = e.target;
-        const index = boss.findIndex(item => item.name === name);
+        const index = boss.findIndex((item) => item.name === name);
         const tmp = [...boss];
         tmp[index].check = !tmp[index].check;
         setBoss(tmp);
     };
 
     const onRebootChange = () => {
-        setReboot(prev => !prev);
+        setReboot((prev) => !prev);
     };
 
     return (
@@ -481,6 +521,7 @@ const Meso = () => {
                 formatting={formatting}
                 total={true}
                 onPropertyPlus={onPropertyPlus}
+                onCancle={onCancle}
             />
             <ModalProperty
                 src1={src1}
@@ -504,8 +545,19 @@ const Meso = () => {
                 formatting={formatting}
                 total={false}
                 onPropertyPlus={onPropertyPlus}
+                onCancle={onCancle}
             />
-            <ModalBoss toggle={bossmesotoggle} total={false} setToggle={setBossMesoToggle} boss={boss} reboot={reboot} onCheckChange={onCheckChange} onRebootChange={onRebootChange} />
+            <ModalBoss
+                toggle={bossmesotoggle}
+                total={false}
+                setToggle={setBossMesoToggle}
+                boss={boss}
+                reboot={reboot}
+                onCheckChange={onCheckChange}
+                onRebootChange={onRebootChange}
+                onBossMesoPlus={onBossMesoPlus}
+                onCancle={onCancle}
+            />
         </React.Fragment>
     );
 };

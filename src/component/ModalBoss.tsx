@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Modal from './Modal';
 
@@ -70,10 +70,12 @@ interface ModalBossProps {
     reboot : boolean;
     onCheckChange : (e: React.ChangeEvent<HTMLInputElement>) => void;
     onRebootChange : () => void;
-}
+    onBossMesoPlus : () => void;
+    onCancle : (onToggle: React.Dispatch<React.SetStateAction<boolean>>) => void;
+};
 
 
-const ModalBoss: React.FC<ModalBossProps> = ({ toggle, total, setToggle, boss, reboot, onRebootChange, onCheckChange }) => {
+const ModalBoss: React.FC<ModalBossProps> = ({ toggle, total, setToggle, boss, reboot, onRebootChange, onCheckChange, onBossMesoPlus, onCancle }) => {
 
     return (
         <Modal toggle={toggle}>
@@ -92,17 +94,17 @@ const ModalBoss: React.FC<ModalBossProps> = ({ toggle, total, setToggle, boss, r
                 {boss.map((item) => (
                     <ModalColumns key={item.name}>
                         <div>{item.name}</div>
-                        <div>{item.meso.toLocaleString()}</div>
+                        <div>{reboot ? (item.meso*5).toLocaleString() : item.meso.toLocaleString()}</div>
                         <Checkbox type="checkbox" checked={item.check} name={item.name} onChange={onCheckChange}/>
                     </ModalColumns>
                 ))}
             </ModalContent>
             <Head>
-                <Button width="100px">적용하기</Button>
+                <Button width="100px" onClick={onBossMesoPlus}>적용하기</Button>
 
                 <Button
                     width="100px"
-                    onClick={() => setToggle((prev) => !prev)}
+                    onClick={() => onCancle(setToggle)}
                 >
                     닫기
                 </Button>
