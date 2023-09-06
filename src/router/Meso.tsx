@@ -1,4 +1,3 @@
-import Modal from 'component/Modal';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import ModalProperty from 'component/ModalProperty';
@@ -47,6 +46,170 @@ const Back = styled.div`
     }
 `;
 
+interface Boss {
+    check: boolean;
+    meso: number;
+    name: string;
+}
+
+const array: Boss[] = [
+    {
+        check: false,
+        name: '이지 시그너스',
+        meso: 5493394,
+    },
+    {
+        check: false,
+        name: '하드 힐라',
+        meso: 6936489,
+    },
+    {
+        check: false,
+        name: '카오스 핑크빈',
+        meso: 7923110,
+    },
+    {
+        check: false,
+        name: '노말 시그너스',
+        meso: 9039130,
+    },
+    {
+        check: false,
+        name: '카오스 자쿰',
+        meso: 9741285,
+    },
+    {
+        check: false,
+        name: '카오스 피에르',
+        meso: 9838932,
+    },
+    {
+        check: false,
+        name: '카오스 반반',
+        meso: 9818154,
+    },
+    {
+        check: false,
+        name: '카오스 블러디퀸',
+        meso: 9806780,
+    },
+    {
+        check: false,
+        name: '카오스 벨룸',
+        meso: 12590202,
+    },
+    {
+        check: false,
+        name: '하드 매그너스',
+        meso: 11579023,
+    },
+    {
+        check: false,
+        name: '카오스 파풀라투스',
+        meso: 26725937,
+    },
+    {
+        check: false,
+        name: '노말 스우',
+        meso: 33942566,
+    },
+    {
+        check: false,
+        name: '노말 데미안',
+        meso: 35517853,
+    },
+    {
+        check: false,
+        name: '노말 가디언 엔젤 슬라임',
+        meso: 46935874,
+    },
+    {
+        check: false,
+        name: '이지 루시드',
+        meso: 48058319,
+    },
+    {
+        check: false,
+        name: '이지 윌',
+        meso: 52139127,
+    },
+    {
+        check: false,
+        name: '노말 루시드',
+        meso: 57502626,
+    },
+    {
+        check: false,
+        name: '노말 윌',
+        meso: 66311463,
+    },
+    {
+        check: false,
+        name: '노말 더스크',
+        meso: 71054562,
+    },
+    {
+        check: false,
+        name: '노말 듄켈',
+        meso: 76601412,
+    },
+    {
+        check: false,
+        name: '하드 데미안',
+        meso: 112480613,
+    },
+    {
+        check: false,
+        name: '하드 스우',
+        meso: 118294192,
+    },
+    {
+        check: false,
+        name: '하드 루시드',
+        meso: 131095655,
+    },
+    {
+        check: false,
+        name: '하드 윌',
+        meso: 145038483,
+    },
+    {
+        check: false,
+        name: '노말 진 힐라',
+        meso: 148112376,
+    },
+    {
+        check: false,
+        name: '카오스 가디언 엔젤 슬라임',
+        meso: 155492141,
+    },
+    {
+        check: false,
+        name: '카오스 더스크',
+        meso: 160173752,
+    },
+    {
+        check: false,
+        name: '하드 듄켈',
+        meso: 168609280,
+    },
+    {
+        check: false,
+        name: '하드 진 힐라',
+        meso: 190159452,
+    },
+    {
+        check: false,
+        name: '노말 선택받은 세렌',
+        meso: 196904752,
+    },
+    {
+        check: false,
+        name: '하드 선택받은 세렌',
+        meso: 267825621,
+    },
+];
+
 const Meso = () => {
     const [day, setDay] = useState<Date>(new Date());
     const [property, setProperty] = useState<number>(0); //재획수익
@@ -69,6 +232,8 @@ const Meso = () => {
     const [BossMesoArray, setBossMesoArray] = useState<Array<number>>([]);
     const [GemArray, setGemArray] = useState<Array<number>>([]);
     const [ErdaArray, setErdaArray] = useState<Array<number>>([]);
+    const [reboot, setReboot] = useState<boolean>(false);
+    const [boss, setBoss] = useState<Array<Boss>>(array);
 
 
     const getDayItem = (day: string) => {
@@ -227,6 +392,19 @@ const Meso = () => {
         setArray(prev => prev.filter((value,index) => index !== num-1));
     };
 
+
+    const onCheckChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+        const { name } = e.target;
+        const index = boss.findIndex(item => item.name === name);
+        const tmp = [...boss];
+        tmp[index].check = !tmp[index].check;
+        setBoss(tmp);
+    };
+
+    const onRebootChange = () => {
+        setReboot(prev => !prev);
+    };
+
     return (
         <React.Fragment>
             <Background>
@@ -327,7 +505,7 @@ const Meso = () => {
                 total={false}
                 onPropertyPlus={onPropertyPlus}
             />
-            <ModalBoss toggle={bossmesotoggle} total={false} setToggle={setBossMesoToggle} />
+            <ModalBoss toggle={bossmesotoggle} total={false} setToggle={setBossMesoToggle} boss={boss} reboot={reboot} onCheckChange={onCheckChange} onRebootChange={onRebootChange} />
         </React.Fragment>
     );
 };
