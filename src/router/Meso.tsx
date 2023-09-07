@@ -50,6 +50,7 @@ interface Boss {
     check: boolean;
     meso: number;
     name: string;
+    num: number;
 }
 
 const array: Boss[] = [
@@ -57,156 +58,187 @@ const array: Boss[] = [
         check: false,
         name: '이지 시그너스',
         meso: 5493394,
+        num: 0,
     },
     {
         check: false,
         name: '하드 힐라',
         meso: 6936489,
+        num: 0,
     },
     {
         check: false,
         name: '카오스 핑크빈',
         meso: 7923110,
+        num: 0,
     },
     {
         check: false,
         name: '노말 시그너스',
         meso: 9039130,
+        num: 0,
     },
     {
         check: false,
         name: '카오스 자쿰',
         meso: 9741285,
+        num: 0,
     },
     {
         check: false,
         name: '카오스 피에르',
         meso: 9838932,
+        num: 0,
     },
     {
         check: false,
         name: '카오스 반반',
         meso: 9818154,
+        num: 0,
     },
     {
         check: false,
         name: '카오스 블러디퀸',
         meso: 9806780,
+        num: 0,
     },
     {
         check: false,
         name: '카오스 벨룸',
         meso: 12590202,
+        num: 0,
     },
     {
         check: false,
         name: '하드 매그너스',
         meso: 11579023,
+        num: 0,
     },
     {
         check: false,
         name: '카오스 파풀라투스',
         meso: 26725937,
+        num: 0,
     },
     {
         check: false,
         name: '노말 스우',
         meso: 33942566,
+        num: 0,
     },
     {
         check: false,
         name: '노말 데미안',
         meso: 35517853,
+        num: 0,
     },
     {
         check: false,
         name: '노말 가디언 엔젤 슬라임',
         meso: 46935874,
+        num: 0,
     },
     {
         check: false,
         name: '이지 루시드',
         meso: 48058319,
+        num: 0,
     },
     {
         check: false,
         name: '이지 윌',
         meso: 52139127,
+        num: 0,
     },
     {
         check: false,
         name: '노말 루시드',
         meso: 57502626,
+        num: 0,
     },
     {
         check: false,
         name: '노말 윌',
         meso: 66311463,
+        num: 0,
     },
     {
         check: false,
         name: '노말 더스크',
         meso: 71054562,
+        num: 0,
     },
     {
         check: false,
         name: '노말 듄켈',
         meso: 76601412,
+        num: 0,
     },
     {
         check: false,
         name: '하드 데미안',
         meso: 112480613,
+        num: 0,
     },
     {
         check: false,
         name: '하드 스우',
         meso: 118294192,
+        num: 0,
     },
     {
         check: false,
         name: '하드 루시드',
         meso: 131095655,
+        num: 0,
     },
     {
         check: false,
         name: '하드 윌',
         meso: 145038483,
+        num: 0,
     },
     {
         check: false,
         name: '노말 진 힐라',
         meso: 148112376,
+        num: 0,
     },
     {
         check: false,
         name: '카오스 가디언 엔젤 슬라임',
         meso: 155492141,
+        num: 0,
     },
     {
         check: false,
         name: '카오스 더스크',
         meso: 160173752,
+        num: 0,
     },
     {
         check: false,
         name: '하드 듄켈',
         meso: 168609280,
+        num: 0,
     },
     {
         check: false,
         name: '하드 진 힐라',
         meso: 190159452,
+        num: 0,
     },
     {
         check: false,
         name: '노말 선택받은 세렌',
         meso: 196904752,
+        num: 0,
     },
     {
         check: false,
         name: '하드 선택받은 세렌',
         meso: 267825621,
+        num: 0,
     },
 ];
 
@@ -218,7 +250,6 @@ const Meso = () => {
     const [propertytoggle, setPropertyToggle] = useState<boolean>(false);
     const [totalpropertytoggle, setTotalPropertyToggle] =
         useState<boolean>(false);
-    const [bossmeso, setBossMeso] = useState<number>(0);
     const [totalbossmeso, setTotalBossMeso] = useState<number>(0);
     const [bossmesonum, setBossMesoNum] = useState<number>(0);
     const [bossmesotoggle, setBossMesoToggle] = useState<boolean>(false);
@@ -236,13 +267,215 @@ const Meso = () => {
     const [boss, setBoss] = useState<Array<Boss>>(array);
     const [update, setUpdate] = useState<boolean>(false);
 
+    useEffect(() => {
+        //day가 바뀌면 그에 맞춰 로컬스토리지에서 해당 날짜 데이터를 가져옴
+        getDayItem(day.toLocaleDateString('ko-kr'));
+    }, [day]);
+
+    useEffect(() => {
+        onSetTotalProperty();
+    }, [PropertyArray, GemArray, ErdaArray]);
+
+    useEffect(() => {
+        onSetBossProperty();
+    }, [BossMesoArray]);
+
+    useEffect(() => {
+        onStoreProperty(
+            day.toLocaleDateString('ko-kr'),
+            PropertyArray,
+            GemArray,
+            ErdaArray,
+            property,
+            gem,
+            erda,
+            propertynum
+        );
+    },[totalproperty]);
+
+    useEffect(() => {
+        onStoreBossMeso(
+            day.toLocaleDateString('ko-kr'),
+            BossMesoArray,
+            bossmesonum,
+            totalbossmeso
+        );
+    },[totalbossmeso]);
+
     const getDayItem = (day: string) => {
-        const tmp = window.localStorage.getItem(day);
+        const tmp = window.localStorage.getItem('meso');
         if (tmp) {
-            //해당 날짜에 데이터가 있는 경우
-            const value = JSON.parse(tmp);
+            const item = JSON.parse(tmp);
+            if (Array.isArray(item)) {
+                //배열이라면
+                const index = item.findIndex(
+                    (items) => Object.keys(items)[0] === day
+                );
+                if (index !== -1) {
+                    //데이터가 있다면
+                    if (item[index] && item[index][day]) {
+                        setBossMesoNum(item[index][day].bossmesonum);
+                        setPropertyNum(item[index][day].propertynum);
+                        setPropertyArray(item[index][day].propertyarray);
+                        setBossMesoArray(item[index][day].bossmesoarray);
+                        setTotalBossMeso(item[index][day].totalbossmeso);
+                        setTotalProperty(item[index][day].totalproperty);
+                        setGemArray(item[index][day].gemarray);
+                        setErdaArray(item[index][day].erdaarray);
+                        setTotalGem(item[index][day].totalgem);
+                        setTotalErda(item[index][day].totalerda);
+                    }
+                }
+            }
+        }
+    };
+
+    const onStoreBossMeso = (
+        day: string,
+        BossMesoArray: number[],
+        bossmesonum: number,
+        totalbossmeso: number
+    ) => {
+        const tmp = window.localStorage.getItem('meso');
+        if (tmp) {
+            const item = JSON.parse(tmp);
+            if (Array.isArray(item)) {
+                const index = item.findIndex(
+                    (items) => Object.keys(items)[0] === day
+                );
+                if (index !== -1) {
+                    //해당 날짜에 데이터가 있다면 업데이트
+                    const data = item[index][day];
+                    const newdata = {
+                        [day]: {
+                            ...data,
+                            bossmesoarray: BossMesoArray,
+                            bossmesonum: bossmesonum,
+                            totalbossmeso: totalbossmeso,
+                        },
+                    };
+                    const array = item.map((items, indexs) =>
+                        index === indexs ? newdata : items
+                    );
+                    window.localStorage.setItem('meso', JSON.stringify(array));
+                } else {
+                    //해당 날짜에 데이터가 없다면 추가
+                    const data = {
+                        [day]: {
+                            totalbossmeso: totalbossmeso,
+                            bossmesonum: bossmesonum,
+                            bossmesoarray: BossMesoArray,
+                            totalproperty: totalproperty,
+                            propertynum: propertynum,
+                            totalgem: totalgem,
+                            totalerda: totalerda,
+                            propertyarray: PropertyArray,
+                            gemarray: GemArray,
+                            erdaarray: ErdaArray,
+                        },
+                    };
+                    const array = [...item, data];
+                    window.localStorage.setItem('meso', JSON.stringify(array));
+                }
+            }
         } else {
-            //해당 날짜에 데이터가 없는 경우 빈데이터 출력
+            //최초 추가
+            const first = [
+                {
+                    [day]: {
+                        totalbossmeso: totalbossmeso,
+                        bossmesonum: bossmesonum,
+                        bossmesoarray: BossMesoArray,
+                        totalproperty: totalproperty,
+                        propertynum: propertynum,
+                        totalgem: totalgem,
+                        totalerda: totalerda,
+                        propertyarray: PropertyArray,
+                        gemarray: GemArray,
+                        erdaarray: ErdaArray,
+                    },
+                },
+            ];
+            window.localStorage.setItem('meso', JSON.stringify(first));
+        }
+    };
+
+    const onStoreProperty = (
+        day: string,
+        PropertyArray: number[],
+        GemArray: number[],
+        ErdaArray: number[],
+        totalproperty: number,
+        totalgem: number,
+        totalerda: number,
+        propertynum: number
+    ) => {
+        const tmp = window.localStorage.getItem('meso');
+        console.log(PropertyArray);
+        if (tmp) {
+            const item = JSON.parse(tmp);
+            if (Array.isArray(item)) {
+                const index = item.findIndex(
+                    (items) => Object.keys(items)[0] === day
+                );
+                if (index !== -1) {
+                    //해당 날짜에 데이터가 있다면 업데이트
+                    const data = item[index][day];
+                    const newdata = {
+                        [day]: {
+                            ...data,
+                            totalproperty: totalproperty,
+                            totalgem: totalgem,
+                            totalerda: totalerda,
+                            propertyarray: PropertyArray,
+                            gemarray: GemArray,
+                            erdaarray: ErdaArray,
+                            propertynum: propertynum,
+                        },
+                    };
+                    const array = item.map((items, indexs) =>
+                        index === indexs ? newdata : items
+                    );
+                    window.localStorage.setItem('meso', JSON.stringify(array));
+                } else {
+                    //해당 날짜에 데이터가 없다면 추가
+                    const data = {
+                        [day]: {
+                            totalbossmeso: totalbossmeso,
+                            bossmesonum: bossmesonum,
+                            bossmesoarray: BossMesoArray,
+                            totalproperty: totalproperty,
+                            propertynum: propertynum,
+                            totalgem: totalgem,
+                            totalerda: totalerda,
+                            propertyarray: PropertyArray,
+                            gemarray: GemArray,
+                            erdaarray: ErdaArray,
+                        },
+                    };
+                    const array = [...item, data];
+                    window.localStorage.setItem('meso', JSON.stringify(array));
+                }
+            }
+        } else {
+            //최초 추가
+            const first = [
+                {
+                    [day]: {
+                        totalbossmeso: totalbossmeso,
+                        bossmesonum: bossmesonum,
+                        bossmesoarray: BossMesoArray,
+                        totalproperty: totalproperty,
+                        propertynum: propertynum,
+                        totalgem: totalgem,
+                        totalerda: totalerda,
+                        propertyarray: PropertyArray,
+                        gemarray: GemArray,
+                        erdaarray: ErdaArray,
+                    },
+                },
+            ];
+            window.localStorage.setItem('meso', JSON.stringify(first));
         }
     };
 
@@ -290,19 +523,6 @@ const Meso = () => {
     const src5 =
         'data:image/jpeg;base64,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';
 
-    useEffect(() => {
-        //day가 바뀌면 그에 맞춰 로컬스토리지에서 해당 날짜 데이터를 가져옴
-        getDayItem(day.toLocaleDateString('ko-KR'));
-    }, [day]);
-
-    useEffect(() => {
-        onSetTotalProperty();
-    }, [PropertyArray, GemArray, ErdaArray]);
-
-    useEffect(() => {
-        onSetBossProperty();
-    }, [BossMesoArray])
-
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         setDay(new Date(value));
@@ -318,8 +538,8 @@ const Meso = () => {
 
     const onArrayChange = (
         num: number,
-        index : number,
-        update : boolean,
+        index: number,
+        update: boolean,
         setState: React.Dispatch<React.SetStateAction<Array<number>>>
     ) => {
         if (!update) {
@@ -340,8 +560,8 @@ const Meso = () => {
         setProperty(0);
         setGem(0);
         setErda(0);
-        if(!update) {
-            setPropertyNum(prev => prev + 1);
+        if (!update) {
+            setPropertyNum((prev) => prev + 1);
         }
         setUpdate(false);
     };
@@ -353,25 +573,43 @@ const Meso = () => {
                 tmp += item.meso;
             }
         });
-        if(reboot) {
+        if (reboot) {
             tmp = tmp * 5;
         }
         onArrayChange(tmp, bossmesonum, update, setBossMesoArray);
-        onBossInit();
         setBossMesoToggle((prev) => !prev);
-        if(!update) {
-            setBossMesoNum(prev => prev + 1);
+        if (!update) {
+            setBossMesoNum((prev) => prev + 1);
         }
         setUpdate(false);
     };
 
+    const onTotalBossMesoPlus = () => {
+        let tmp = 0;
+        let max = 0;
+        boss.forEach((item) => {
+            if (item.num > 0) {
+                tmp += item.meso * item.num;
+                max = Math.max(max, item.num);
+            }
+        });
+        if (reboot) {
+            tmp = tmp * 5;
+        }
+        setBossMesoArray([tmp]);
+        setBossMesoNum(max);
+        setTotalBossMesoToggle((prev) => !prev);
+    };
+
     const onBossInit = () => {
         const tmp = [...boss];
-        tmp.forEach(item => item.check = false);
+        tmp.forEach((item) => (item.check = false));
         setBoss(tmp);
-    }
+    };
 
     const onSetTotalProperty = () => {
+        if ((PropertyArray && PropertyArray.length === 0) || !PropertyArray)
+            return;
         let property = 0;
         let gem = 0;
         let erda = 0;
@@ -384,14 +622,16 @@ const Meso = () => {
     };
 
     const onSetBossProperty = () => {
+        if ((BossMesoArray && BossMesoArray.length === 0) || !BossMesoArray)
+            return;
         let bossmeso = 0;
-        BossMesoArray.forEach(item => bossmeso += item);
+        BossMesoArray.forEach((item) => (bossmeso += item));
         setTotalBossMeso(bossmeso);
     };
 
     const onPlusClick = (
         setToggle: React.Dispatch<React.SetStateAction<boolean>>,
-        onInit: () => void,
+        onInit: () => void
     ) => {
         setToggle((prev) => !prev);
         onInit();
@@ -404,8 +644,12 @@ const Meso = () => {
     };
 
     const onPropertyUpdate = () => {
+        if (propertynum < 1) {
+            window.alert('수정할 정보가 없습니다.');
+            return;
+        }
         setPropertyToggle((prev) => !prev);
-        setUpdate(prev => !prev);
+        setUpdate((prev) => !prev);
         if (PropertyArray[propertynum - 1]) {
             setProperty(PropertyArray[propertynum - 1]);
             setGem(GemArray[propertynum - 1]);
@@ -413,8 +657,19 @@ const Meso = () => {
         }
     };
 
-    const onCancle = (onToggle : React.Dispatch<React.SetStateAction<boolean>>) => {
-        onToggle(prev => !prev);
+    const onBossMesoUpdate = () => {
+        if (bossmesonum < 1) {
+            window.alert('수정할 정보가 없습니다.');
+            return;
+        }
+        setBossMesoToggle((prev) => !prev);
+        setUpdate((prev) => !prev);
+    };
+
+    const onCancle = (
+        onToggle: React.Dispatch<React.SetStateAction<boolean>>
+    ) => {
+        onToggle((prev) => !prev);
         setUpdate(false);
     };
 
@@ -427,7 +682,6 @@ const Meso = () => {
         num: number
     ) => {
         if (num < 1) return;
-        console.log(array);
         setNum(onMinus(num));
         setTotal((prev) => prev - array[num - 1]);
         setArray((prev) => prev.filter((value, index) => index !== num - 1));
@@ -438,6 +692,14 @@ const Meso = () => {
         const index = boss.findIndex((item) => item.name === name);
         const tmp = [...boss];
         tmp[index].check = !tmp[index].check;
+        setBoss(tmp);
+    };
+
+    const onNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const index = boss.findIndex((item) => item.name === name);
+        const tmp = [...boss];
+        tmp[index].num = Number(value);
         setBoss(tmp);
     };
 
@@ -494,8 +756,8 @@ const Meso = () => {
                         array={BossMesoArray}
                         setArray={setBossMesoArray}
                         setTotal={setTotalBossMeso}
-                        onUpdate={onPropertyUpdate}
-                        onInit={onPropertyInit}
+                        onUpdate={onBossMesoUpdate}
+                        onInit={onBossInit}
                     />
                 </Back>
             </Background>
@@ -556,6 +818,17 @@ const Meso = () => {
                 onCheckChange={onCheckChange}
                 onRebootChange={onRebootChange}
                 onBossMesoPlus={onBossMesoPlus}
+                onCancle={onCancle}
+            />
+            <ModalBoss
+                toggle={totalbossmesotoggle}
+                total={true}
+                setToggle={setTotalBossMesoToggle}
+                boss={boss}
+                reboot={reboot}
+                onCheckChange={onNumberChange}
+                onRebootChange={onRebootChange}
+                onBossMesoPlus={onTotalBossMesoPlus}
                 onCancle={onCancle}
             />
         </React.Fragment>

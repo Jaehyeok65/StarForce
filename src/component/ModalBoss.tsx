@@ -6,7 +6,7 @@ const ModalContent = styled.div`
     display: grid;
     gap: 30px;
     row-gap: 10px;
-    margin: 7% 20% 7% 20%;
+    margin: 7% 20% 7% 15%;
     position: relative;
 
     > div {
@@ -46,6 +46,16 @@ const NavGrid = styled.div`
 const Checkbox = styled.input`
     width: 20px;
     height: 16px;
+    border : 1px solid gray;
+    border-radius : 4px;
+`;
+
+const Input = styled.input`
+    width : 36
+    px;
+    height : 12px;
+    border : 1px solid gray;
+    border-radius : 4px;
 `;
 
 const Button = styled.button<{ width: string }>`
@@ -60,6 +70,7 @@ interface Boss {
     check: boolean;
     meso: number;
     name: string;
+    num : number;
 }
 
 interface ModalBossProps {
@@ -95,7 +106,7 @@ const ModalBoss: React.FC<ModalBossProps> = ({ toggle, total, setToggle, boss, r
                     <ModalColumns key={item.name}>
                         <div>{item.name}</div>
                         <div>{reboot ? (item.meso*5).toLocaleString() : item.meso.toLocaleString()}</div>
-                        <Checkbox type="checkbox" checked={item.check} name={item.name} onChange={onCheckChange}/>
+                        {total ? <Input type="number" name={item.name} value={item.num} onChange={onCheckChange} /> :<Checkbox type="checkbox" checked={item.check} name={item.name} onChange={onCheckChange}/> }
                     </ModalColumns>
                 ))}
             </ModalContent>
