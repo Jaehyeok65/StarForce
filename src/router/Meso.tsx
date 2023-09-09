@@ -266,6 +266,12 @@ const Meso = () => {
     const [reboot, setReboot] = useState<boolean>(false);
     const [boss, setBoss] = useState<Array<Boss>>(array);
     const [update, setUpdate] = useState<boolean>(false);
+    const [tmppropertynum, setTmpPropertyNum] = useState<number>(0);
+    const [tmpproperty, setTmpProperty] = useState<number>(0);
+    const [tmpgem, setTmpGem] = useState<number>(0);
+    const [tmperda, setTmpErda] = useState<number>(0);
+    const [onload, setOnLoad] = useState<boolean>(false);
+    const [propertytotal, setPropertyTotal] = useState<boolean>(false);
 
     useEffect(() => {
         //day가 바뀌면 그에 맞춰 로컬스토리지에서 해당 날짜 데이터를 가져옴
@@ -273,34 +279,36 @@ const Meso = () => {
     }, [day]);
 
     useEffect(() => {
-        onSetTotalProperty();
-    }, [PropertyArray, GemArray, ErdaArray]);
-
-    useEffect(() => {
-        onSetBossProperty();
-    }, [BossMesoArray]);
-
-    useEffect(() => {
+        if (!onload) return;
         onStoreProperty(
             day.toLocaleDateString('ko-kr'),
             PropertyArray,
             GemArray,
             ErdaArray,
-            property,
-            gem,
-            erda,
+            totalproperty,
+            totalgem,
+            totalerda,
             propertynum
         );
-    },[totalproperty]);
+    }, [totalproperty]);
 
     useEffect(() => {
+        if (!onload) return;
         onStoreBossMeso(
             day.toLocaleDateString('ko-kr'),
             BossMesoArray,
             bossmesonum,
             totalbossmeso
         );
-    },[totalbossmeso]);
+    }, [totalbossmeso]);
+
+    useEffect(() => {
+        setOnLoad(true);
+
+        return () => {
+            setOnLoad(false);
+        };
+    }, []);
 
     const getDayItem = (day: string) => {
         const tmp = window.localStorage.getItem('meso');
@@ -411,7 +419,6 @@ const Meso = () => {
         propertynum: number
     ) => {
         const tmp = window.localStorage.getItem('meso');
-        console.log(PropertyArray);
         if (tmp) {
             const item = JSON.parse(tmp);
             if (Array.isArray(item)) {
@@ -540,22 +547,35 @@ const Meso = () => {
         num: number,
         index: number,
         update: boolean,
-        setState: React.Dispatch<React.SetStateAction<Array<number>>>
-    ) => {
+        prev: number[]
+    ): number[] => {
         if (!update) {
             //추가
-            setState((prev) => [...prev, num]);
+            return [...prev, num];
         } else {
-            setState((prev) =>
-                prev.map((item, index1) => (index1 === index - 1 ? num : item))
+            return prev.map((item, index1) =>
+                index1 === index - 1 ? num : item
             );
         }
     };
 
     const onPropertyPlus = () => {
-        onArrayChange(property, propertynum, update, setPropertyArray);
-        onArrayChange(gem, propertynum, update, setGemArray);
-        onArrayChange(erda, propertynum, update, setErdaArray);
+        const newPropertyArray = onArrayChange(
+            property,
+            propertynum,
+            update,
+            PropertyArray
+        );
+        const newGemArray = onArrayChange(gem, propertynum, update, GemArray);
+        const newErdaArray = onArrayChange(
+            erda,
+            propertynum,
+            update,
+            ErdaArray
+        );
+        setPropertyArray(newPropertyArray);
+        setGemArray(newGemArray);
+        setErdaArray(newErdaArray);
         setPropertyToggle((prev) => !prev);
         setProperty(0);
         setGem(0);
@@ -563,7 +583,24 @@ const Meso = () => {
         if (!update) {
             setPropertyNum((prev) => prev + 1);
         }
+        onSetTotalProperty(newPropertyArray, newGemArray, newErdaArray);
         setUpdate(false);
+    };
+
+    const onTotalPropertyPlus = () => {
+        setTotalProperty(tmpproperty);
+        setTotalErda(tmperda);
+        setTotalGem(tmpgem);
+        setPropertyNum(tmppropertynum);
+        setPropertyArray([tmpproperty]);
+        setErdaArray([tmperda]);
+        setGemArray([tmpgem]);
+        setUpdate(false);
+        setTotalPropertyToggle((prev) => !prev);
+        setTmpProperty(0);
+        setTmpErda(0);
+        setTmpGem(0);
+        setTmpPropertyNum(0);
     };
 
     const onBossMesoPlus = () => {
@@ -576,7 +613,14 @@ const Meso = () => {
         if (reboot) {
             tmp = tmp * 5;
         }
-        onArrayChange(tmp, bossmesonum, update, setBossMesoArray);
+        const newBossMesoArray = onArrayChange(
+            tmp,
+            bossmesonum,
+            update,
+            BossMesoArray
+        );
+        setBossMesoArray(newBossMesoArray);
+        onSetBossProperty(newBossMesoArray);
         setBossMesoToggle((prev) => !prev);
         if (!update) {
             setBossMesoNum((prev) => prev + 1);
@@ -597,6 +641,7 @@ const Meso = () => {
             tmp = tmp * 5;
         }
         setBossMesoArray([tmp]);
+        onSetBossProperty([tmp]);
         setBossMesoNum(max);
         setTotalBossMesoToggle((prev) => !prev);
     };
@@ -607,9 +652,11 @@ const Meso = () => {
         setBoss(tmp);
     };
 
-    const onSetTotalProperty = () => {
-        if ((PropertyArray && PropertyArray.length === 0) || !PropertyArray)
-            return;
+    const onSetTotalProperty = (
+        PropertyArray: number[],
+        GemArray: number[],
+        ErdaArray: number[]
+    ) => {
         let property = 0;
         let gem = 0;
         let erda = 0;
@@ -621,9 +668,7 @@ const Meso = () => {
         setTotalErda(erda);
     };
 
-    const onSetBossProperty = () => {
-        if ((BossMesoArray && BossMesoArray.length === 0) || !BossMesoArray)
-            return;
+    const onSetBossProperty = (BossMesoArray: number[]) => {
         let bossmeso = 0;
         BossMesoArray.forEach((item) => (bossmeso += item));
         setTotalBossMeso(bossmeso);
@@ -682,9 +727,54 @@ const Meso = () => {
         num: number
     ) => {
         if (num < 1) return;
-        setNum(onMinus(num));
-        setTotal((prev) => prev - array[num - 1]);
-        setArray((prev) => prev.filter((value, index) => index !== num - 1));
+        if (num === array.length) {
+            setNum(onMinus(num));
+            setTotal((prev) => prev - array[num - 1]);
+            setArray((prev) =>
+                prev.filter((value, index) => index !== num - 1)
+            );
+        }
+        else {
+            setNum(0);
+            setTotal(0);
+            setArray([]);
+        }
+    };
+
+    const onPropertyMinusClick = (
+        setNum: React.Dispatch<React.SetStateAction<number>>,
+        onMinus: (prev: number) => number,
+        setTotal: React.Dispatch<React.SetStateAction<number>>,
+        setArray: React.Dispatch<React.SetStateAction<Array<number>>>,
+        array: Array<number>,
+        num: number
+    ) => {
+        if (num < 1) return;
+        if (num === array.length) {
+            //일괄입력을 안하고 차례차례 수정했을 경우
+            setNum(onMinus(num));
+            setTotal((prev) => prev - array[num - 1]);
+            setTotalGem((prev) => prev - GemArray[num - 1]);
+            setTotalErda((prev) => prev - ErdaArray[num - 1]);
+            setArray((prev) =>
+                prev.filter((value, index) => index !== num - 1)
+            );
+            setGemArray((prev) =>
+                prev.filter((value, index) => index !== num - 1)
+            );
+            setErdaArray((prev) =>
+                prev.filter((value, index) => index !== num - 1)
+            );
+        } else {
+            //일괄입력을 했을 경우는 propertynum과 Array의 개수가 일치하지 않음 즉 마이너스 클릭을 했을 경우 0으로 되어야함
+            setNum(0);
+            setTotal(0);
+            setTotalGem(0);
+            setTotalErda(0);
+            setArray([]);
+            setGemArray([]);
+            setErdaArray([]);
+        }
     };
 
     const onCheckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -697,6 +787,9 @@ const Meso = () => {
 
     const onNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
+        if (Number(value) < 0) {
+            return;
+        }
         const index = boss.findIndex((item) => item.name === name);
         const tmp = [...boss];
         tmp[index].num = Number(value);
@@ -730,7 +823,7 @@ const Meso = () => {
                         setToggle={setPropertyToggle}
                         setTotalToggle={setTotalPropertyToggle}
                         onPlusClick={onPlusClick}
-                        onMinusClick={onMinusClick}
+                        onMinusClick={onPropertyMinusClick}
                         formatting={formatting}
                         onPlus={onPlus}
                         onMinus={onMinus}
@@ -767,22 +860,22 @@ const Meso = () => {
                 src4={src4}
                 src5={src5}
                 toggle={totalpropertytoggle}
-                totalproperty={totalproperty}
-                propertynum={propertynum}
+                totalproperty={tmpproperty}
+                propertynum={tmppropertynum}
                 erda={erda}
                 gem={gem}
                 property={property}
-                totalerda={totalerda}
-                totalgem={totalgem}
+                totalerda={tmperda}
+                totalgem={tmpgem}
                 onInputChange={onInputChange}
-                setPropertyNum={setPropertyNum}
-                setErda={setErda}
-                setGem={setGem}
-                setProperty={setTotalProperty}
+                setPropertyNum={setTmpPropertyNum}
+                setErda={setTmpErda}
+                setGem={setTmpGem}
+                setProperty={setTmpProperty}
                 setToggle={setTotalPropertyToggle}
                 formatting={formatting}
                 total={true}
-                onPropertyPlus={onPropertyPlus}
+                onPropertyPlus={onTotalPropertyPlus}
                 onCancle={onCancle}
             />
             <ModalProperty

@@ -40,7 +40,7 @@ const Input = styled.input`
 const Head = styled.div`
     display: flex;
     justify-content: center;
-    margin-bottom : 10%;
+    margin-bottom: 10%;
 `;
 
 interface ModalPropertyProps {
@@ -53,22 +53,22 @@ interface ModalPropertyProps {
     property: number;
     erda: number;
     gem: number;
-    totalproperty : number;
-    totalerda : number;
-    totalgem : number
+    totalproperty: number;
+    totalerda: number;
+    totalgem: number;
     total: boolean;
     onInputChange: (
         e: React.ChangeEvent<HTMLInputElement>,
         setState: React.Dispatch<React.SetStateAction<number>>
     ) => void;
     setPropertyNum: React.Dispatch<React.SetStateAction<number>>;
-    setProperty : React.Dispatch<React.SetStateAction<number>>;
+    setProperty: React.Dispatch<React.SetStateAction<number>>;
     setErda: React.Dispatch<React.SetStateAction<number>>;
     setGem: React.Dispatch<React.SetStateAction<number>>;
     setToggle: React.Dispatch<React.SetStateAction<boolean>>;
     formatting: (param: number) => string;
-    onPropertyPlus : () => void;
-    onCancle : (onToggle: React.Dispatch<React.SetStateAction<boolean>>) => void;
+    onPropertyPlus: () => void;
+    onCancle: (onToggle: React.Dispatch<React.SetStateAction<boolean>>) => void;
 }
 
 const ModalProperty: React.FC<ModalPropertyProps> = ({
@@ -93,7 +93,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
     setToggle,
     formatting,
     onPropertyPlus,
-    onCancle
+    onCancle,
 }) => {
     return (
         <Modal toggle={toggle}>
@@ -130,7 +130,10 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                         onChange={(e) => onInputChange(e, setProperty)}
                     />
                 </div>
-                <div>{total ? formatting(totalproperty) : formatting(property)}&nbsp;메소</div>
+                <div>
+                    {total ? formatting(totalproperty) : formatting(property)}
+                    &nbsp;메소
+                </div>
                 <div>
                     <img src={src4} width="35px" alt="조각" /> &nbsp;&nbsp;:
                 </div>
@@ -141,7 +144,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                         onChange={(e) => onInputChange(e, setErda)}
                     />
                 </div>
-                <div>{total ? totalerda : erda }&nbsp;개</div>
+                <div>{total ? totalerda : erda}&nbsp;개</div>
                 <div>
                     <img src={src5} width="35px" alt="코젬" /> &nbsp;&nbsp;:
                 </div>
@@ -155,18 +158,10 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                 <div>{total ? totalgem : gem}&nbsp;개</div>
             </ModalContent>
             <Head>
-                {!total && (
-                    <Button
-                        width="100px"
-                        onClick={() => onPropertyPlus()}
-                    >
-                        적용하기
-                    </Button>
-                )}
-                <Button
-                    width="100px"
-                    onClick={() => onCancle(setToggle)}
-                >
+                <Button width="100px" onClick={() => onPropertyPlus()}>
+                    적용하기
+                </Button>
+                <Button width="100px" onClick={() => onCancle(setToggle)}>
                     닫기
                 </Button>
             </Head>
