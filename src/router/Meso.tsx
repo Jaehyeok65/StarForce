@@ -5,6 +5,7 @@ import MesoView from 'component/MesoView';
 import ModalBoss from 'component/ModalBoss';
 import ModalErda from 'component/ModalErda';
 import ModalStorage from 'component/ModalStorage';
+import Modal from 'component/Modal';
 
 const Head = styled.div`
     display: flex;
@@ -13,7 +14,7 @@ const Head = styled.div`
 
 const Nav = styled.div`
     display: flex;
-    justify-content: right;
+    justify-content: space-between;
     margin-top: 3%;
 `;
 
@@ -54,6 +55,7 @@ const DivBtn = styled.div`
     padding: 6px;
     cursor: pointer;
     margin-right: 6px;
+    font-size: 12px;
 `;
 
 const Content = styled.div`
@@ -302,6 +304,8 @@ const Meso = () => {
     const [gemmeso, setGemMeso] = useState<number>(1000000);
     const [storage, setStorage] = useState<number>(0);
     const [storagetoggle, setStorageToggle] = useState<boolean>(false);
+    const [weeklymeso, setWeeklyMeso] = useState<number>(0);
+    const [weeklytoggle, setWeeklyToggle] = useState<boolean>(false);
 
     useEffect(() => {
         //day가 바뀌면 그에 맞춰 로컬스토리지에서 해당 날짜 데이터를 가져옴
@@ -631,8 +635,6 @@ const Meso = () => {
         return param.toLocaleString();
     };
 
-    console.log(storage);
-
     const src1 =
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_YvmRV52YvU3lkRTBEfPSpqzDpMB9BShWoA&usqp=CAU';
 
@@ -765,6 +767,95 @@ const Meso = () => {
         onSetBossProperty([tmp]);
         setBossMesoNum(max);
         setTotalBossMesoToggle((prev) => !prev);
+    };
+
+    const onWeeklyMeso = (day: Date) => {
+        const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
+        const current = WEEKDAY[day.getDay()];
+        const prevday = new Date(day);
+        const nextday = new Date(day);
+        switch(current) {
+            case "일" : {
+                prevday.setDate(day.getDate()-3);
+                nextday.setDate(day.getDate() + 3);
+                break;
+            }
+            case "월" : {
+                prevday.setDate(day.getDate()-4);
+                nextday.setDate(day.getDate() + 2);
+                break;
+            }
+            case "화" : {
+                prevday.setDate(day.getDate()-5);
+                nextday.setDate(day.getDate() + 1);
+                break;
+            }
+            case "수" : {
+                prevday.setDate(day.getDate()-6);
+                nextday.setDate(day.getDate());
+                break;
+            }
+            case "목" : {
+                prevday.setDate(day.getDate());
+                nextday.setDate(day.getDate() + 6);
+                break;
+            }
+            case "금" : {
+                prevday.setDate(day.getDate()-1);
+                nextday.setDate(day.getDate() + 5);
+                break;
+            }
+            case "토" : {
+                prevday.setDate(day.getDate()-2);
+                nextday.setDate(day.getDate() + 4);
+                break;
+            }
+        }
+        const tmp = onSelectMeso(prevday, nextday);
+        if(typeof tmp === "number") {
+            setWeeklyMeso(tmp);
+        }
+        setWeeklyToggle((prev) => !prev);
+    };
+
+    const onSelectMeso = (prevday: Date, nextday: Date) => {
+        const days = new Date(prevday);
+        const tmpdays = new Date(prevday); //중복으로 더해지는 것을 막기위한 변수 선언
+        let meso = 0;
+        const tmp = window.localStorage.getItem('meso');
+        if (tmp) {
+            //저장된 정보가 있는 경우
+            const item = JSON.parse(tmp);
+            if (item && Array.isArray(item)) {
+                for (
+                    let i = 1;
+                    i <= nextday.getDate() - prevday.getDate() + 1;
+                    i++
+                ) {
+                    //범위만큼 조회
+                    const index = item.findIndex(
+                        (items) =>
+                            Object.keys(items)[0] === days.toLocaleDateString()
+                    );
+                    if (index !== -1) {
+                        //index가 -1이 아니라면 데이터가 저장되어 있는 것
+                        meso =
+                            meso +
+                            item[index][days.toLocaleDateString('ko-kr')]
+                                .totalproperty +
+                            item[index][days.toLocaleDateString('ko-kr')]
+                                .totalbossmeso;
+                    }
+                    days.setDate(tmpdays.getDate() + i);
+                }
+                return meso;
+            }
+        } else {
+            window.alert(
+                '저장된 정보가 없습니다. 데이터를 저장한 후 다시 시도해주세요.'
+            );
+            return;
+        }
     };
 
     const onBossInit = () => {
@@ -939,6 +1030,9 @@ const Meso = () => {
                         })}
                     </Head>
                     <Nav>
+                        <DivBtn onClick={() => onWeeklyMeso(day)}>
+                            금주 수익 조회
+                        </DivBtn>
                         <input type="date" onChange={onChange} />
                     </Nav>
                     <MesoView
@@ -1092,6 +1186,16 @@ const Meso = () => {
                 formatting={formatting}
                 onStore={onStore}
             />
+            <Modal toggle={weeklytoggle}>
+                <Content>
+                    <Head>
+                        금주의 수익은 {weeklymeso && formatting(weeklymeso)}&nbsp;메소 입니다.&nbsp;
+                    </Head>
+                    <DivBtn onClick={() => setWeeklyToggle((prev) => !prev)}>
+                        닫기
+                    </DivBtn>
+                </Content>
+            </Modal>
         </React.Fragment>
     );
 };
