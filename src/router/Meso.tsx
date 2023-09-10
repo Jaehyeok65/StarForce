@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import ModalProperty from 'component/ModalProperty';
 import MesoView from 'component/MesoView';
 import ModalBoss from 'component/ModalBoss';
+import Modal from 'component/Modal';
+import ModalErda from 'component/ModalErda';
 
 const Head = styled.div`
     display: flex;
@@ -271,7 +273,9 @@ const Meso = () => {
     const [tmpgem, setTmpGem] = useState<number>(0);
     const [tmperda, setTmpErda] = useState<number>(0);
     const [onload, setOnLoad] = useState<boolean>(false);
-    const [propertytotal, setPropertyTotal] = useState<boolean>(false);
+    const [erdatoggle, setErdaToggle] = useState<boolean>(false);
+    const [erdameso, setErdaMeso] = useState<number>(8000000);
+    const [gemmeso, setGemMeso] = useState<number>(1000000);
 
     useEffect(() => {
         //day가 바뀌면 그에 맞춰 로컬스토리지에서 해당 날짜 데이터를 가져옴
@@ -320,7 +324,7 @@ const Meso = () => {
                     (items) => Object.keys(items)[0] === day
                 );
                 if (index !== -1) {
-                    //데이터가 있다면
+                    //데이터가 있다면 스토리지에서 데이터를 가져옴
                     if (item[index] && item[index][day]) {
                         setBossMesoNum(item[index][day].bossmesonum);
                         setPropertyNum(item[index][day].propertynum);
@@ -333,6 +337,18 @@ const Meso = () => {
                         setTotalGem(item[index][day].totalgem);
                         setTotalErda(item[index][day].totalerda);
                     }
+                } else {
+                    //데이터가 없다면 기본값으로 초기화함
+                    setBossMesoNum(0);
+                    setPropertyNum(0);
+                    setPropertyArray([]);
+                    setBossMesoArray([]);
+                    setTotalBossMeso(0);
+                    setTotalProperty(0);
+                    setGemArray([]);
+                    setErdaArray([]);
+                    setTotalErda(0);
+                    setTotalGem(0);
                 }
             }
         }
@@ -663,7 +679,8 @@ const Meso = () => {
         PropertyArray.map((item) => (property += item));
         GemArray.map((item) => (gem += item));
         ErdaArray.map((item) => (erda += item));
-        setTotalProperty(property);
+
+        setTotalProperty(property + gem * gemmeso + erda * erdameso);
         setTotalGem(gem);
         setTotalErda(erda);
     };
@@ -733,8 +750,7 @@ const Meso = () => {
             setArray((prev) =>
                 prev.filter((value, index) => index !== num - 1)
             );
-        }
-        else {
+        } else {
             setNum(0);
             setTotal(0);
             setArray([]);
@@ -753,7 +769,13 @@ const Meso = () => {
         if (num === array.length) {
             //일괄입력을 안하고 차례차례 수정했을 경우
             setNum(onMinus(num));
-            setTotal((prev) => prev - array[num - 1]);
+            setTotal(
+                (prev) =>
+                    prev -
+                    (array[num - 1] +
+                        GemArray[num - 1] * gemmeso +
+                        ErdaArray[num - 1] * erdameso)
+            );
             setTotalGem((prev) => prev - GemArray[num - 1]);
             setTotalErda((prev) => prev - ErdaArray[num - 1]);
             setArray((prev) =>
@@ -832,6 +854,8 @@ const Meso = () => {
                         setTotal={setTotalProperty}
                         onUpdate={onPropertyUpdate}
                         onInit={onPropertyInit}
+                        property={true}
+                        setPropertyToggle={setErdaToggle}
                     />
                     <MesoView
                         src={src2}
@@ -851,6 +875,8 @@ const Meso = () => {
                         setTotal={setTotalBossMeso}
                         onUpdate={onBossMesoUpdate}
                         onInit={onBossInit}
+                        property={false}
+                        setPropertyToggle={setErdaToggle}
                     />
                 </Back>
             </Background>
@@ -923,6 +949,18 @@ const Meso = () => {
                 onRebootChange={onRebootChange}
                 onBossMesoPlus={onTotalBossMesoPlus}
                 onCancle={onCancle}
+            />
+            <ModalErda
+                toggle={erdatoggle}
+                src4={src4}
+                src5={src5}
+                erdameso={erdameso}
+                gemmeso={gemmeso}
+                setErdaMeso={setErdaMeso}
+                setGemMeso={setGemMeso}
+                onInputChange={onInputChange}
+                onCancle={() => setErdaToggle((prev) => !prev)}
+                formatting={formatting}
             />
         </React.Fragment>
     );

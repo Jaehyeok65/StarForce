@@ -46,8 +46,10 @@ interface MesoViewProps {
     name: string;
     total: number;
     array : Array<number>;
+    property : boolean;
     setNum: React.Dispatch<React.SetStateAction<number>>;
     setToggle: React.Dispatch<React.SetStateAction<boolean>>;
+    setPropertyToggle: React.Dispatch<React.SetStateAction<boolean>>;
     setTotalToggle: React.Dispatch<React.SetStateAction<boolean>>;
     onPlusClick: (
         setToggle: React.Dispatch<React.SetStateAction<boolean>>,
@@ -76,13 +78,14 @@ const MesoView: React.FC<MesoViewProps> = ({
     name,
     total,
     array,
+    property,
     setToggle,
     setTotalToggle,
     onPlusClick,
     onMinusClick,
     formatting,
     setNum,
-    onPlus,
+    setPropertyToggle,
     onMinus,
     setArray,
     setTotal,
@@ -109,6 +112,9 @@ const MesoView: React.FC<MesoViewProps> = ({
                     <DivBtn onClick={() => setTotalToggle((prev) => !prev)}>
                         일괄입력
                     </DivBtn>
+                    { property && <DivBtn onClick={() => setPropertyToggle((prev) => !prev)}>
+                        조각가격
+                    </DivBtn>}
                 </div>
             </Content>
             <Content>
