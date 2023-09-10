@@ -16,7 +16,7 @@ const ModalContent = styled.div`
 
 const ModalColumns = styled.div`
     display: grid;
-    grid-template-columns: 60% 40% 10%;
+    grid-template-columns: 60% 40% 15%;
 `;
 
 const ModalHead = styled.div`
@@ -46,16 +46,15 @@ const NavGrid = styled.div`
 const Checkbox = styled.input`
     width: 20px;
     height: 16px;
-    border : 1px solid gray;
-    border-radius : 4px;
+    border: 1px solid gray;
+    border-radius: 4px;
 `;
 
 const Input = styled.input`
-    width : 36
-    px;
-    height : 12px;
-    border : 1px solid gray;
-    border-radius : 4px;
+    width: 36 px;
+    height: 12px;
+    border: 1px solid gray;
+    border-radius: 4px;
 `;
 
 const Button = styled.button<{ width: string }>`
@@ -70,24 +69,32 @@ interface Boss {
     check: boolean;
     meso: number;
     name: string;
-    num : number;
+    num: number;
 }
 
 interface ModalBossProps {
     toggle: boolean;
     total: boolean;
     setToggle: React.Dispatch<React.SetStateAction<boolean>>;
-    boss : Boss[];
-    reboot : boolean;
-    onCheckChange : (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onRebootChange : () => void;
-    onBossMesoPlus : () => void;
-    onCancle : (onToggle: React.Dispatch<React.SetStateAction<boolean>>) => void;
-};
+    boss: Boss[];
+    reboot: boolean;
+    onCheckChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onRebootChange: () => void;
+    onBossMesoPlus: () => void;
+    onCancle: (onToggle: React.Dispatch<React.SetStateAction<boolean>>) => void;
+}
 
-
-const ModalBoss: React.FC<ModalBossProps> = ({ toggle, total, setToggle, boss, reboot, onRebootChange, onCheckChange, onBossMesoPlus, onCancle }) => {
-
+const ModalBoss: React.FC<ModalBossProps> = ({
+    toggle,
+    total,
+    setToggle,
+    boss,
+    reboot,
+    onRebootChange,
+    onCheckChange,
+    onBossMesoPlus,
+    onCancle,
+}) => {
     return (
         <Modal toggle={toggle}>
             <ModalHead>
@@ -98,25 +105,46 @@ const ModalBoss: React.FC<ModalBossProps> = ({ toggle, total, setToggle, boss, r
             <ModalNav>
                 <NavGrid>
                     <div>리부트</div>
-                    <Checkbox type="checkbox" checked={reboot} onChange={onRebootChange} />
+                    <Checkbox
+                        type="checkbox"
+                        checked={reboot}
+                        onChange={onRebootChange}
+                    />
                 </NavGrid>
             </ModalNav>
             <ModalContent>
                 {boss.map((item) => (
                     <ModalColumns key={item.name}>
                         <div>{item.name}</div>
-                        <div>{reboot ? (item.meso*5).toLocaleString() : item.meso.toLocaleString()}</div>
-                        {total ? <Input type="number" name={item.name} value={item.num} onChange={onCheckChange} /> :<Checkbox type="checkbox" checked={item.check} name={item.name} onChange={onCheckChange}/> }
+                        <div>
+                            {reboot
+                                ? (item.meso * 5).toLocaleString()
+                                : item.meso.toLocaleString()}
+                        </div>
+                        {total ? (
+                            <Input
+                                type="number"
+                                name={item.name}
+                                value={item.num}
+                                onChange={onCheckChange}
+                            />
+                        ) : (
+                            <Checkbox
+                                type="checkbox"
+                                checked={item.check}
+                                name={item.name}
+                                onChange={onCheckChange}
+                            />
+                        )}
                     </ModalColumns>
                 ))}
             </ModalContent>
             <Head>
-                <Button width="100px" onClick={onBossMesoPlus}>적용하기</Button>
+                <Button width="100px" onClick={onBossMesoPlus}>
+                    적용하기
+                </Button>
 
-                <Button
-                    width="100px"
-                    onClick={() => onCancle(setToggle)}
-                >
+                <Button width="100px" onClick={() => onCancle(setToggle)}>
                     닫기
                 </Button>
             </Head>
