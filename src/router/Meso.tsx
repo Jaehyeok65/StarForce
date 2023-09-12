@@ -873,9 +873,6 @@ const Meso = () => {
                 };
             }
         } else {
-            window.alert(
-                '저장된 정보가 없습니다. 데이터를 저장한 후 다시 시도해주세요.'
-            );
             return {
                 property: 0,
                 boss: 0,
@@ -892,17 +889,24 @@ const Meso = () => {
         onDiffChange(storage, new Date(value), setDate);
     };
 
-    const onDiffChange = (current : number, prev : Date, setDate : (value: React.SetStateAction<Date | null>) => void) => {
-        if(!current) {
-            window.alert("먼저 현재 창고에 있는 돈을 입력해주세요.");
+    const onDiffChange = (
+        current: number,
+        prev: Date,
+        setDate: (value: React.SetStateAction<Date | null>) => void
+    ) => {
+        if (!current) {
+            window.alert('먼저 현재 창고에 있는 돈을 입력해주세요.');
             return;
         }
-        if(prev.toLocaleDateString('ko-kr') === new Date().toLocaleDateString('ko-kr')) {
-            window.alert("동일한 날짜입니다 다른 날짜를 선택해주세요.");
+        if (
+            prev.toLocaleDateString('ko-kr') ===
+            new Date().toLocaleDateString('ko-kr')
+        ) {
+            window.alert('동일한 날짜입니다 다른 날짜를 선택해주세요.');
             return;
         }
         const tmp = window.localStorage.getItem('meso');
-        if(tmp) {
+        if (tmp) {
             const item = JSON.parse(tmp);
             const day = prev.toLocaleDateString('ko-kr');
             if (Array.isArray(item)) {
@@ -912,22 +916,24 @@ const Meso = () => {
                 );
                 if (index !== -1) {
                     //데이터가 있다면 스토리지에서 데이터를 가져옴
-                    if (item[index] && item[index][day] && item[index][day].storage) {
-                      setDiff(current - item[index][day].storage);
-                      setDate(prev);
-                    }
-                    else {
+                    if (
+                        item[index] &&
+                        item[index][day] &&
+                        item[index][day].storage
+                    ) {
+                        setDiff(current - item[index][day].storage);
+                        setDate(prev);
+                    } else {
                         setDate(prev);
                         setDiff(0);
                     }
-                }
-                else {
+                } else {
                     setDate(prev);
                     setDiff(0);
                 }
             }
         }
-    }
+    };
 
     const onBossInit = () => {
         const tmp = [...boss];
@@ -1269,7 +1275,13 @@ const Meso = () => {
                 formatting={formatting}
                 weeklymeso={weeklymeso}
             />
-            <ModalCompare toggle={compare} setToggle={setCompare} diff={diff} date={date} onDateChange={onDateChange}/>
+            <ModalCompare
+                toggle={compare}
+                setToggle={setCompare}
+                diff={diff}
+                date={date}
+                onDateChange={onDateChange}
+            />
         </React.Fragment>
     );
 };
