@@ -5,7 +5,8 @@ import MesoView from 'component/MesoView';
 import ModalBoss from 'component/ModalBoss';
 import ModalErda from 'component/ModalErda';
 import ModalStorage from 'component/ModalStorage';
-import Modal from 'component/Modal';
+import ModalWeekly from 'component/ModalWeekly';
+import ModalCompare from 'component/ModalCompare';
 
 const Head = styled.div`
     display: flex;
@@ -320,6 +321,9 @@ const Meso = () => {
         boss: 0,
     });
     const [weeklytoggle, setWeeklyToggle] = useState<boolean>(false);
+    const [compare, setCompare] = useState<boolean>(false);
+    const [date, setDate] = useState<Date | null>(null);
+    const [diff, setDiff] = useState<number>(0);
 
     useEffect(() => {
         //day가 바뀌면 그에 맞춰 로컬스토리지에서 해당 날짜 데이터를 가져옴
@@ -883,6 +887,48 @@ const Meso = () => {
         };
     };
 
+    const onDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        onDiffChange(storage, new Date(value), setDate);
+    };
+
+    const onDiffChange = (current : number, prev : Date, setDate : (value: React.SetStateAction<Date | null>) => void) => {
+        if(!current) {
+            window.alert("먼저 현재 창고에 있는 돈을 입력해주세요.");
+            return;
+        }
+        if(prev.toLocaleDateString('ko-kr') === new Date().toLocaleDateString('ko-kr')) {
+            window.alert("동일한 날짜입니다 다른 날짜를 선택해주세요.");
+            return;
+        }
+        const tmp = window.localStorage.getItem('meso');
+        if(tmp) {
+            const item = JSON.parse(tmp);
+            const day = prev.toLocaleDateString('ko-kr');
+            if (Array.isArray(item)) {
+                //배열이라면
+                const index = item.findIndex(
+                    (items) => Object.keys(items)[0] === day
+                );
+                if (index !== -1) {
+                    //데이터가 있다면 스토리지에서 데이터를 가져옴
+                    if (item[index] && item[index][day] && item[index][day].storage) {
+                      setDiff(current - item[index][day].storage);
+                      setDate(prev);
+                    }
+                    else {
+                        setDate(prev);
+                        setDiff(0);
+                    }
+                }
+                else {
+                    setDate(prev);
+                    setDiff(0);
+                }
+            }
+        }
+    }
+
     const onBossInit = () => {
         const tmp = [...boss];
         tmp.forEach((item) => (item.check = false));
@@ -1118,6 +1164,9 @@ const Meso = () => {
                             >
                                 입력
                             </DivBtn>
+                            <DivBtn onClick={() => setCompare((prev) => !prev)}>
+                                비교
+                            </DivBtn>
                         </div>
                     </Content>
                 </Back>
@@ -1214,47 +1263,13 @@ const Meso = () => {
                 formatting={formatting}
                 onStore={onStore}
             />
-            <Modal toggle={weeklytoggle}>
-                <div>
-                    <Content>
-                        <Head>
-                            금주의 재획 수익은 &nbsp;
-                            <Bold>
-                                {weeklymeso && formatting(weeklymeso.property)}
-                            </Bold>
-                            &nbsp;메소이며&nbsp;
-                        </Head>
-                    </Content>
-                    <Content>
-                        <Head>
-                            금주의 보스 수익은 &nbsp;
-                            <Bold>
-                                {weeklymeso && formatting(weeklymeso.boss)}
-                            </Bold>
-                            &nbsp;메소이고&nbsp;
-                        </Head>
-                    </Content>
-                    <Content>
-                        <Head>
-                            금주의 총 수익은 &nbsp;
-                            <Bold>
-                                {weeklymeso &&
-                                    formatting(
-                                        weeklymeso.property + weeklymeso.boss
-                                    )}
-                            </Bold>
-                            &nbsp;메소입니다.&nbsp;
-                        </Head>
-                    </Content>
-                    <Content>
-                        <DivBtn
-                            onClick={() => setWeeklyToggle((prev) => !prev)}
-                        >
-                            닫기
-                        </DivBtn>
-                    </Content>
-                </div>
-            </Modal>
+            <ModalWeekly
+                toggle={weeklytoggle}
+                setToggle={setWeeklyToggle}
+                formatting={formatting}
+                weeklymeso={weeklymeso}
+            />
+            <ModalCompare toggle={compare} setToggle={setCompare} diff={diff} date={date} onDateChange={onDateChange}/>
         </React.Fragment>
     );
 };
