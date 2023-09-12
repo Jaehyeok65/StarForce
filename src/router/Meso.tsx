@@ -38,6 +38,10 @@ const Background = styled.div`
     }
 `;
 
+const Bold = styled.span`
+    font-weight: bold;
+`;
+
 const Back = styled.div`
     margin: 5% 5% 5% 5%;
     border: 1px solid gray;
@@ -56,6 +60,8 @@ const DivBtn = styled.div`
     cursor: pointer;
     margin-right: 6px;
     font-size: 12px;
+    max-width: 200px;
+    text-align: center;
 `;
 
 const Content = styled.div`
@@ -79,6 +85,11 @@ interface Boss {
     meso: number;
     name: string;
     num: number;
+}
+
+interface Week {
+    property: number;
+    boss: number;
 }
 
 const array: Boss[] = [
@@ -304,7 +315,10 @@ const Meso = () => {
     const [gemmeso, setGemMeso] = useState<number>(1000000);
     const [storage, setStorage] = useState<number>(0);
     const [storagetoggle, setStorageToggle] = useState<boolean>(false);
-    const [weeklymeso, setWeeklyMeso] = useState<number>(0);
+    const [weeklymeso, setWeeklyMeso] = useState<Week>({
+        property: 0,
+        boss: 0,
+    });
     const [weeklytoggle, setWeeklyToggle] = useState<boolean>(false);
 
     useEffect(() => {
@@ -774,54 +788,53 @@ const Meso = () => {
         const current = WEEKDAY[day.getDay()];
         const prevday = new Date(day);
         const nextday = new Date(day);
-        switch(current) {
-            case "일" : {
-                prevday.setDate(day.getDate()-3);
+        switch (current) {
+            case '일': {
+                prevday.setDate(day.getDate() - 3);
                 nextday.setDate(day.getDate() + 3);
                 break;
             }
-            case "월" : {
-                prevday.setDate(day.getDate()-4);
+            case '월': {
+                prevday.setDate(day.getDate() - 4);
                 nextday.setDate(day.getDate() + 2);
                 break;
             }
-            case "화" : {
-                prevday.setDate(day.getDate()-5);
+            case '화': {
+                prevday.setDate(day.getDate() - 5);
                 nextday.setDate(day.getDate() + 1);
                 break;
             }
-            case "수" : {
-                prevday.setDate(day.getDate()-6);
+            case '수': {
+                prevday.setDate(day.getDate() - 6);
                 nextday.setDate(day.getDate());
                 break;
             }
-            case "목" : {
+            case '목': {
                 prevday.setDate(day.getDate());
                 nextday.setDate(day.getDate() + 6);
                 break;
             }
-            case "금" : {
-                prevday.setDate(day.getDate()-1);
+            case '금': {
+                prevday.setDate(day.getDate() - 1);
                 nextday.setDate(day.getDate() + 5);
                 break;
             }
-            case "토" : {
-                prevday.setDate(day.getDate()-2);
+            case '토': {
+                prevday.setDate(day.getDate() - 2);
                 nextday.setDate(day.getDate() + 4);
                 break;
             }
         }
         const tmp = onSelectMeso(prevday, nextday);
-        if(typeof tmp === "number") {
-            setWeeklyMeso(tmp);
-        }
+        setWeeklyMeso(tmp);
         setWeeklyToggle((prev) => !prev);
     };
 
-    const onSelectMeso = (prevday: Date, nextday: Date) => {
+    const onSelectMeso = (prevday: Date, nextday: Date): Week => {
         const days = new Date(prevday);
         const tmpdays = new Date(prevday); //중복으로 더해지는 것을 막기위한 변수 선언
-        let meso = 0;
+        let boss = 0;
+        let property = 0;
         const tmp = window.localStorage.getItem('meso');
         if (tmp) {
             //저장된 정보가 있는 경우
@@ -839,23 +852,35 @@ const Meso = () => {
                     );
                     if (index !== -1) {
                         //index가 -1이 아니라면 데이터가 저장되어 있는 것
-                        meso =
-                            meso +
-                            item[index][days.toLocaleDateString('ko-kr')]
-                                .totalproperty +
+                        boss =
+                            boss +
                             item[index][days.toLocaleDateString('ko-kr')]
                                 .totalbossmeso;
+                        property =
+                            property +
+                            item[index][days.toLocaleDateString('ko-kr')]
+                                .totalproperty;
                     }
                     days.setDate(tmpdays.getDate() + i);
                 }
-                return meso;
+                return {
+                    property: property,
+                    boss: boss,
+                };
             }
         } else {
             window.alert(
                 '저장된 정보가 없습니다. 데이터를 저장한 후 다시 시도해주세요.'
             );
-            return;
+            return {
+                property: 0,
+                boss: 0,
+            };
         }
+        return {
+            property: 0,
+            boss: 0,
+        };
     };
 
     const onBossInit = () => {
@@ -875,7 +900,6 @@ const Meso = () => {
         PropertyArray.map((item) => (property += item));
         GemArray.map((item) => (gem += item));
         ErdaArray.map((item) => (erda += item));
-
         setTotalProperty(property + gem * gemmeso + erda * erdameso);
         setTotalGem(gem);
         setTotalErda(erda);
@@ -940,6 +964,8 @@ const Meso = () => {
         num: number
     ) => {
         if (num < 1) return;
+        const tmp = window.confirm('데이터를 삭제하시겠습니까?');
+        if (!tmp) return;
         if (num === array.length) {
             setNum(onMinus(num));
             setTotal((prev) => prev - array[num - 1]);
@@ -962,6 +988,8 @@ const Meso = () => {
         num: number
     ) => {
         if (num < 1) return;
+        const tmp = window.confirm('데이터를 삭제하시겠습니까?');
+        if (!tmp) return;
         if (num === array.length) {
             //일괄입력을 안하고 차례차례 수정했을 경우
             setNum(onMinus(num));
@@ -1081,7 +1109,7 @@ const Meso = () => {
                         <div>
                             <img src={src6} width="40px" alt="이미지" />
                             &nbsp; 보유 메소 &nbsp;: &nbsp;
-                            {storage && formatting(storage)}{' '}
+                            <Bold>{storage && formatting(storage)}</Bold>&nbsp;
                             메소&nbsp;&nbsp;&nbsp;
                             <DivBtn
                                 onClick={() =>
@@ -1187,14 +1215,45 @@ const Meso = () => {
                 onStore={onStore}
             />
             <Modal toggle={weeklytoggle}>
-                <Content>
-                    <Head>
-                        금주의 수익은 {weeklymeso && formatting(weeklymeso)}&nbsp;메소 입니다.&nbsp;
-                    </Head>
-                    <DivBtn onClick={() => setWeeklyToggle((prev) => !prev)}>
-                        닫기
-                    </DivBtn>
-                </Content>
+                <div>
+                    <Content>
+                        <Head>
+                            금주의 재획 수익은 &nbsp;
+                            <Bold>
+                                {weeklymeso && formatting(weeklymeso.property)}
+                            </Bold>
+                            &nbsp;메소이며&nbsp;
+                        </Head>
+                    </Content>
+                    <Content>
+                        <Head>
+                            금주의 보스 수익은 &nbsp;
+                            <Bold>
+                                {weeklymeso && formatting(weeklymeso.boss)}
+                            </Bold>
+                            &nbsp;메소이고&nbsp;
+                        </Head>
+                    </Content>
+                    <Content>
+                        <Head>
+                            금주의 총 수익은 &nbsp;
+                            <Bold>
+                                {weeklymeso &&
+                                    formatting(
+                                        weeklymeso.property + weeklymeso.boss
+                                    )}
+                            </Bold>
+                            &nbsp;메소입니다.&nbsp;
+                        </Head>
+                    </Content>
+                    <Content>
+                        <DivBtn
+                            onClick={() => setWeeklyToggle((prev) => !prev)}
+                        >
+                            닫기
+                        </DivBtn>
+                    </Content>
+                </div>
             </Modal>
         </React.Fragment>
     );
