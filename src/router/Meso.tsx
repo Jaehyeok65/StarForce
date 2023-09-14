@@ -900,7 +900,7 @@ const Meso = () => {
         }
         if (
             prev.toLocaleDateString('ko-kr') ===
-            new Date().toLocaleDateString('ko-kr')
+            day.toLocaleDateString('ko-kr')
         ) {
             window.alert('동일한 날짜입니다 다른 날짜를 선택해주세요.');
             return;
