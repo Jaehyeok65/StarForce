@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Modal from './Modal';
 
@@ -34,8 +34,8 @@ const DivBtn = styled.div`
     text-align: center;
 `;
 
-const Color = styled.div<{ plus: boolean }>`
-    color: ${(props) => (props.plus ? 'blue' : 'red')};
+const Color = styled.div<{ $plus: string }>`
+    color: ${(props) => (props.$plus === 'true' ? 'red' : 'blue')};
 `;
 
 interface ModalCompareProps {
@@ -44,6 +44,7 @@ interface ModalCompareProps {
     diff: number;
     date: Date | null;
     onDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    formatting: (param: number) => string;
 }
 
 const ModalCompare: React.FC<ModalCompareProps> = ({
@@ -52,7 +53,10 @@ const ModalCompare: React.FC<ModalCompareProps> = ({
     date,
     onDateChange,
     diff,
+    formatting,
 }) => {
+
+    console.log(diff);
     return (
         <Modal toggle={toggle}>
             <Content>
@@ -64,15 +68,15 @@ const ModalCompare: React.FC<ModalCompareProps> = ({
                     <Head>
                         {date.toLocaleDateString('ko-kr')}일
                         {diff > 0 ? (
-                            <Color plus={true}>
-                                &nbsp;대비 +&nbsp;{diff}&nbsp;메소가
+                            <Color $plus="true">
+                                &nbsp;대비 &nbsp;{formatting(Math.abs(diff))}&nbsp;메소가
                                 증가했습니다.
                             </Color>
                         ) : diff === 0 ? (
                             <div>에는 저장된 데이터가 없습니다.</div>
                         ) : (
-                            <Color plus={false}>
-                                &nbsp;대비 &nbsp;{diff}&nbsp;메소가
+                            <Color $plus="false">
+                                &nbsp;대비 &nbsp;{formatting(Math.abs(diff))}&nbsp;메소가
                                 감소했습니다.
                             </Color>
                         )}

@@ -1281,6 +1281,7 @@ const Meso = () => {
                 diff={diff}
                 date={date}
                 onDateChange={onDateChange}
+                formatting={formatting}
             />
         </React.Fragment>
     );
