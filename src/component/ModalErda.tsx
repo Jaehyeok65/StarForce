@@ -49,6 +49,7 @@ interface ModalErdaProps {
     toggle: boolean;
     erdameso: number;
     gemmeso: number;
+    day : string
     onInputChange: (
         e: React.ChangeEvent<HTMLInputElement>,
         setState: React.Dispatch<React.SetStateAction<number>>
@@ -57,6 +58,7 @@ interface ModalErdaProps {
     setErdaMeso: React.Dispatch<React.SetStateAction<number>>;
     onCancle: () => void;
     formatting: (param: number) => string;
+    onStoreErda : (erdameso : number, gemmeso : number, day : string) => void;
 }
 
 const ModalErda: React.FC<ModalErdaProps> = ({
@@ -70,6 +72,8 @@ const ModalErda: React.FC<ModalErdaProps> = ({
     toggle,
     onCancle,
     formatting,
+    onStoreErda,
+    day
 }) => {
     return (
         <Modal toggle={toggle}>
@@ -99,6 +103,9 @@ const ModalErda: React.FC<ModalErdaProps> = ({
                 <div>{formatting(gemmeso)}&nbsp;메소</div>
             </ModalContent>
             <Head>
+                <Button width="100px" onClick={() => onStoreErda(erdameso,gemmeso,day)}>
+                    적용하기
+                </Button>
                 <Button width="100px" onClick={onCancle}>
                     닫기
                 </Button>

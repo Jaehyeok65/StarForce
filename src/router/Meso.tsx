@@ -385,6 +385,12 @@ const Meso = () => {
                         setTotalGem(item[index][day].totalgem);
                         setTotalErda(item[index][day].totalerda);
                         setStorage(item[index][day].storage);
+                        if (item[index][day].erdameso) {
+                            setErdaMeso(item[index][day].erdameso);
+                        }
+                        if (item[index][day].gemmeso) {
+                            setGemMeso(item[index][day].gemmeso);
+                        }
                     }
                 } else {
                     //데이터가 없다면 기본값으로 초기화함
@@ -624,6 +630,84 @@ const Meso = () => {
         setStorageToggle((prev) => !prev);
     };
 
+    const onStoreErda = (erdameso: number, gemmeso: number, day: string) => {
+        //에르다 메소 저장
+        const tmp = window.localStorage.getItem('meso');
+        if (tmp) {
+            const item = JSON.parse(tmp);
+            if (Array.isArray(item)) {
+                const index = item.findIndex(
+                    (items) => Object.keys(items)[0] === day
+                );
+                if (index !== -1) {
+                    //해당 날짜에 데이터가 있으면
+                    const data = item[index][day];
+                    const newdata = {
+                        [day]: {
+                            ...data,
+                            erdameso: erdameso,
+                            gemmeso: gemmeso,
+                        },
+                    };
+                    const array = item.map((items, indexs) =>
+                        index === indexs ? newdata : items
+                    );
+                    window.localStorage.setItem('meso', JSON.stringify(array));
+                } else {
+                    //해당 날짜에 데이터가 없으면
+                    const data = {
+                        [day]: {
+                            totalbossmeso: totalbossmeso,
+                            bossmesonum: bossmesonum,
+                            bossmesoarray: BossMesoArray,
+                            totalproperty: totalproperty,
+                            propertynum: propertynum,
+                            totalgem: totalgem,
+                            totalerda: totalerda,
+                            propertyarray: PropertyArray,
+                            gemarray: GemArray,
+                            erdaarray: ErdaArray,
+                            storage: storage,
+                            gemmeso: gemmeso,
+                            erdameso: erdameso,
+                        },
+                    };
+                    const array = [...item, data];
+                    window.localStorage.setItem('meso', JSON.stringify(array));
+                }
+            }
+        } else {
+            const first = [
+                {
+                    [day]: {
+                        totalbossmeso: totalbossmeso,
+                        bossmesonum: bossmesonum,
+                        bossmesoarray: BossMesoArray,
+                        totalproperty: totalproperty,
+                        propertynum: propertynum,
+                        totalgem: totalgem,
+                        totalerda: totalerda,
+                        propertyarray: PropertyArray,
+                        gemarray: GemArray,
+                        erdaarray: ErdaArray,
+                        storage: storage,
+                        gemmeso: gemmeso,
+                        erdameso: erdameso,
+                    },
+                },
+            ];
+            window.localStorage.setItem('meso', JSON.stringify(first));
+        }
+        onSetTotalProperty(
+            PropertyArray,
+            GemArray,
+            ErdaArray,
+            erdameso,
+            gemmeso
+        );
+        setErdaToggle((prev) => !prev);
+    };
+
     const onPlus = (prev: number): number => {
         return prev + 1;
     };
@@ -724,7 +808,13 @@ const Meso = () => {
         if (!update) {
             setPropertyNum((prev) => prev + 1);
         }
-        onSetTotalProperty(newPropertyArray, newGemArray, newErdaArray);
+        onSetTotalProperty(
+            newPropertyArray,
+            newGemArray,
+            newErdaArray,
+            erdameso,
+            gemmeso
+        );
         setUpdate(false);
     };
 
@@ -899,8 +989,7 @@ const Meso = () => {
             return;
         }
         if (
-            prev.toLocaleDateString('ko-kr') ===
-            day.toLocaleDateString('ko-kr')
+            prev.toLocaleDateString('ko-kr') === day.toLocaleDateString('ko-kr')
         ) {
             window.alert('동일한 날짜입니다 다른 날짜를 선택해주세요.');
             return;
@@ -944,7 +1033,9 @@ const Meso = () => {
     const onSetTotalProperty = (
         PropertyArray: number[],
         GemArray: number[],
-        ErdaArray: number[]
+        ErdaArray: number[],
+        erdameso: number,
+        gemmeso: number
     ) => {
         let property = 0;
         let gem = 0;
@@ -1258,6 +1349,8 @@ const Meso = () => {
                 onInputChange={onInputChange}
                 onCancle={() => setErdaToggle((prev) => !prev)}
                 formatting={formatting}
+                onStoreErda={onStoreErda}
+                day={day.toLocaleDateString('ko-kr')}
             />
             <ModalStorage
                 toggle={storagetoggle}
