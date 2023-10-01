@@ -927,6 +927,7 @@ const Meso = () => {
     const onSelectMeso = (prevday: Date, nextday: Date): Week => {
         const days = new Date(prevday);
         const tmpdays = new Date(prevday); //중복으로 더해지는 것을 막기위한 변수 선언
+        console.log(nextday.getDate() - prevday.getDate() + 1);
         let boss = 0;
         let property = 0;
         const tmp = window.localStorage.getItem('meso');
@@ -936,7 +937,7 @@ const Meso = () => {
             if (item && Array.isArray(item)) {
                 for (
                     let i = 1;
-                    i <= nextday.getDate() - prevday.getDate() + 1;
+                    i <= 7; //일주일치를 조회하기 때문
                     i++
                 ) {
                     //범위만큼 조회
