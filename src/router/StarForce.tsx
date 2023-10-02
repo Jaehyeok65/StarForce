@@ -127,26 +127,16 @@ const StarForce = () => {
         if (starcatch) {
             //스타캐치 한다면 강화확률 * 0.05 증가
             per += per * 0.05;
-        }
+        } //per이 성공확률, destroy가 파괴확률
 
-        if (destroy < per) {
-            //파괴 확률이 성공 확률보다 적을 때
-            if (num <= destroy) {
-                return 2;
-            } else if (num <= per) {
-                return 0;
-            } else {
-                return 1;
-            }
-        } else {
-            //성공 확률이 파괴 확률보다 적을 때
-            if (num <= per) {
-                return 0;
-            } else if (num <= destroy) {
-                return 2;
-            } else {
-                return 1;
-            }
+        if(num <= per) { // 난수가 성공확률 이하 일 경우 성공 리턴 === num은 1 ~ 30중 하나일 것
+            return 0;
+        }
+        else if(num <= per + destroy) { //성공이 아닐 경우 파괴 리턴 === 이 경우 num은 31 ~ 100중 하나 일 것
+            return 2;
+        }
+        else { //성공과 파괴 둘 다 아닐 경우 실패 리턴
+            return 1;
         }
     };
 
