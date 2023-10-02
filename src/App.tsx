@@ -5,6 +5,7 @@ import Main from 'router/Main';
 import Meso from 'router/Meso';
 import SolErda from 'router/SolErda';
 import StarForce from 'router/StarForce';
+import StarForceSimul from 'router/StarForceSimul';
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Main />} />
                     <Route path="/starforce" element={<StarForce />} />
+                    <Route path="/simulate" element={<StarForceSimul />} />
                     <Route path="/solerda" element={<SolErda />} />
                     <Route path="/meso" element={<Meso />} />
                 </Routes>

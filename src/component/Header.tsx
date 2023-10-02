@@ -28,10 +28,17 @@ const Header = () => {
 
     const RenewalSubject = (sub: String): String => {
         if (sub === '/starforce') {
-            return '스타포스 시뮬레이터';
+            return '스타포스 강화';
         } else if (sub === '/solerda') {
             return '헥사 스탯 시뮬레이터';
-        } else {
+        } 
+        else if(sub === '/simulate') {
+            return '스타포스 시뮬레이터';
+        }
+        else if(sub === '/meso') {
+            return '메소 수급 기록';
+        }
+        else {
             return 'MapleStory';
         }
     };

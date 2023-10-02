@@ -33,7 +33,8 @@ const Main = () => {
         <Background>
             <Back>
         <Ul>
-            <li><Link to={"/starforce"}>스타포스 시뮬레이터</Link></li>
+            <li><Link to={"/starforce"}>스타포스 강화하기</Link></li>
+            <li><Link to={"/simulate"}>스타포스 시뮬레이터</Link></li>
             <li><Link to={"/solerda"}>헥사 스탯 시뮬레이터</Link></li>
             <li><Link to={"/meso"}>메소 수급 기록</Link></li>
         </Ul>
