@@ -48,7 +48,7 @@ const Back = styled.div`
     margin: 5% 5% 5% 5%;
     border: 1px solid gray;
     border-radius: 12px;
-    padding: 5% 5% 5% 5%;
+    padding: 5% 5% 0% 5%;
 `;
 
 const selectlevel = [110, 120, 130, 135, 140, 145, 150, 160, 200, 250];
@@ -89,7 +89,8 @@ const StarForce = () => {
     const [fail, setFail] = useState<number>(0); //실패 횟수
 
     const enforce = (per: number, destroy: number): 0 | 1 | 2 => {
-        const num = Math.floor(Math.random() * 100) + 1; // 1 ~ 100까지 난수 생성
+        const tmp = (Math.random() * 100).toFixed(1); // 난수 생성
+        const num = Number(tmp);
         if (starcatch) {
             //스타캐치 한다면 강화확률 * 0.05 증가
             per += per * 0.05;
