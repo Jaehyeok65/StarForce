@@ -113,7 +113,8 @@ self.onmessage = (e) => {
     };
 
     const enforce = (per, destroy, starcatch) => {
-        const num = Math.floor(Math.random() * 100) + 1; // 1 ~ 100까지 난수 생성
+        const tmp = (Math.random() * 100).toFixed(1); // 난수 생성
+        const num = Number(tmp);
         if (starcatch) {
             //스타캐치 한다면 강화확률 * 0.05 증가
             per += per * 0.05;
