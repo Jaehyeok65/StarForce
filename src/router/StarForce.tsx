@@ -53,6 +53,11 @@ const Back = styled.div`
 
 const selectlevel = [110, 120, 130, 135, 140, 145, 150, 160, 200, 250];
 
+const currentlevel = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+    22, 23, 24,
+];
+
 interface discount {
     [key: string]: boolean;
 }
@@ -356,6 +361,11 @@ const StarForce = () => {
         setLevel(+value);
     };
 
+    const onCurrentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { value } = e.target;
+        setCurrent(+value);
+    };
+
     const onSpareChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         setSpare(+value);
@@ -398,7 +408,7 @@ const StarForce = () => {
         <Background>
             <Back>
                 <StarBack>
-                    <Star $row={14}>
+                    <Star $row={13}>
                         <div>장비 레벨 선택</div>
                         <div>
                             <select value={level} onChange={onSelectChange}>
@@ -492,6 +502,16 @@ const StarForce = () => {
                             &nbsp;
                             <StarBtn onClick={onInitialize}>초기화하기</StarBtn>
                         </StarContent>
+                        <div>강화단계 설정하기 : </div>
+                        <div>
+                            <select value={current} onChange={onCurrentChange}>
+                                {currentlevel.map((item) => (
+                                    <option value={item} key={item}>
+                                        {item}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </Star>
                 </StarBack>
             </Back>
