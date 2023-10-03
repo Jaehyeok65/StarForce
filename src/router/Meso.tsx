@@ -324,6 +324,7 @@ const Meso = () => {
     const [compare, setCompare] = useState<boolean>(false);
     const [date, setDate] = useState<Date | null>(null);
     const [diff, setDiff] = useState<number>(0);
+    const [prev, setPrev] = useState<Date | null>(null);
 
     useEffect(() => {
         //day가 바뀌면 그에 맞춰 로컬스토리지에서 해당 날짜 데이터를 가져옴
@@ -919,13 +920,16 @@ const Meso = () => {
                 break;
             }
         }
+
         const tmp = onSelectMeso(prevday, nextday);
+        setPrev(prevday);
         setWeeklyMeso(tmp);
         setWeeklyToggle((prev) => !prev);
     };
 
     const onSelectMeso = (prevday: Date, nextday: Date): Week => {
         const days = new Date(prevday);
+        console.log(days.toLocaleDateString('ko-kr'));
         let boss = 0;
         let property = 0;
         const tmp = window.localStorage.getItem('meso');
@@ -1366,6 +1370,7 @@ const Meso = () => {
                 setToggle={setWeeklyToggle}
                 formatting={formatting}
                 weeklymeso={weeklymeso}
+                prev={prev}
             />
             <ModalCompare
                 toggle={compare}

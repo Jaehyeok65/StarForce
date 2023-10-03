@@ -18,8 +18,8 @@ const DivBtn = styled.div`
 `;
 
 const Head = styled.div`
-    display : flex;
-    justify-content : center;
+    display: flex;
+    justify-content: center;
 `;
 
 const Content = styled.div`
@@ -39,63 +39,75 @@ const Content = styled.div`
 `;
 
 interface ModalWeeklyProps {
-    toggle : boolean;
-    weeklymeso : Week;
-    setToggle : React.Dispatch<React.SetStateAction<boolean>>;
-    formatting : (param : number) => string;
+    toggle: boolean;
+    weeklymeso: Week;
+    prev: Date | null;
+    setToggle: React.Dispatch<React.SetStateAction<boolean>>;
+    formatting: (param: number) => string;
 }
 
 interface Week {
     property: number;
     boss: number;
-};
-
-const ModalWeekly : React.FC<ModalWeeklyProps> = ({toggle, weeklymeso, setToggle, formatting}) => {
-
-
-    return(
-        <Modal toggle={toggle}>
-                <div>
-                    <Content>
-                        <Head>
-                            금주의 재획 수익은 &nbsp;
-                            <Bold>
-                                {weeklymeso && formatting(weeklymeso.property)}
-                            </Bold>
-                            &nbsp;메소이며&nbsp;
-                        </Head>
-                    </Content>
-                    <Content>
-                        <Head>
-                            금주의 보스 수익은 &nbsp;
-                            <Bold>
-                                {weeklymeso && formatting(weeklymeso.boss)}
-                            </Bold>
-                            &nbsp;메소이고&nbsp;
-                        </Head>
-                    </Content>
-                    <Content>
-                        <Head>
-                            금주의 총 수익은 &nbsp;
-                            <Bold>
-                                {weeklymeso &&
-                                    formatting(
-                                        weeklymeso.property + weeklymeso.boss
-                                    )}
-                            </Bold>
-                            &nbsp;메소입니다.&nbsp;
-                        </Head>
-                    </Content>
-                    <Content>
-                        <DivBtn
-                            onClick={() => setToggle((prev) => !prev)}
-                        >
-                            닫기
-                        </DivBtn>
-                    </Content>
-                </div>
-            </Modal>
-    )
 }
+
+const ModalWeekly: React.FC<ModalWeeklyProps> = ({
+    toggle,
+    weeklymeso,
+    prev,
+    setToggle,
+    formatting,
+}) => {
+    return (
+        <Modal toggle={toggle}>
+            <div>
+                <Content>
+                    <Head>
+                        <Bold>
+                            {prev?.toLocaleDateString('ko-kr')} ~{' '}
+                            {prev &&
+                                new Date(
+                                    new Date(prev).setDate(prev.getDate() + 7)
+                                ).toLocaleDateString('ko-kr')}
+                        </Bold>
+                    </Head>
+                </Content>
+                <Content>
+                    <Head>
+                        금주의 재획 수익은 &nbsp;
+                        <Bold>
+                            {weeklymeso && formatting(weeklymeso.property)}
+                        </Bold>
+                        &nbsp;메소이며&nbsp;
+                    </Head>
+                </Content>
+                <Content>
+                    <Head>
+                        금주의 보스 수익은 &nbsp;
+                        <Bold>{weeklymeso && formatting(weeklymeso.boss)}</Bold>
+                        &nbsp;메소이고&nbsp;
+                    </Head>
+                </Content>
+                <Content>
+                    <Head>
+                        금주의 총 수익은 &nbsp;
+                        <Bold>
+                            {weeklymeso &&
+                                formatting(
+                                    weeklymeso.property + weeklymeso.boss
+                                )}
+                        </Bold>
+                        &nbsp;메소입니다.&nbsp;
+                    </Head>
+                </Content>
+                <Content>
+                    <DivBtn onClick={() => setToggle((prev) => !prev)}>
+                        닫기
+                    </DivBtn>
+                </Content>
+            </div>
+        </Modal>
+    );
+};
 
 export default React.memo(ModalWeekly);
