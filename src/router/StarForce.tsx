@@ -53,11 +53,6 @@ const Back = styled.div`
 
 const selectlevel = [110, 120, 130, 135, 140, 145, 150, 160, 200, 250];
 
-const currentlevel = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24,
-];
-
 interface discount {
     [key: string]: boolean;
 }
@@ -92,6 +87,7 @@ const StarForce = () => {
     const [destorynum, setDestroynum] = useState<number>(0); //현재까지 터진 횟수
     const [success, setSuccess] = useState<number>(0); //성공 횟수
     const [fail, setFail] = useState<number>(0); //실패 횟수
+    const [tmpcurrent, setTmpcurrent] = useState<string>('');
 
     const enforce = (per: number, destroy: number): 0 | 1 | 2 => {
         const tmp = (Math.random() * 100).toFixed(1); // 난수 생성
@@ -361,9 +357,36 @@ const StarForce = () => {
         setLevel(+value);
     };
 
-    const onCurrentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const onTmpCurrentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const check = /^[0-9]{1,2}$/g;
         const { value } = e.target;
-        setCurrent(+value);
+        if (!check.test(value) && value !== '') {
+            //정규식을 만족하지 못하며 null이 아닌 경우
+            window.alert('최대 두 자릿수 숫자만 입력 가능합니다.');
+            return;
+        }
+        if (Number(value) < 0 || Number(value) > 24) {
+            window.alert('0이상 24이하 숫자만 입력 가능합니다.');
+            return;
+        }
+        setTmpcurrent(value);
+    };
+
+    const onCurrentChange = () => {
+        const confirm = window.confirm(
+            '강화단계를 설정하면 현재까지 저장된 강화정보가 초기화됩니다. 강화단계를 설정하시겠습니까?'
+        );
+        if (!confirm) {
+            return;
+        }
+        if (tmpcurrent === '') {
+            window.alert('강화 단계를 입력해주세요.');
+            return;
+        }
+        onInitialize();
+        const tmp = Number(tmpcurrent);
+        setCurrent(tmp);
+        setTmpcurrent(String(tmp));
     };
 
     const onSpareChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -394,6 +417,7 @@ const StarForce = () => {
         setFail(0);
         setDestroynum(0);
         setReinforcenum(0);
+        setTmpcurrent('');
     };
 
     useEffect(() => {
@@ -504,13 +528,15 @@ const StarForce = () => {
                         </StarContent>
                         <div>강화단계 설정하기 : </div>
                         <div>
-                            <select value={current} onChange={onCurrentChange}>
-                                {currentlevel.map((item) => (
-                                    <option value={item} key={item}>
-                                        {item}
-                                    </option>
-                                ))}
-                            </select>
+                            <input
+                                type="text"
+                                value={tmpcurrent}
+                                onChange={onTmpCurrentChange}
+                            />{' '}
+                            &nbsp;
+                            <StarBtn onClick={onCurrentChange}>
+                                적용하기
+                            </StarBtn>
                         </div>
                     </Star>
                 </StarBack>
