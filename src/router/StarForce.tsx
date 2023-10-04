@@ -83,7 +83,8 @@ const StarForce = () => {
     const [chance, setChance] = useState<0 | 1 | 2>(0);
     const [reinforcenum, setReinforcenum] = useState<number>(0);
     const [destroy, setDestroy] = useState<number>(0); //파괴확률
-    const [destoryguard, setDestroyGuard] = useState<boolean>(false);
+    const [destoryguard, setDestroyGuard] = useState<boolean>(false); //메소관련 파괴방지
+    const [tmpdestoryguard, setTmpDestoryGuard] = useState<boolean>(false); //강화관련 파괴방지
     const [destorynum, setDestroynum] = useState<number>(0); //현재까지 터진 횟수
     const [success, setSuccess] = useState<number>(0); //성공 횟수
     const [fail, setFail] = useState<number>(0); //실패 횟수
@@ -188,7 +189,7 @@ const StarForce = () => {
         }
         setCurrentmeso((prev) => prev + meso);
         setReinforcenum((prev) => prev + 1);
-        renewalDestoryGuard(current, success);
+        renewalDestoryGuard(tmpdestoryguard,current, success);
     };
 
     const enforceMeso = (current: number): number => {
@@ -209,13 +210,14 @@ const StarForce = () => {
         setDestroy(destroypercent(current));
     };
 
-    const renewalDestoryGuard = (current: number, success: 0 | 1 | 2) => {
+    const renewalDestoryGuard = (tmpdestoryguard : boolean, current: number, success: 0 | 1 | 2) => {
         //강화 성공, 실패에 따라 파괴방지 초기화
+        console.log(tmpdestoryguard);
         if (success === 0 && current === 16) {
             //성공했으며 17성을 갔을 경우 == current 갱신 전이므로 16이어야함
             setDestroyGuard(false); //파괴방지 off
-        } else if (success === 1 && current === 17) {
-            //실패했으며 16성을 갔을 경우 마찬가지로 갱신전이므로 17이어야함
+        } else if (success === 1 && current === 17 && tmpdestoryguard) {
+            //실패했으며 16성을 갔을 경우 마찬가지로 갱신전이므로 17이어야함 === 파괴방지를 true로 하기 위해서는 체크가 되어있을 때만 파괴방지를 true로함
             setDestroyGuard(true);
         } else if (success === 2) {
             //파괴되었을 경우 off
@@ -402,6 +404,11 @@ const StarForce = () => {
         });
     };
 
+    const onCheckDestroyGuard = () => {
+        setTmpDestoryGuard(prev => !prev);
+        setDestroyGuard(prev => !prev);
+    };
+
     const onEventChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name } = e.target;
         setEvent({
@@ -502,10 +509,8 @@ const StarForce = () => {
                             <label>
                                 <input
                                     type="checkbox"
-                                    checked={destoryguard}
-                                    onChange={() =>
-                                        setDestroyGuard((prev) => !prev)
-                                    }
+                                    checked={tmpdestoryguard}
+                                    onClick={onCheckDestroyGuard}
                                     disabled={current !== 15 && current !== 16}
                                 />
                             </label>

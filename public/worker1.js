@@ -4,7 +4,6 @@ self.onmessage = (e) => {
         event,
         simulateguard,
         spare,
-        destoryguard,
         discount,
         level,
         start,
@@ -81,16 +80,11 @@ self.onmessage = (e) => {
         }
     };
 
-    const onDestroyGuard = (meso, current, simulate) => {
-        if (simulate) {
-            if ((current === 15 || current === 16) && simulateguard) {
-                return meso * 2;
-            }
-        } else {
-            if ((current === 15 || current === 16) && destoryguard) {
-                return meso * 2;
-            }
+    const onDestroyGuard = (meso, current, tmpsimulateguard) => {
+        if ((current === 15 || current === 16) && tmpsimulateguard) {
+            return meso * 2;
         }
+
         return meso;
     };
 
@@ -158,15 +152,37 @@ self.onmessage = (e) => {
         }
     };
 
-    const enforceMeso = (current, simulate) => {
+    const enforceMeso = (current, tmpsimulateguard) => {
         return Math.floor(
             eventmeso(
                 discountmeso(
-                    onDestroyGuard(consume(current, level), current, simulate),
+                    onDestroyGuard(
+                        consume(current, level),
+                        current,
+                        tmpsimulateguard
+                    ),
                     current
                 )
             )
         );
+    };
+
+    const renewalDestoryGuard = (current,success,simulateguard) => {
+        //강화 성공, 실패에 따라 파괴방지 여부를 리턴함
+        if(!simulateguard) { //파괴방지를 체크하지 않았다면 무조건 false리턴
+            return false;
+        }
+        //파괴방지를 체크했다는 것
+        if (success === 0 && current === 16) {
+            //성공했으며 17성을 갔을 경우 == current 갱신 전이므로 16이어야함
+            return false;
+        } else if (success === 1 && current === 17) {
+            //실패했으며 16성을 갔을 경우 마찬가지로 갱신전이므로 17이어야함
+            return true;
+        } else if (success === 2) {
+            //파괴되었을 경우 off
+            return false;
+        }
     };
 
     const simulate = (currents, goal) => {
@@ -179,41 +195,53 @@ self.onmessage = (e) => {
         let meso = 0;
         let per = rate(currents);
         let i = 0;
+        let chance = 0; //찬스타임 선언
+        let tmpsimulateguard = simulateguard; //지역변수로 옮겨와서 컨트롤함
         //currents = currents === start ? 0 : currents;
         //한번에 계산 후 setState 호출하기 위한 지역변수 선언
 
         while (currents < goal) {
+            //여기서 찬스타임과 파괴방지 자동화를 포함해야함
             if (
                 (event['15-16'] || event['샤이닝 스타포스']) &&
                 (currents === 5 || currents === 10 || currents === 15)
             ) {
                 i = 0; //1516일 경우 무조건 성공
+            } else if (chance === 2) {
+                //찬스가 2라면 찬스타임이므로 반드시 성공
+                i = 0;
             } else {
                 i =
-                    simulateguard && (currents === 15 || currents === 16)
+                    tmpsimulateguard && (currents === 15 || currents === 16)
                         ? enforce(per, 0, starcatch)
                         : enforce(per, destroy, starcatch); //파괴방지 염두에 둠
             }
             if (i === 0) {
                 //성공
+                meso = meso + enforceMeso(currents, tmpsimulateguard);
                 success = success + 1;
                 currents = currents + 1;
+                chance = 0; //성공했다면 찬스를 초기화
             } else if (i === 1) {
                 //실패
+                meso = meso + enforceMeso(currents, tmpsimulateguard);
                 fail = fail + 1;
                 if (currents > 15 && currents !== 20) {
                     //current
                     currents = currents - 1;
+                    chance = chance + 1;
                 }
             } else {
                 //파괴
+                meso = meso + enforceMeso(currents, tmpsimulateguard);
                 destroynum = destroynum + 1;
                 currents = 12;
                 meso = meso + spare; //파괴시 스페어 메소 추가
+                chance = 0; //파괴되었을 경우도 찬스를 초기화
             }
             count = count + 1;
             per = rate(currents); //current가 바뀌었으므로 확률 재갱신
-            meso = meso + enforceMeso(currents, true);
+            tmpsimulateguard = renewalDestoryGuard(currents,i,simulateguard);
             destroy = destroypercent(currents);
         }
 

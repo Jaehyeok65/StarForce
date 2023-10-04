@@ -105,10 +105,8 @@ const StarForce = () => {
         '샤이닝 스타포스': false,
     });
     const [spare, setSpare] = useState<number>(0);
-    const [chance, setChance] = useState<0 | 1 | 2>(0);
     const [reinforcenum, setReinforcenum] = useState<number>(0);
     const [destroy, setDestroy] = useState<number>(0); //파괴확률
-    const [destoryguard, setDestroyGuard] = useState<boolean>(false);
     const [destorynum, setDestroynum] = useState<number>(0); //현재까지 터진 횟수
     const [success, setSuccess] = useState<number>(0); //성공 횟수
     const [fail, setFail] = useState<number>(0); //실패 횟수
@@ -122,111 +120,12 @@ const StarForce = () => {
     const [calculating, setCalculating] = useState<boolean>(false);
     const [progress, setProgress] = useState<number>(0);
 
-    const enforce = (per: number, destroy: number): 0 | 1 | 2 => {
-        const num = Math.floor(Math.random() * 100) + 1; // 1 ~ 100까지 난수 생성
-        if (starcatch) {
-            //스타캐치 한다면 강화확률 * 0.05 증가
-            per += per * 0.05;
-        } //per이 성공확률, destroy가 파괴확률
 
-        if(num <= per) { // 난수가 성공확률 이하 일 경우 성공 리턴 === num은 1 ~ 30중 하나일 것
-            return 0;
-        }
-        else if(num <= per + destroy) { //성공이 아닐 경우 파괴 리턴 === 이 경우 num은 31 ~ 100중 하나 일 것
-            return 2;
-        }
-        else { //성공과 파괴 둘 다 아닐 경우 실패 리턴
-            return 1;
-        }
-    };
-
-    const enforceTry = (per: number, destroy: number, current: number) => {
-        if (event['15-16'] || event['샤이닝 스타포스']) {
-            //이벤트라면
-            if (current === 5 || current === 10 || current === 15) {
-                if (
-                    window.confirm(
-                        `${current} -> ${
-                            current + 1
-                        } 강화 소모메소는 ${meso}메소이며 강화 확률은 100%입니다. 강화하시겠습니까?`
-                    )
-                ) {
-                    window.alert('강화에 성공하셨습니다.');
-                    enforceResult(current, 0);
-                    return;
-                }
-            }
-        }
-        if (chance === 2) {
-            if (
-                window.confirm(
-                    `찬스타임! ${current} -> ${
-                        current + 1
-                    } 강화 소모메소는 ${meso}메소이며 강화 확률은 100%입니다. 강화하시겠습니까?`
-                )
-            ) {
-                window.alert('강화에 성공하셨습니다.');
-                enforceResult(current, 0);
-            }
-        } else {
-            if (
-                window.confirm(
-                    `${current} -> ${
-                        current + 1
-                    } 강화 소모메소는 ${meso}메소이며 강화 확률은 ${percentage}%입니다. 강화하시겠습니까?`
-                )
-            ) {
-                const success =
-                    destoryguard && (current === 15 || current === 16)
-                        ? enforce(per, 0)
-                        : enforce(per, destroy);
-                if (success === 0) {
-                    window.alert('강화에 성공하셨습니다.');
-                } else if (success === 1) {
-                    window.alert('강화에 실패하셨습니다.');
-                } else {
-                    window.alert(`장비가 파괴되었습니다.`);
-                }
-                enforceResult(current, success);
-            }
-        }
-    };
-
-    const enforceResult = (current: number, success: 0 | 1 | 2) => {
-        if (success === 0) {
-            //성공했을때
-            setCurrent((prev) => prev + 1);
-            setChance(0);
-            setSuccess((prev) => prev + 1);
-        } else if (success === 1) {
-            //실패했을 때
-            if (current > 15 && current !== 20) {
-                //15성 이상이며 20성이 아니라면 하락하지 않음
-                setCurrent((prev) => prev - 1);
-                if (chance === 0) {
-                    setChance(1);
-                } else if (chance === 1) {
-                    setChance(2);
-                }
-            }
-            setFail((prev) => prev + 1);
-        } else {
-            //파괴됐을때 === 자동복구
-            setCurrent(12);
-            setChance(0);
-            setCurrentmeso((prev) => prev + spare);
-            setDestroynum((prev) => prev + 1);
-        }
-        setCurrentmeso((prev) => prev + meso);
-        setReinforcenum((prev) => prev + 1);
-        renewalDestoryGuard(current, success);
-    };
-
-    const enforceMeso = (current: number, simulate: boolean): number => {
+    const enforceMeso = (current: number): number => {
         return Math.floor(
             eventmeso(
                 discountmeso(
-                    onDestroyGuard(consume(current, level), current, simulate),
+                    onDestroyGuard(consume(current, level), current),
                     current
                 )
             )
@@ -236,23 +135,10 @@ const StarForce = () => {
     const renewal = (current: number, level: number) => {
         //레벨과 강화수치에 따라 소모 메소, 강화 확률, 파괴 확률 초기화
         setPercentage(rate(current));
-        setMeso(enforceMeso(current, false));
+        setMeso(enforceMeso(current));
         setDestroy(destroypercent(current));
     };
 
-    const renewalDestoryGuard = (current: number, success: 0 | 1 | 2) => {
-        //강화 성공, 실패에 따라 파괴방지 초기화
-        if (success === 0 && current === 16) {
-            //성공했으며 17성을 갔을 경우 == current 갱신 전이므로 16이어야함
-            setDestroyGuard(false); //파괴방지 off
-        } else if (success === 1 && current === 17) {
-            //실패했으며 16성을 갔을 경우 마찬가지로 갱신전이므로 17이어야함
-            setDestroyGuard(true);
-        } else if (success === 2) {
-            //파괴되었을 경우 off
-            setDestroyGuard(false);
-        }
-    };
 
     const rate = (current: number): number => {
         //현재 강화수치에 따라 강화확률 반환
@@ -293,16 +179,9 @@ const StarForce = () => {
     const onDestroyGuard = (
         meso: number,
         current: number,
-        simulate: boolean
     ): number => {
-        if (simulate) {
-            if ((current === 15 || current === 16) && simulateguard) {
-                return meso * 2;
-            }
-        } else {
-            if ((current === 15 || current === 16) && destoryguard) {
-                return meso * 2;
-            }
+        if ((current === 15 || current === 16) && simulateguard) {
+            return meso * 2;
         }
         return meso;
     };
@@ -470,7 +349,6 @@ const StarForce = () => {
             event: event,
             simulateguard: simulateguard,
             spare: spare,
-            destoryguard: destoryguard,
             discount: discount,
             level: level,
             start: start,
@@ -525,7 +403,7 @@ const StarForce = () => {
 
     useEffect(() => {
         renewal(current, level);
-    }, [current, level, destoryguard, discount, event]);
+    }, [current, level, discount, event]);
 
     useEffect(() => {
         onAverageMeso();
