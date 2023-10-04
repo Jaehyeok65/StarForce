@@ -173,11 +173,11 @@ self.onmessage = (e) => {
             return false;
         }
         //파괴방지를 체크했다는 것
-        if (success === 0 && current === 16) {
-            //성공했으며 17성을 갔을 경우 == current 갱신 전이므로 16이어야함
+        if (success === 0 && current === 17) {
+            //성공했으며 17성을 갔을 경우 == 이미 갱신되었으므로 17이어야함
             return false;
-        } else if (success === 1 && current === 17) {
-            //실패했으며 16성을 갔을 경우 마찬가지로 갱신전이므로 17이어야함
+        } else if (success === 1 && current === 16) {
+            //실패했으며 16성을 갔을 경우 마찬가지로 갱신되었으므로 16이어야함
             return true;
         } else if (success === 2) {
             //파괴되었을 경우 off
