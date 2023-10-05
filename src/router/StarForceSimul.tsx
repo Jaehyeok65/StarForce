@@ -363,7 +363,7 @@ const StarForce = () => {
             } else if (typeof e.data === 'object') {
                 onSetResult(e.data);
                 setProgress(0); //완료되었기 때문에 진행상황 다시 0으로 초기화
-                setTotalSimulate((prev) => prev + num);
+                setTotalSimulate(num);
                 setToggle((prev) => !prev);
                 setCalculating((prev) => !prev);
             }
@@ -371,11 +371,11 @@ const StarForce = () => {
     };
 
     const onSetResult = (result: simulateresult) => {
-        setSuccess((prev) => prev + result.success);
-        setCurrentmeso((prev) => prev + result.currentmeso);
-        setFail((prev) => prev + result.fail);
-        setDestroynum((prev) => prev + result.destorynum);
-        setReinforcenum((prev) => prev + result.reinforcenum);
+        setSuccess(result.success);
+        setCurrentmeso(result.currentmeso);
+        setFail(result.fail);
+        setDestroynum(result.destorynum);
+        setReinforcenum(result.reinforcenum);
         setCurrent(result.current);
     };
 
@@ -407,7 +407,7 @@ const StarForce = () => {
 
     useEffect(() => {
         onAverageMeso();
-    }, [totalsimulate]);
+    }, [currentmeso]);
 
     return (
         <Background>
