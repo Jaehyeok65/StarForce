@@ -167,20 +167,16 @@ self.onmessage = (e) => {
         );
     };
 
-    const renewalDestoryGuard = (current,success,simulateguard) => {
+    const renewalDestoryGuard = (current, simulateguard) => {
         //강화 성공, 실패에 따라 파괴방지 여부를 리턴함
-        if(!simulateguard) { //파괴방지를 체크하지 않았다면 무조건 false리턴
+        if (!simulateguard) {
+            //파괴방지를 체크하지 않았다면 무조건 false리턴
             return false;
         }
         //파괴방지를 체크했다는 것
-        if (success === 0 && current === 17) {
-            //성공했으며 17성을 갔을 경우 == 이미 갱신되었으므로 17이어야함
-            return false;
-        } else if (success === 1 && current === 16) {
-            //실패했으며 16성을 갔을 경우 마찬가지로 갱신되었으므로 16이어야함
+        if (current === 15 || current === 16) {
             return true;
-        } else if (success === 2) {
-            //파괴되었을 경우 off
+        } else {
             return false;
         }
     };
@@ -196,12 +192,12 @@ self.onmessage = (e) => {
         let per = rate(currents);
         let i = 0;
         let chance = 0; //찬스타임 선언
-        let tmpsimulateguard = simulateguard; //지역변수로 옮겨와서 컨트롤함
-        //currents = currents === start ? 0 : currents;
+        let tmpsimulateguard = false;
         //한번에 계산 후 setState 호출하기 위한 지역변수 선언
 
         while (currents < goal) {
             //여기서 찬스타임과 파괴방지 자동화를 포함해야함
+            tmpsimulateguard = renewalDestoryGuard(currents, simulateguard);
             if (
                 (event['15-16'] || event['샤이닝 스타포스']) &&
                 (currents === 5 || currents === 10 || currents === 15)
@@ -241,7 +237,6 @@ self.onmessage = (e) => {
             }
             count = count + 1;
             per = rate(currents); //current가 바뀌었으므로 확률 재갱신
-            tmpsimulateguard = renewalDestoryGuard(currents,i,simulateguard);
             destroy = destroypercent(currents);
         }
 
