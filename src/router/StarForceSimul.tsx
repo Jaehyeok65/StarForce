@@ -2,6 +2,7 @@ import Modal from 'component/Modal';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Loading from 'component/Loading';
+import ModalSimul from 'component/ModalSimul';
 
 const StarBack = styled.div`
     width: 100%;
@@ -86,6 +87,14 @@ type simulateresult = {
     current: number;
 };
 
+type simul = {
+    done: boolean;
+    needmeso: number;
+    name: string;
+    consumemeso: number;
+    key: number;
+};
+
 const StarForce = () => {
     const [percentage, setPercentage] = useState<number>(30); //현재 강화 확률
     const [current, setCurrent] = useState<number>(0); //현재 강화수치
@@ -119,7 +128,8 @@ const StarForce = () => {
     const [toggle, setToggle] = useState<boolean>(false);
     const [calculating, setCalculating] = useState<boolean>(false);
     const [progress, setProgress] = useState<number>(0);
-
+    const [simulstore, setSimulStore] = useState<simul[]>([]); //로컬스토리지 저장소와 관련된 상태
+    const [simulstoretoggle, setSimulStoreToggle] = useState<boolean>(false);
 
     const enforceMeso = (current: number): number => {
         return Math.floor(
@@ -138,7 +148,6 @@ const StarForce = () => {
         setMeso(enforceMeso(current));
         setDestroy(destroypercent(current));
     };
-
 
     const rate = (current: number): number => {
         //현재 강화수치에 따라 강화확률 반환
@@ -176,10 +185,7 @@ const StarForce = () => {
         }
     };
 
-    const onDestroyGuard = (
-        meso: number,
-        current: number,
-    ): number => {
+    const onDestroyGuard = (meso: number, current: number): number => {
         if ((current === 15 || current === 16) && simulateguard) {
             return meso * 2;
         }
@@ -397,8 +403,190 @@ const StarForce = () => {
         setReinforcenum(0);
     };
 
+    const onAddSimulResult = (data: simul) => {
+        //시뮬레이터 결과를 저장함
+        const tmp = window.localStorage.getItem('simul'); //스토리지에 저장된 결과를 가져옴
+        const tmpkey = window.localStorage.getItem('simulkey');
+        let key = 1;
+        if (tmpkey) {
+            key = Number(JSON.parse(tmpkey));
+        }
+        if (tmp) {
+            //결과가 있다면 parse
+            const prev = JSON.parse(tmp); //스토리지에서 가져온 시뮬레이터 결과 정보 === 배열
+            if (Array.isArray(prev)) {
+                //기존에 가져온 것이 배열이라면
+                const newdata = { ...data, key: key };
+                const next = [...prev, newdata]; //데이터를 추가한 후
+                window.localStorage.setItem('simul', JSON.stringify(next)); //배열 데이터 갱신
+                setSimulStore(next);
+            }
+        } else {
+            //결과가 없다면 새로 추가해야함
+            const newdata = { ...data, key: key };
+            const next = [newdata];
+            window.localStorage.setItem('simul', JSON.stringify(next)); //배열 데이터 갱신
+            setSimulStore(next);
+        }
+        window.localStorage.setItem('simulkey', JSON.stringify(++key));
+        window.alert('저장되었습니다.');
+    };
+
+    const onClickSimulStore = () => {
+        const name = window.prompt('저장할 아이템의 이름을 입력해주세요.');
+        if (name) {
+            if (simulatemeso === 0) {
+                window.alert('먼저 스타포스 시뮬레이터를 이용해주세요.');
+                return;
+            } else if (totalsimulate < 100000) {
+                const confirm = window.confirm(
+                    '시뮬레이팅 횟수가 10만회보다 작다면 결과가 부정확할 수 있습니다. 결과를 저장하시겠습니까?'
+                );
+                if (!confirm) {
+                    //아니오를 선택한다면 return
+                    return;
+                }
+            }
+            const data: simul = {
+                done: false,
+                needmeso: simulatemeso,
+                name: name,
+                consumemeso: 0,
+                key: 0,
+            };
+            onAddSimulResult(data);
+        }
+    };
+
+    const onFetchSimulResult = () => {
+        //초기에 스토리지에 저장된 결과를 가져옴
+        const tmp = window.localStorage.getItem('simul');
+        if (tmp) {
+            const data = JSON.parse(tmp);
+            if (Array.isArray(data)) {
+                //스토리지에 데이터가 존재하며 배열이라면
+                setSimulStore(data);
+            }
+        }
+    };
+
+    const onAddSimulateConsumeMeso = (num: number) => {
+        const consume = window.prompt('소모 메소를 입력해주세요.');
+        if (consume) {
+            const check = /^[0-9]{1,100}$/g;
+            if (check.test(consume)) {
+                //정규식 테스트를 통과한다면 숫자만 입력한 것
+                const consumemeso = Number(consume);
+                onUpdateSimulateConumeMeso(num, consumemeso);
+            } else {
+                window.alert('숫자만 입력 가능합니다.');
+                return;
+            }
+        }
+    };
+
+    const onNeedMeso = () : number => {
+        const tmp = window.localStorage.getItem('simul');
+        if (tmp) {
+            const item = JSON.parse(tmp);
+            if (Array.isArray(item)) {
+                let need = 0;
+                item.forEach(items => need = need + items.needmeso);
+                return need;
+            }
+        }
+        return 0;
+    }
+
+    const onConsumeMeso = () : number => {
+        const tmp = window.localStorage.getItem('simul');
+        if (tmp) {
+            const item = JSON.parse(tmp);
+            if (Array.isArray(item)) {
+                let consume = 0;
+                item.forEach(items => {
+                    if(items.done) {
+                        consume = consume + items.consumemeso;
+                    }
+                })
+                return consume;
+            }
+        }
+        return 0;
+    }
+
+    const onUpdateSimulateConumeMeso = (num: number, consumemeso: number) => {
+        const tmp = window.localStorage.getItem('simul');
+        if (tmp) {
+            const item = JSON.parse(tmp);
+            if (Array.isArray(item)) {
+                const index = item.findIndex((data) => data.key === num);
+                if (index !== -1) {
+                    //index가 -1이 아니라는 것은 데이터가 있다는 것
+                    const newdata = {
+                        ...item[index],
+                        consumemeso: consumemeso,
+                        done : true
+                    };
+                    const array = item.map((items,indexs) =>
+                        index === indexs ? newdata : items
+                    );
+                    window.localStorage.setItem('simul',JSON.stringify(array));
+                    setSimulStore(array);
+                }
+            }
+        }
+    };
+
+    const onCheckSimulResult = (num : number) => {
+        const tmp = window.localStorage.getItem('simul');
+        if (tmp) {
+            const item = JSON.parse(tmp);
+            if (Array.isArray(item)) {
+                const index = item.findIndex((data) => data.key === num);
+                if (index !== -1) {
+                    //index가 -1이 아니라는 것은 데이터가 있다는 것
+                    const newdata = {
+                        ...item[index],
+                        consumemeso: 0,
+                        done : false
+                    };
+                    const array = item.map((items,indexs) =>
+                        index === indexs ? newdata : items
+                    );
+                    window.localStorage.setItem('simul',JSON.stringify(array));
+                    setSimulStore(array);
+                }
+            }
+        }
+    }
+
+    const onDeleteSimulResult = (num : number) => {
+        const confirm = window.confirm("저장된 정보를 삭제하시겠습니까?");
+        if(!confirm) { //아니오를 누르면 리턴
+            return;
+        }
+        const tmp = window.localStorage.getItem('simul');
+        if (tmp) {
+            const item = JSON.parse(tmp);
+            if (Array.isArray(item)) {
+                const index = item.findIndex((data) => data.key === num);
+                if(index !== -1) {
+                    const newarray = item.filter(data => data.key !== num);
+                    window.localStorage.setItem('simul',JSON.stringify(newarray));
+                    setSimulStore(newarray);
+                }
+            }
+        }
+    }
+
+    const onClickSimulStoreToggle = () => {
+        setSimulStoreToggle((prev) => !prev);
+    };
+
     useEffect(() => {
         renewal(current, level);
+        onFetchSimulResult();
     }, []);
 
     useEffect(() => {
@@ -539,6 +727,16 @@ const StarForce = () => {
                                 {formatting(simulatemeso)}
                                 메소
                             </div>
+                            <div>
+                                <StarBtn onClick={onClickSimulStore}>
+                                    저장하기
+                                </StarBtn>
+                            </div>
+                            <div>
+                                <StarBtn onClick={onClickSimulStoreToggle}>
+                                    저장 목록 보기
+                                </StarBtn>
+                            </div>
                         </Star>
                         <Modal toggle={toggle}>
                             <ModalContent>
@@ -567,6 +765,17 @@ const StarForce = () => {
                                 </StarBtn>
                             </ModalContent>
                         </Modal>
+                        <ModalSimul
+                            toggle={simulstoretoggle}
+                            simulstore={simulstore}
+                            onClickSimulStoreToggle={onClickSimulStoreToggle}
+                            formatting={formatting}
+                            onAddSimulateConsumeMeso={onAddSimulateConsumeMeso}
+                            onDeleteSimulResult={onDeleteSimulResult}
+                            onCheckSimulResult={onCheckSimulResult}
+                            onNeedMeso={onNeedMeso}
+                            onConsumeMeso={onConsumeMeso}
+                        />
                     </StarBack>
                 )}
             </Back>
