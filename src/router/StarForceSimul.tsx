@@ -485,31 +485,63 @@ const StarForce = () => {
         }
     };
 
-    const onNeedMeso = () : number => {
+    const onNeedMeso = (): number => {
         const tmp = window.localStorage.getItem('simul');
         if (tmp) {
             const item = JSON.parse(tmp);
             if (Array.isArray(item)) {
                 let need = 0;
-                item.forEach(items => need = need + items.needmeso);
+                item.forEach((items) => (need = need + items.needmeso));
                 return need;
             }
         }
         return 0;
-    }
+    };
 
-    const onConsumeMeso = () : number => {
+    const onConsumeMeso = (): number => {
         const tmp = window.localStorage.getItem('simul');
         if (tmp) {
             const item = JSON.parse(tmp);
             if (Array.isArray(item)) {
                 let consume = 0;
-                item.forEach(items => {
-                    if(items.done) {
-                        consume = consume + items.consumemeso;
-                    }
-                })
+                item.forEach((items) => {
+                    consume = consume + items.consumemeso;
+                });
                 return consume;
+            }
+        }
+        return 0;
+    };
+
+    const onCheckedItem = () : number => {
+        const tmp = window.localStorage.getItem('simul');
+        if (tmp) {
+            const item = JSON.parse(tmp);
+            if (Array.isArray(item)) {
+                let checked = 0;
+                item.forEach((items) => {
+                    if(items.done) {
+                        checked = checked + 1;
+                    }
+                });
+                return checked;
+            }
+        }
+        return 0;
+    }
+
+    const onUnCheckedItem = () : number => {
+        const tmp = window.localStorage.getItem('simul');
+        if (tmp) {
+            const item = JSON.parse(tmp);
+            if (Array.isArray(item)) {
+                let checked = 0;
+                item.forEach((items) => {
+                    if(!items.done) {
+                        checked = checked + 1;
+                    }
+                });
+                return checked;
             }
         }
         return 0;
@@ -526,19 +558,18 @@ const StarForce = () => {
                     const newdata = {
                         ...item[index],
                         consumemeso: consumemeso,
-                        done : true
                     };
-                    const array = item.map((items,indexs) =>
+                    const array = item.map((items, indexs) =>
                         index === indexs ? newdata : items
                     );
-                    window.localStorage.setItem('simul',JSON.stringify(array));
+                    window.localStorage.setItem('simul', JSON.stringify(array));
                     setSimulStore(array);
                 }
             }
         }
     };
 
-    const onCheckSimulResult = (num : number) => {
+    const onCheckSimulResult = (num: number) => {
         const tmp = window.localStorage.getItem('simul');
         if (tmp) {
             const item = JSON.parse(tmp);
@@ -548,22 +579,22 @@ const StarForce = () => {
                     //index가 -1이 아니라는 것은 데이터가 있다는 것
                     const newdata = {
                         ...item[index],
-                        consumemeso: 0,
-                        done : false
+                        done: !item[index].done,
                     };
-                    const array = item.map((items,indexs) =>
+                    const array = item.map((items, indexs) =>
                         index === indexs ? newdata : items
                     );
-                    window.localStorage.setItem('simul',JSON.stringify(array));
+                    window.localStorage.setItem('simul', JSON.stringify(array));
                     setSimulStore(array);
                 }
             }
         }
-    }
+    };
 
-    const onDeleteSimulResult = (num : number) => {
-        const confirm = window.confirm("저장된 정보를 삭제하시겠습니까?");
-        if(!confirm) { //아니오를 누르면 리턴
+    const onDeleteSimulResult = (num: number) => {
+        const confirm = window.confirm('저장된 정보를 삭제하시겠습니까?');
+        if (!confirm) {
+            //아니오를 누르면 리턴
             return;
         }
         const tmp = window.localStorage.getItem('simul');
@@ -571,14 +602,17 @@ const StarForce = () => {
             const item = JSON.parse(tmp);
             if (Array.isArray(item)) {
                 const index = item.findIndex((data) => data.key === num);
-                if(index !== -1) {
-                    const newarray = item.filter(data => data.key !== num);
-                    window.localStorage.setItem('simul',JSON.stringify(newarray));
+                if (index !== -1) {
+                    const newarray = item.filter((data) => data.key !== num);
+                    window.localStorage.setItem(
+                        'simul',
+                        JSON.stringify(newarray)
+                    );
                     setSimulStore(newarray);
                 }
             }
         }
-    }
+    };
 
     const onClickSimulStoreToggle = () => {
         setSimulStoreToggle((prev) => !prev);
@@ -775,6 +809,8 @@ const StarForce = () => {
                             onCheckSimulResult={onCheckSimulResult}
                             onNeedMeso={onNeedMeso}
                             onConsumeMeso={onConsumeMeso}
+                            onCheckedItem={onCheckedItem}
+                            onUnCheckedItem={onUnCheckedItem}
                         />
                     </StarBack>
                 )}

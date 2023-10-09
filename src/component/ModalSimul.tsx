@@ -152,6 +152,8 @@ interface ModalSimulProps {
     onCheckSimulResult : (num : number) => void;
     onNeedMeso : () => number;
     onConsumeMeso : () => number;
+    onCheckedItem : () => number;
+    onUnCheckedItem : () => number;
 };
 
 const ModalSimul: React.FC<ModalSimulProps> = ({
@@ -163,7 +165,9 @@ const ModalSimul: React.FC<ModalSimulProps> = ({
     onDeleteSimulResult,
     onCheckSimulResult,
     onNeedMeso,
-    onConsumeMeso
+    onConsumeMeso,
+    onCheckedItem,
+    onUnCheckedItem
 }) => {
     return (
         <Modal toggle={toggle}>
@@ -208,6 +212,10 @@ const ModalSimul: React.FC<ModalSimulProps> = ({
                 <div>{formatting(onNeedMeso())}&nbsp;메소</div>
                 <div>총 소모 메소</div>
                 <div>{formatting(onConsumeMeso())}&nbsp;메소</div>
+                <div>완료 아이템 수</div>
+                <div>{onCheckedItem()}개</div>
+                <div>미완료 아이템 수</div>
+                <div>{onUnCheckedItem()}개</div>
             </Footer>
             <End> <StarBtn onClick={onClickSimulStoreToggle}>닫기</StarBtn></End>
         </Modal>
