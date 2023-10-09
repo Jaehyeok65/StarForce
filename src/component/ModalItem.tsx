@@ -99,7 +99,11 @@ const ModalItem: React.FC<ModalStorageProps> = ({
                         <div>구매 날짜</div>
                     </Text>
                 </TodoItemBlock>
-                {itemarray.map((item, index) => (
+                {itemarray && itemarray.sort((a,b) => {
+                    if(a.date > b.date) return 1;
+                    if(a.date < b.date) return -1;
+                    return 0;
+                }).map((item, index) => (
                     <TodoItemBlock key={index}>
                         <Text>
                             <div>{item.name && item.name}</div>
