@@ -7,6 +7,8 @@ import ModalErda from 'component/ModalErda';
 import ModalStorage from 'component/ModalStorage';
 import ModalWeekly from 'component/ModalWeekly';
 import ModalCompare from 'component/ModalCompare';
+import ModalAddItem from 'component/ModalAddItem';
+import ModalItem from 'component/ModalItem';
 
 const Head = styled.div`
     display: flex;
@@ -282,6 +284,12 @@ const array: Boss[] = [
     },
 ];
 
+type Item = {
+    name: string;
+    price: number;
+    date: string;
+};
+
 const Meso = () => {
     const [day, setDay] = useState<Date>(new Date());
     const [property, setProperty] = useState<number>(0); //재획수익
@@ -325,6 +333,14 @@ const Meso = () => {
     const [date, setDate] = useState<Date | null>(null);
     const [diff, setDiff] = useState<number>(0);
     const [prev, setPrev] = useState<Date | null>(null);
+    const [additemtoggle, setAddItemToggle] = useState<boolean>(false);
+    const [itemtoggle, setItemToggle] = useState<boolean>(false);
+    const [item, setItem] = useState<Item>({
+        name: '',
+        price: 0,
+        date: '',
+    });
+    const [itemarray, setItemArray] = useState<Array<Item>>([]);
 
     useEffect(() => {
         //day가 바뀌면 그에 맞춰 로컬스토리지에서 해당 날짜 데이터를 가져옴
@@ -357,7 +373,7 @@ const Meso = () => {
 
     useEffect(() => {
         setOnLoad(true);
-
+        onFetchItemArray();
         return () => {
             setOnLoad(false);
         };
@@ -755,6 +771,9 @@ const Meso = () => {
 
     const src6 =
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuo6kAXQaW8WBvl6WVxUJLiXlSICKu7sLx2A&usqp=CAU';
+
+    const src7 =
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfA6w5i-76Djn4fnmNAAIYYEK9yuoiXJchSA&usqp=CAU';
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
@@ -1188,6 +1207,72 @@ const Meso = () => {
         setBoss(tmp);
     };
 
+    const onItemChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setItem((prev) => {
+            return {
+                ...prev,
+                [name]: value,
+            };
+        });
+    };
+
+    const onItemStore = () => {
+        const tmp = window.localStorage.getItem('item');
+        if (tmp) {
+            //이미 존재한다면 배열에 추가
+            const result = JSON.parse(tmp);
+            if (Array.isArray(result)) {
+                const dayAddItem = {
+                    ...item,
+                    date: day.toLocaleDateString('ko-kr'),
+                };
+                const newitem = [...result, dayAddItem];
+                window.localStorage.setItem('item', JSON.stringify(newitem));
+                setItemArray(newitem);
+            }
+        } else {
+            const dayAddItem = {
+                ...item,
+                date: day.toLocaleDateString('ko-kr'),
+            };
+            window.localStorage.setItem('item', JSON.stringify([dayAddItem]));
+            setItemArray([dayAddItem]);
+        }
+        setItem({
+            name: '',
+            price: 0,
+            date: '',
+        });
+        setAddItemToggle((prev) => !prev);
+    };
+
+    const onFetchItemArray = () => {
+        //초기에 스토리지에 저장된 결과를 가져옴
+        const tmp = window.localStorage.getItem('item');
+        if (tmp) {
+            const data = JSON.parse(tmp);
+            if (Array.isArray(data)) {
+                //스토리지에 데이터가 존재하며 배열이라면
+                setItemArray(data);
+            }
+        }
+    };
+
+    const onItemConsumeMeso = (): number => {
+        const tmp = window.localStorage.getItem('item');
+        if (tmp) {
+            const data = JSON.parse(tmp);
+            if (Array.isArray(data)) {
+                //스토리지에 데이터가 존재하며 배열이라면
+                let meso = 0;
+                data.forEach((item) => (meso = meso + Number(item.price)));
+                return meso;
+            }
+        }
+        return 0;
+    };
+
     const onRebootChange = () => {
         setReboot((prev) => !prev);
     };
@@ -1266,6 +1351,24 @@ const Meso = () => {
                             </DivBtn>
                             <DivBtn onClick={() => setCompare((prev) => !prev)}>
                                 비교
+                            </DivBtn>
+                        </div>
+                    </Content>
+                    <Content>
+                        <div>
+                            <img src={src7} width="50px" alt="이미지" />
+                            &nbsp; 아이템 구매 내역 &nbsp; &nbsp;
+                            <DivBtn
+                                onClick={() =>
+                                    setAddItemToggle((prev) => !prev)
+                                }
+                            >
+                                추가
+                            </DivBtn>
+                            <DivBtn
+                                onClick={() => setItemToggle((prev) => !prev)}
+                            >
+                                보기
                             </DivBtn>
                         </div>
                     </Content>
@@ -1379,6 +1482,21 @@ const Meso = () => {
                 date={date}
                 onDateChange={onDateChange}
                 formatting={formatting}
+            />
+            <ModalAddItem
+                toggle={additemtoggle}
+                item={item}
+                onChange={onItemChange}
+                onCancle={() => setAddItemToggle((prev) => !prev)}
+                formatting={formatting}
+                onStore={onItemStore}
+            />
+            <ModalItem
+                toggle={itemtoggle}
+                onCancle={() => setItemToggle((prev) => !prev)}
+                itemarray={itemarray}
+                formatting={formatting}
+                onItemConsumeMeso={onItemConsumeMeso}
             />
         </React.Fragment>
     );
