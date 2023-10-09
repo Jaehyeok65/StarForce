@@ -93,7 +93,7 @@ const ModalAddItem: React.FC<ModalAddItemProps> = ({
                     />
                 </div>
                 <Hide>숨김</Hide>
-                <div>{formatting(item.price)}</div>
+                <div>{item.price && formatting(item.price)}</div>
             </ModalContent>
             <Head>
                 <Button width="100px" onClick={onStore}>
