@@ -288,6 +288,7 @@ type Item = {
     name: string;
     price: number;
     date: string;
+    buy : boolean;
 };
 
 const Meso = () => {
@@ -339,8 +340,10 @@ const Meso = () => {
         name: '',
         price: 0,
         date: '',
+        buy : false
     });
     const [itemarray, setItemArray] = useState<Array<Item>>([]);
+    const [buy, setBuy] = useState<boolean>(false);
 
     useEffect(() => {
         //day가 바뀌면 그에 맞춰 로컬스토리지에서 해당 날짜 데이터를 가져옴
@@ -1217,7 +1220,7 @@ const Meso = () => {
         });
     };
 
-    const onItemStore = () => {
+    const onBuyItemStore = () => {
         const tmp = window.localStorage.getItem('item');
         if (tmp) {
             //이미 존재한다면 배열에 추가
@@ -1226,6 +1229,7 @@ const Meso = () => {
                 const dayAddItem = {
                     ...item,
                     date: day.toLocaleDateString('ko-kr'),
+                    buy : buy
                 };
                 const newitem = [...result, dayAddItem];
                 window.localStorage.setItem('item', JSON.stringify(newitem));
@@ -1235,6 +1239,7 @@ const Meso = () => {
             const dayAddItem = {
                 ...item,
                 date: day.toLocaleDateString('ko-kr'),
+                buy : buy
             };
             window.localStorage.setItem('item', JSON.stringify([dayAddItem]));
             setItemArray([dayAddItem]);
@@ -1243,6 +1248,40 @@ const Meso = () => {
             name: '',
             price: 0,
             date: '',
+            buy : false
+        });
+        setAddItemToggle((prev) => !prev);
+    };
+
+    const onSellItemStore = () => {
+        const tmp = window.localStorage.getItem('item');
+        if (tmp) {
+            //이미 존재한다면 배열에 추가
+            const result = JSON.parse(tmp);
+            if (Array.isArray(result)) {
+                const dayAddItem = {
+                    ...item,
+                    date: day.toLocaleDateString('ko-kr'),
+                    buy : buy
+                };
+                const newitem = [...result, dayAddItem];
+                window.localStorage.setItem('item', JSON.stringify(newitem));
+                setItemArray(newitem);
+            }
+        } else {
+            const dayAddItem = {
+                ...item,
+                date: day.toLocaleDateString('ko-kr'),
+                buy : buy
+            };
+            window.localStorage.setItem('item', JSON.stringify([dayAddItem]));
+            setItemArray([dayAddItem]);
+        }
+        setItem({
+            name: '',
+            price: 0,
+            date: '',
+            buy : false
         });
         setAddItemToggle((prev) => !prev);
     };
@@ -1357,13 +1396,22 @@ const Meso = () => {
                     <Content>
                         <div>
                             <img src={src7} width="50px" alt="이미지" />
-                            &nbsp; 아이템 구매 내역 &nbsp; &nbsp;
+                            &nbsp; 아이템 구매 및 판매 내역 &nbsp; &nbsp;
                             <DivBtn
-                                onClick={() =>
-                                    setAddItemToggle((prev) => !prev)
-                                }
+                                onClick={() => {
+                                    setAddItemToggle((prev) => !prev);
+                                    setBuy(true);
+                                }}
                             >
-                                추가
+                                구매
+                            </DivBtn>
+                            <DivBtn
+                                onClick={() => {
+                                    setAddItemToggle((prev) => !prev);
+                                    setBuy(false);
+                                }}
+                            >
+                                판매
                             </DivBtn>
                             <DivBtn
                                 onClick={() => setItemToggle((prev) => !prev)}
@@ -1489,7 +1537,9 @@ const Meso = () => {
                 onChange={onItemChange}
                 onCancle={() => setAddItemToggle((prev) => !prev)}
                 formatting={formatting}
-                onStore={onItemStore}
+                onBuyStore={onBuyItemStore}
+                onSellStore={onSellItemStore}
+                buy={buy}
             />
             <ModalItem
                 toggle={itemtoggle}

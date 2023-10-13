@@ -55,24 +55,28 @@ type Item = {
 
 interface ModalAddItemProps {
     toggle: boolean;
+    buy : boolean;
     item: Item;
     onCancle: () => void;
     formatting: (param: number) => string;
-    onStore: () => void;
+    onBuyStore: () => void;
+    onSellStore : () => void;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const ModalAddItem: React.FC<ModalAddItemProps> = ({
     item,
     toggle,
+    buy,
     onCancle,
     formatting,
-    onStore,
+    onBuyStore,
     onChange,
+    onSellStore
 }) => {
     return (
         <Modal toggle={toggle}>
-            <ModalHead>구매한 아이템의 이름과 가격을 입력해주세요.</ModalHead>
+            <ModalHead>{buy ? '구매' : '판매'}한 아이템의 이름과 가격을 입력해주세요.</ModalHead>
             <ModalContent>
                 <div>이름 : &nbsp;&nbsp;</div>
                 <div>
@@ -96,7 +100,7 @@ const ModalAddItem: React.FC<ModalAddItemProps> = ({
                 <div>{item.price > 0 && formatting(item.price)}</div>
             </ModalContent>
             <Head>
-                <Button width="100px" onClick={onStore}>
+                <Button width="100px" onClick={buy ? onBuyStore : onSellStore}>
                     저장하기
                 </Button>
                 <Button width="100px" onClick={onCancle}>
