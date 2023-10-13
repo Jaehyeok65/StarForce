@@ -35,7 +35,7 @@ const Footer = styled.div`
     font-weight: bold;
     font-size: 12px;
     padding-bottom: 5%;
-    place-items : center;
+    place-items: center;
 `;
 
 const Text = styled.div`
@@ -89,7 +89,7 @@ interface ModalStorageProps {
     onCancle: () => void;
     formatting: (param: number) => string;
     onItemBuyMeso: () => number;
-    onItemSellMeso : () => number;
+    onItemSellMeso: () => number;
     onBuyClick: () => void;
     onSellClick: () => void;
 }
@@ -123,28 +123,40 @@ const ModalItem: React.FC<ModalStorageProps> = ({
                 {itemarray &&
                     itemarray
                         .sort((a, b) => {
-                            if (a.date > b.date) return 1;
-                            if (a.date < b.date) return -1;
+                            const dateA = new Date(a.date);
+                            const dateB = new Date(b.date);
+
+                            if (dateA > dateB) return 1;
+                            if (dateA < dateB) return -1;
                             return 0;
                         })
-                        .map((item, index) => (
-                            <TodoItemBlock key={index}>
-                                {buy === item.buy && (
-                                    <Text>
-                                        <div>{item.name && item.name}</div>
-                                        <div>
-                                            {item.price &&
-                                                formatting(item.price)}
-                                        </div>
-                                        <div>{item.date && item.date}</div>
-                                    </Text>
-                                )}
-                            </TodoItemBlock>
-                        ))}
+                        .map((item, index) => {
+                            if (item.buy === buy) {
+                                return (
+                                    <TodoItemBlock key={index}>
+                                        <Text>
+                                            <div>{item.name && item.name}</div>
+                                            <div>
+                                                {item.price &&
+                                                    formatting(item.price)}
+                                            </div>
+                                            <div>{item.date && item.date}</div>
+                                        </Text>
+                                    </TodoItemBlock>
+                                );
+                            } else {
+                                return null; // 판매 아이템을 숨기기 위해 null 반환
+                            }
+                        })}
             </Block>
             <Footer>
                 <div>총 {buy ? '구매 ' : '판매 '} 메소 : </div>
-                <div>{buy ? formatting(onItemBuyMeso()) : formatting(onItemSellMeso())}&nbsp;메소</div>
+                <div>
+                    {buy
+                        ? formatting(onItemBuyMeso())
+                        : formatting(onItemSellMeso())}
+                    &nbsp;메소
+                </div>
             </Footer>
             <End>
                 {' '}
