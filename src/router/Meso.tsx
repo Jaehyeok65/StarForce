@@ -343,7 +343,7 @@ const Meso = () => {
         buy : false
     });
     const [itemarray, setItemArray] = useState<Array<Item>>([]);
-    const [buy, setBuy] = useState<boolean>(false);
+    const [buy, setBuy] = useState<boolean>(true);
 
     useEffect(() => {
         //day가 바뀌면 그에 맞춰 로컬스토리지에서 해당 날짜 데이터를 가져옴
@@ -1298,14 +1298,36 @@ const Meso = () => {
         }
     };
 
-    const onItemConsumeMeso = (): number => {
+    const onItemBuyMeso = (): number => {
         const tmp = window.localStorage.getItem('item');
         if (tmp) {
             const data = JSON.parse(tmp);
             if (Array.isArray(data)) {
                 //스토리지에 데이터가 존재하며 배열이라면
                 let meso = 0;
-                data.forEach((item) => (meso = meso + Number(item.price)));
+                data.forEach((item) => {
+                    if(item.buy === true) {
+                        meso = meso + Number(item.price);
+                    }
+                });
+                return meso;
+            }
+        }
+        return 0;
+    };
+
+    const onItemSellMeso = (): number => {
+        const tmp = window.localStorage.getItem('item');
+        if (tmp) {
+            const data = JSON.parse(tmp);
+            if (Array.isArray(data)) {
+                //스토리지에 데이터가 존재하며 배열이라면
+                let meso = 0;
+                data.forEach((item) => {
+                    if(item.buy === false) {
+                        meso = meso + Number(item.price);
+                    }
+                });
                 return meso;
             }
         }
@@ -1546,7 +1568,11 @@ const Meso = () => {
                 onCancle={() => setItemToggle((prev) => !prev)}
                 itemarray={itemarray}
                 formatting={formatting}
-                onItemConsumeMeso={onItemConsumeMeso}
+                onItemBuyMeso={onItemBuyMeso}
+                onItemSellMeso={onItemSellMeso}
+                buy={buy}
+                onBuyClick={() => setBuy(true)}
+                onSellClick={() => setBuy(false)}
             />
         </React.Fragment>
     );

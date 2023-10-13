@@ -28,15 +28,14 @@ const End = styled.div`
 
 const Footer = styled.div`
     display: grid;
-    align-items: center;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     padding-left: 10%;
-    padding-right: 10%;
+    padding-right: 20%;
     font-weight: bold;
     font-size: 12px;
-    padding-bottom: 20px;
-    text-align: center;
+    padding-bottom: 5%;
+    place-items : center;
 `;
 
 const Text = styled.div`
@@ -49,6 +48,14 @@ const Text = styled.div`
     > div {
         text-align: center;
     }
+`;
+
+const Nav = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    place-items: center;
+    padding-top: 2%;
+    padding-bottom: 2%;
 `;
 
 const Block = styled.div`
@@ -65,20 +72,26 @@ const StarBtn = styled.button`
     width: 70px;
     height: 20px;
     backgroud-color: white;
+    cursor: pointer;
 `;
 
 type Item = {
     name: string;
     price: number;
     date: string;
+    buy: boolean;
 };
 
 interface ModalStorageProps {
     toggle: boolean;
     itemarray: Array<Item>;
+    buy: boolean;
     onCancle: () => void;
     formatting: (param: number) => string;
-    onItemConsumeMeso: () => number;
+    onItemBuyMeso: () => number;
+    onItemSellMeso : () => number;
+    onBuyClick: () => void;
+    onSellClick: () => void;
 }
 
 const ModalItem: React.FC<ModalStorageProps> = ({
@@ -86,36 +99,52 @@ const ModalItem: React.FC<ModalStorageProps> = ({
     onCancle,
     formatting,
     itemarray,
-    onItemConsumeMeso,
+    onItemBuyMeso,
+    onItemSellMeso,
+    buy,
+    onBuyClick,
+    onSellClick,
 }) => {
     return (
         <Modal toggle={toggle}>
-            <Head>아이템 구매 내역</Head>
+            <Head>아이템 {buy ? '구매 ' : '판매 '}내역</Head>
+            <Nav>
+                <StarBtn onClick={onBuyClick}>구매</StarBtn>
+                <StarBtn onClick={onSellClick}>판매</StarBtn>
+            </Nav>
             <Block>
                 <TodoItemBlock>
                     <Text>
                         <div>이름</div>
                         <div>가격</div>
-                        <div>구매 날짜</div>
+                        <div>{buy ? '구매 ' : '판매 '}날짜</div>
                     </Text>
                 </TodoItemBlock>
-                {itemarray && itemarray.sort((a,b) => {
-                    if(a.date > b.date) return 1;
-                    if(a.date < b.date) return -1;
-                    return 0;
-                }).map((item, index) => (
-                    <TodoItemBlock key={index}>
-                        <Text>
-                            <div>{item.name && item.name}</div>
-                            <div>{item.price && formatting(item.price)}</div>
-                            <div>{item.date && item.date}</div>
-                        </Text>
-                    </TodoItemBlock>
-                ))}
+                {itemarray &&
+                    itemarray
+                        .sort((a, b) => {
+                            if (a.date > b.date) return 1;
+                            if (a.date < b.date) return -1;
+                            return 0;
+                        })
+                        .map((item, index) => (
+                            <TodoItemBlock key={index}>
+                                {buy === item.buy && (
+                                    <Text>
+                                        <div>{item.name && item.name}</div>
+                                        <div>
+                                            {item.price &&
+                                                formatting(item.price)}
+                                        </div>
+                                        <div>{item.date && item.date}</div>
+                                    </Text>
+                                )}
+                            </TodoItemBlock>
+                        ))}
             </Block>
             <Footer>
-                <div>총 소비 메소 : </div>
-                <div>{formatting(onItemConsumeMeso())}&nbsp;메소</div>
+                <div>총 {buy ? '구매 ' : '판매 '} 메소 : </div>
+                <div>{buy ? formatting(onItemBuyMeso()) : formatting(onItemSellMeso())}&nbsp;메소</div>
             </Footer>
             <End>
                 {' '}
