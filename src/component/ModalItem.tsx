@@ -1,12 +1,36 @@
 import React from 'react';
 import styled from 'styled-components';
 import Modal from './Modal';
+import { MdDelete } from 'react-icons/md';
+
+
+const Remove = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #dee2e6;
+    font-size: 30px;
+    cursor: pointer;
+    opacity: 0;
+    &:hover {
+        color: #ff6b6b;
+    }
+`;
 
 const TodoItemBlock = styled.div`
     display: flex;
     align-items: center;
     padding-top: 7px;
     padding-bottom: 7px;
+    &:hover {
+        ${Remove} {
+            opacity: 1;
+        }
+    }
+`;
+
+const Hide = styled.div`
+    opacity: 0;
 `;
 
 const Head = styled.div`
@@ -41,7 +65,7 @@ const Footer = styled.div`
 const Text = styled.div`
     flex: 1;
     display: grid;
-    grid-template-columns: 30% 30% 30%;
+    grid-template-columns: 40% 30% 30%;
     gap: 10px;
     font-size: 12px;
     color: #495057;
@@ -92,7 +116,8 @@ interface ModalStorageProps {
     onItemSellMeso: () => number;
     onBuyClick: () => void;
     onSellClick: () => void;
-}
+    onRemoveClick : (param1 : number) => void;
+};
 
 const ModalItem: React.FC<ModalStorageProps> = ({
     toggle,
@@ -104,6 +129,7 @@ const ModalItem: React.FC<ModalStorageProps> = ({
     buy,
     onBuyClick,
     onSellClick,
+    onRemoveClick
 }) => {
     return (
         <Modal toggle={toggle}>
@@ -119,6 +145,7 @@ const ModalItem: React.FC<ModalStorageProps> = ({
                         <div>가격</div>
                         <div>{buy ? '구매 ' : '판매 '}날짜</div>
                     </Text>
+                    <Hide>숨김</Hide>
                 </TodoItemBlock>
                 {itemarray &&
                     itemarray
@@ -142,6 +169,9 @@ const ModalItem: React.FC<ModalStorageProps> = ({
                                             </div>
                                             <div>{item.date && item.date}</div>
                                         </Text>
+                                        <Remove onClick={() => onRemoveClick(index)}>
+                                            <MdDelete />
+                                        </Remove>
                                     </TodoItemBlock>
                                 );
                             } else {

@@ -288,7 +288,7 @@ type Item = {
     name: string;
     price: number;
     date: string;
-    buy : boolean;
+    buy: boolean;
 };
 
 const Meso = () => {
@@ -340,7 +340,7 @@ const Meso = () => {
         name: '',
         price: 0,
         date: '',
-        buy : false
+        buy: false,
     });
     const [itemarray, setItemArray] = useState<Array<Item>>([]);
     const [buy, setBuy] = useState<boolean>(true);
@@ -1229,7 +1229,7 @@ const Meso = () => {
                 const dayAddItem = {
                     ...item,
                     date: day.toLocaleDateString('ko-kr'),
-                    buy : buy
+                    buy: buy,
                 };
                 const newitem = [...result, dayAddItem];
                 window.localStorage.setItem('item', JSON.stringify(newitem));
@@ -1239,7 +1239,7 @@ const Meso = () => {
             const dayAddItem = {
                 ...item,
                 date: day.toLocaleDateString('ko-kr'),
-                buy : buy
+                buy: buy,
             };
             window.localStorage.setItem('item', JSON.stringify([dayAddItem]));
             setItemArray([dayAddItem]);
@@ -1248,7 +1248,7 @@ const Meso = () => {
             name: '',
             price: 0,
             date: '',
-            buy : false
+            buy: false,
         });
         setAddItemToggle((prev) => !prev);
     };
@@ -1262,7 +1262,7 @@ const Meso = () => {
                 const dayAddItem = {
                     ...item,
                     date: day.toLocaleDateString('ko-kr'),
-                    buy : buy
+                    buy: buy,
                 };
                 const newitem = [...result, dayAddItem];
                 window.localStorage.setItem('item', JSON.stringify(newitem));
@@ -1272,7 +1272,7 @@ const Meso = () => {
             const dayAddItem = {
                 ...item,
                 date: day.toLocaleDateString('ko-kr'),
-                buy : buy
+                buy: buy,
             };
             window.localStorage.setItem('item', JSON.stringify([dayAddItem]));
             setItemArray([dayAddItem]);
@@ -1281,7 +1281,7 @@ const Meso = () => {
             name: '',
             price: 0,
             date: '',
-            buy : false
+            buy: false,
         });
         setAddItemToggle((prev) => !prev);
     };
@@ -1306,7 +1306,7 @@ const Meso = () => {
                 //스토리지에 데이터가 존재하며 배열이라면
                 let meso = 0;
                 data.forEach((item) => {
-                    if(item.buy === true) {
+                    if (item.buy === true) {
                         meso = meso + Number(item.price);
                     }
                 });
@@ -1324,7 +1324,7 @@ const Meso = () => {
                 //스토리지에 데이터가 존재하며 배열이라면
                 let meso = 0;
                 data.forEach((item) => {
-                    if(item.buy === false) {
+                    if (item.buy === false) {
                         meso = meso + Number(item.price);
                     }
                 });
@@ -1332,6 +1332,22 @@ const Meso = () => {
             }
         }
         return 0;
+    };
+
+    const onRemoveClick = (index: number) => {
+        const tmp = window.localStorage.getItem('item');
+        if (tmp) {
+            const data = JSON.parse(tmp);
+            if (Array.isArray(data)) {
+                //스토리지에 데이터가 존재하며 배열이라면
+                const newdata = data.filter(
+                    (item, newindex) => index !== newindex
+                );
+                //filter란 조건 함수에 부합하는 것만 새로 뽑아서 배열을 리턴하는 함수
+                window.localStorage.setItem('item', JSON.stringify(newdata));
+                setItemArray(newdata);
+            }
+        }
     };
 
     const onRebootChange = () => {
@@ -1573,6 +1589,7 @@ const Meso = () => {
                 buy={buy}
                 onBuyClick={() => setBuy(true)}
                 onSellClick={() => setBuy(false)}
+                onRemoveClick={onRemoveClick}
             />
         </React.Fragment>
     );
