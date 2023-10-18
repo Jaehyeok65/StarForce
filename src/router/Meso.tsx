@@ -289,6 +289,7 @@ type Item = {
     price: number;
     date: string;
     buy: boolean;
+    id : number;
 };
 
 const Meso = () => {
@@ -341,6 +342,7 @@ const Meso = () => {
         price: 0,
         date: '',
         buy: false,
+        id : 0
     });
     const [itemarray, setItemArray] = useState<Array<Item>>([]);
     const [buy, setBuy] = useState<boolean>(true);
@@ -951,7 +953,6 @@ const Meso = () => {
 
     const onSelectMeso = (prevday: Date, nextday: Date): Week => {
         const days = new Date(prevday);
-        console.log(days.toLocaleDateString('ko-kr'));
         let boss = 0;
         let property = 0;
         const tmp = window.localStorage.getItem('meso');
@@ -1222,6 +1223,11 @@ const Meso = () => {
 
     const onBuyItemStore = () => {
         const tmp = window.localStorage.getItem('item');
+        const tmp2 = window.localStorage.getItem('itemid'); //키값으로 사용하기 위한 아이디
+        let itemid = 1;
+        if(tmp2) {
+            itemid = +JSON.parse(tmp2);
+        }
         if (tmp) {
             //이미 존재한다면 배열에 추가
             const result = JSON.parse(tmp);
@@ -1230,6 +1236,7 @@ const Meso = () => {
                     ...item,
                     date: day.toLocaleDateString('ko-kr'),
                     buy: buy,
+                    id : itemid
                 };
                 const newitem = [...result, dayAddItem];
                 window.localStorage.setItem('item', JSON.stringify(newitem));
@@ -1240,21 +1247,29 @@ const Meso = () => {
                 ...item,
                 date: day.toLocaleDateString('ko-kr'),
                 buy: buy,
+                id : itemid
             };
             window.localStorage.setItem('item', JSON.stringify([dayAddItem]));
             setItemArray([dayAddItem]);
         }
+        window.localStorage.setItem('itemid', JSON.stringify(++itemid));
         setItem({
             name: '',
             price: 0,
             date: '',
             buy: false,
-        });
+            id: 0
+        }); //아이템 상태 초기화
         setAddItemToggle((prev) => !prev);
     };
 
     const onSellItemStore = () => {
         const tmp = window.localStorage.getItem('item');
+        const tmp2 = window.localStorage.getItem('itemid'); //키값으로 사용하기 위한 아이디
+        let itemid = 1;
+        if(tmp2) {
+            itemid = +JSON.parse(tmp2);
+        }
         if (tmp) {
             //이미 존재한다면 배열에 추가
             const result = JSON.parse(tmp);
@@ -1263,6 +1278,7 @@ const Meso = () => {
                     ...item,
                     date: day.toLocaleDateString('ko-kr'),
                     buy: buy,
+                    id : itemid
                 };
                 const newitem = [...result, dayAddItem];
                 window.localStorage.setItem('item', JSON.stringify(newitem));
@@ -1273,15 +1289,18 @@ const Meso = () => {
                 ...item,
                 date: day.toLocaleDateString('ko-kr'),
                 buy: buy,
+                id : itemid
             };
             window.localStorage.setItem('item', JSON.stringify([dayAddItem]));
             setItemArray([dayAddItem]);
         }
+        window.localStorage.setItem('item',JSON.stringify(++itemid));
         setItem({
             name: '',
             price: 0,
             date: '',
             buy: false,
+            id : 0
         });
         setAddItemToggle((prev) => !prev);
     };
@@ -1334,15 +1353,13 @@ const Meso = () => {
         return 0;
     };
 
-    const onRemoveClick = (index: number) => {
+    const onRemoveClick = (id: number) => {
         const tmp = window.localStorage.getItem('item');
         if (tmp) {
             const data = JSON.parse(tmp);
             if (Array.isArray(data)) {
                 //스토리지에 데이터가 존재하며 배열이라면
-                const newdata = data.filter(
-                    (item, newindex) => index !== newindex
-                );
+                const newdata = data.filter(item => item.id !== id);
                 //filter란 조건 함수에 부합하는 것만 새로 뽑아서 배열을 리턴하는 함수
                 window.localStorage.setItem('item', JSON.stringify(newdata));
                 setItemArray(newdata);

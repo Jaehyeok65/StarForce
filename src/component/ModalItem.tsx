@@ -104,6 +104,7 @@ type Item = {
     price: number;
     date: string;
     buy: boolean;
+    id: number;
 };
 
 interface ModalStorageProps {
@@ -157,10 +158,10 @@ const ModalItem: React.FC<ModalStorageProps> = ({
                             if (dateA < dateB) return -1;
                             return 0;
                         })
-                        .map((item, index) => {
+                        .map((item) => {
                             if (item.buy === buy) {
                                 return (
-                                    <TodoItemBlock key={index}>
+                                    <TodoItemBlock key={item.id}>
                                         <Text>
                                             <div>{item.name && item.name}</div>
                                             <div>
@@ -169,7 +170,7 @@ const ModalItem: React.FC<ModalStorageProps> = ({
                                             </div>
                                             <div>{item.date && item.date}</div>
                                         </Text>
-                                        <Remove onClick={() => onRemoveClick(index)}>
+                                        <Remove onClick={() => onRemoveClick(item.id)}>
                                             <MdDelete />
                                         </Remove>
                                     </TodoItemBlock>
