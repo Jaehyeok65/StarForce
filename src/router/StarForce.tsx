@@ -34,7 +34,7 @@ const StarContent = styled.div`
     }
 `;
 
-const Background = styled.div`
+export const Background = styled.div`
     width: 60%;
     margin: 0 auto;
 
@@ -44,7 +44,7 @@ const Background = styled.div`
     }
 `;
 
-const Back = styled.div`
+export const Back = styled.div`
     margin: 5% 5% 5% 5%;
     border: 1px solid gray;
     border-radius: 12px;
@@ -245,17 +245,17 @@ const StarForce = () => {
     const consume = (current: number, level: number): number => {
         //현재 강화수치와 아이템 레벨에 따라 소모 메소 반환
         if (current < 10) {
-            return 1000 + (Math.pow(level, 3) * (current + 1)) / 25;
+            return (1000 + (Math.pow(level, 3) * (current + 1)) / 25) * 0.7;
         } else if (current === 10) {
-            return starforcemeso(current, level, 400);
+            return starforcemeso(current, level, 400) * 0.7;
         } else if (current === 11) {
-            return starforcemeso(current, level, 270);
+            return starforcemeso(current, level, 270) * 0.7;
         } else if (current === 12) {
-            return starforcemeso(current, level, 150);
+            return starforcemeso(current, level, 150) * 0.7;
         } else if (current === 13) {
-            return starforcemeso(current, level, 110);
+            return starforcemeso(current, level, 110) * 0.7;
         } else if (current === 14) {
-            return starforcemeso(current, level, 75);
+            return starforcemeso(current, level, 75) * 0.7;
         } else {
             return starforcemeso(current, level, 200);
         }

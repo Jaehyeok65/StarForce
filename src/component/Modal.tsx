@@ -37,7 +37,7 @@ const fadeout = keyframes`
     }
 `;
 
-const BackgroundModal = styled.div<{$disappear : boolean}>`
+const BackgroundModal = styled.div<{ $disappear: boolean }>`
     position: fixed;
     top: 0;
     width: 100vw;
@@ -58,7 +58,7 @@ const BackgroundModal = styled.div<{$disappear : boolean}>`
         `}
 `;
 
-const Modals = styled.div<{$disappear : boolean}>`
+const Modals = styled.div<{ $disappear: boolean }>`
     position: absolute;
     top: 20%;
     left: 33%;
@@ -69,7 +69,7 @@ const Modals = styled.div<{$disappear : boolean}>`
     background-color: white;
     z-index: 29999;
     border-radius: 8px;
-    overflow-y : auto;
+    overflow-y: auto;
     animation-duration: 0.5s;
     animation-timing-function: ease-out;
     animation-name: ${slideup};
@@ -93,7 +93,15 @@ const Modals = styled.div<{$disappear : boolean}>`
     }
 `;
 
-const Modal = ({ toggle, children } : { toggle : boolean, children : React.ReactNode} ) => {
+const Modal = ({
+    toggle,
+    children,
+    setToggle,
+}: {
+    toggle: boolean;
+    children: React.ReactNode;
+    setToggle?: any;
+}) => {
     const [animate, setAnimate] = useState(false);
     const [localvisible, setLocalvisible] = useState(toggle);
 
@@ -110,8 +118,10 @@ const Modal = ({ toggle, children } : { toggle : boolean, children : React.React
     }
 
     return (
-        <BackgroundModal $disappear={!toggle}>
-            <Modals $disappear={!toggle}>{children}</Modals>
+        <BackgroundModal $disappear={!toggle} onClick={setToggle}>
+            <Modals $disappear={!toggle} onClick={(e) => e.stopPropagation()}>
+                {children}
+            </Modals>
         </BackgroundModal>
     );
 };

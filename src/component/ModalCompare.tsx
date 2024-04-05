@@ -55,8 +55,6 @@ const ModalCompare: React.FC<ModalCompareProps> = ({
     diff,
     formatting,
 }) => {
-
-    console.log(diff);
     return (
         <Modal toggle={toggle}>
             <Content>

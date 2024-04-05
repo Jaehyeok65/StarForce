@@ -6,6 +6,7 @@ import Meso from 'router/Meso';
 import SolErda from 'router/SolErda';
 import StarForce from 'router/StarForce';
 import StarForceSimul from 'router/StarForceSimul';
+import Character from 'router/Character';
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                     <Route path="/simulate" element={<StarForceSimul />} />
                     <Route path="/solerda" element={<SolErda />} />
                     <Route path="/meso" element={<Meso />} />
+                    <Route path="/info" element={<Character />} />
                 </Routes>
             </Router>
         </React.Fragment>

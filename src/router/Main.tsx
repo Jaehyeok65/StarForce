@@ -37,6 +37,7 @@ const Main = () => {
             <li><Link to={"/simulate"}>스타포스 시뮬레이터</Link></li>
             <li><Link to={"/solerda"}>헥사 스탯 시뮬레이터</Link></li>
             <li><Link to={"/meso"}>메소 수급 기록</Link></li>
+            <li><Link to={"/info"}>캐릭터 정보 조회</Link></li>
         </Ul>
         </Back>
         </Background>

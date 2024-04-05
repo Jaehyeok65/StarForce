@@ -9,6 +9,7 @@ const HeaderBar = styled.div`
     height: 5vh;
     background-color: orange;
     top: 0;
+    z-index : 999;
 `;
 
 const HeaderContent = styled.div`
@@ -37,6 +38,9 @@ const Header = () => {
         }
         else if(sub === '/meso') {
             return '메소 수급 기록';
+        }
+        else if(sub === '/info') {
+            return '캐릭터 정보 조회';
         }
         else {
             return 'MapleStory';
