@@ -66,6 +66,8 @@ const HexaCoreInfo = ({ ocid, date }: { ocid: string; date : string; }) => {
         enabled: !!ocid,
     });
 
+    console.log(stat);
+
     if (isLoading) {
         return <div>Loading...</div>;
     }

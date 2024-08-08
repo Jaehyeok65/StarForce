@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import ItemCard from './ItemCard';
 import { useQuery } from '@tanstack/react-query';
@@ -7,7 +7,7 @@ import { getItemData } from 'api/Maple';
 const Grid = styled.div`
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    padding-top: 10%;
+    padding-top: 5%;
     gap: 20px;
 
     @media screen and (max-width: 567px) {
@@ -15,23 +15,53 @@ const Grid = styled.div`
     }
 `;
 
+const Preset = styled.div`
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding-top: 5%;
+    gap: 20px;
+`;
+
+const Button = styled.button<{ $mode: boolean }>`
+    border-radius: 8px;
+    border: 1px solid gray;
+    background-color: ${(props) => (props.$mode ? 'black' : 'white')};
+    height: 33px;
+    color: ${(props) => props.$mode && 'white'};
+`;
+
+const presetButton = [
+    { name: '1번 프리셋', index: 1 },
+    { name: '2번 프리셋', index: 2 },
+    { name: '3번 프리셋', index: 3 },
+];
+
 const ItemInfo = ({
     ocid,
     setEquipment,
     setEquipmentToggle,
-    date
+    date,
 }: {
-    ocid : string;
+    ocid: string;
     setEquipment: React.Dispatch<React.SetStateAction<any>>;
     setEquipmentToggle: React.Dispatch<React.SetStateAction<boolean>>;
-    date : string;
+    date: string;
 }) => {
-
-    const { data: item, isLoading, isError, error } = useQuery({
+    const {
+        data: item,
+        isLoading,
+        isError,
+        error,
+    } = useQuery({
         queryKey: ['item', ocid, date],
         queryFn: () => getItemData(ocid, date),
         enabled: !!ocid,
     });
+
+    const [itemPreset, setItemPreset] = useState<number>(1);
+
+    console.log(item && item[`item_equipment_preset_${itemPreset}`]);
+
     const customSort = (a: any, b: any) => {
         const order: any = {
             무기: 1,
@@ -71,28 +101,41 @@ const ItemInfo = ({
         setEquipmentToggle((prev) => !prev);
     };
 
-    if(isLoading) {
+    if (isLoading) {
         return <div>Loading...</div>;
     }
 
-    if(isError) {
-        return <div>{"오류가 발생했습니다. " + error}</div>
+    if (isError) {
+        return <div>{'오류가 발생했습니다. ' + error}</div>;
     }
 
     return (
-        <Grid>
-            {item &&
-                item.item_equipment
-                    .sort(customSort)
-                    .map((equipment: any, index: number) => (
-                        <ItemCard
-                            key={index}
-                            item={equipment}
-                            character_class={item.character_class}
-                            onClick={() => onItemCardClick(equipment)}
-                        />
-                    ))}
-        </Grid>
+        <div>
+            <Preset>
+                {presetButton.map((preset: any) => (
+                    <Button
+                        key={preset.index}
+                        $mode={preset.index === itemPreset}
+                        onClick={() => setItemPreset(preset.index)}
+                    >
+                        {preset.name}
+                    </Button>
+                ))}
+            </Preset>
+            <Grid>
+                {item &&
+                    item[`item_equipment_preset_${itemPreset}`]
+                        .sort(customSort)
+                        .map((equipment: any, index: number) => (
+                            <ItemCard
+                                key={index}
+                                item={equipment}
+                                character_class={item.character_class}
+                                onClick={() => onItemCardClick(equipment)}
+                            />
+                        ))}
+            </Grid>
+        </div>
     );
 };
 
