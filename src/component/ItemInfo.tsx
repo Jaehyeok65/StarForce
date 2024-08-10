@@ -17,7 +17,7 @@ const Grid = styled.div`
 
 const Preset = styled.div`
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     padding-top: 5%;
     gap: 20px;
 `;
@@ -31,6 +31,7 @@ const Button = styled.button<{ $mode: boolean }>`
 `;
 
 const presetButton = [
+    { name: '착용중', index: 0 },
     { name: '1번 프리셋', index: 1 },
     { name: '2번 프리셋', index: 2 },
     { name: '3번 프리셋', index: 3 },
@@ -58,9 +59,7 @@ const ItemInfo = ({
         enabled: !!ocid,
     });
 
-    const [itemPreset, setItemPreset] = useState<number>(1);
-
-    console.log(item && item[`item_equipment_preset_${itemPreset}`]);
+    const [itemPreset, setItemPreset] = useState<number>(0);
 
     const customSort = (a: any, b: any) => {
         const order: any = {
@@ -123,17 +122,27 @@ const ItemInfo = ({
                 ))}
             </Preset>
             <Grid>
-                {item &&
-                    item[`item_equipment_preset_${itemPreset}`]
-                        .sort(customSort)
-                        .map((equipment: any, index: number) => (
-                            <ItemCard
-                                key={index}
-                                item={equipment}
-                                character_class={item.character_class}
-                                onClick={() => onItemCardClick(equipment)}
-                            />
-                        ))}
+                {item && itemPreset > 0
+                    ? item[`item_equipment_preset_${itemPreset}`]
+                          .sort(customSort)
+                          .map((equipment: any, index: number) => (
+                              <ItemCard
+                                  key={index}
+                                  item={equipment}
+                                  character_class={item.character_class}
+                                  onClick={() => onItemCardClick(equipment)}
+                              />
+                          ))
+                    : item.item_equipment
+                          .sort(customSort)
+                          .map((equipment: any, index: number) => (
+                              <ItemCard
+                                  key={index}
+                                  item={equipment}
+                                  character_class={item.character_class}
+                                  onClick={() => onItemCardClick(equipment)}
+                              />
+                          ))}
             </Grid>
         </div>
     );
