@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import styled, { keyframes, css } from 'styled-components';
 
 const slideup = keyframes`
@@ -117,12 +118,13 @@ const Modal = ({
         return null;
     }
 
-    return (
+    return ReactDOM.createPortal(
         <BackgroundModal $disappear={!toggle} onClick={setToggle}>
             <Modals $disappear={!toggle} onClick={(e) => e.stopPropagation()}>
                 {children}
             </Modals>
-        </BackgroundModal>
+        </BackgroundModal>,
+        document.body
     );
 };
 
