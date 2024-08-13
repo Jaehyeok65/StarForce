@@ -48,7 +48,7 @@ const Inner = styled.div`
     grid-template-columns: 85% 15%;
 `;
 
-const HexaCoreInfo = ({ ocid, date }: { ocid: string; date : string; }) => {
+const HexaCoreInfo = ({ ocid, date }: { ocid: string; date: string }) => {
     const {
         data: core,
         isLoading,
@@ -65,8 +65,6 @@ const HexaCoreInfo = ({ ocid, date }: { ocid: string; date : string; }) => {
         queryFn: () => getHexaStatData(ocid, date),
         enabled: !!ocid,
     });
-
-    console.log(stat);
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -106,28 +104,43 @@ const HexaCoreInfo = ({ ocid, date }: { ocid: string; date : string; }) => {
                         )
                     )}
             </Core>
-            <Title>헥사 스탯</Title>
-            <div>
-                {stat &&
-                    stat?.character_hexa_stat_core.map(
-                        (item: any, index: number) => (
-                            <Stat key={index}>
-                                <div>
-                                    {item.main_stat_name} :{' '}
-                                    {item.main_stat_level}
-                                </div>
-                                <div>
-                                    {item.sub_stat_name_1} :{' '}
-                                    {item.sub_stat_level_1}
-                                </div>
-                                <div>
-                                    {item.sub_stat_name_2} :{' '}
-                                    {item.sub_stat_level_2}
-                                </div>
-                            </Stat>
-                        )
-                    )}
-            </div>
+            {Object.keys(stat)
+                .filter((key) => key.startsWith('character_hexa_stat_core'))
+                .map((hexastatKey) => {
+                    // `_`로 나누어 마지막 부분을 추출
+                    const parts = hexastatKey.split('_');
+                    // 마지막 부분이 숫자인지 확인
+                    const lastPart = parts[parts.length - 1];
+                    const number = parseInt(lastPart, 10);
+                    const displayNumber = !isNaN(number) ? number : 1;
+                    const statinfo = stat[hexastatKey];
+                    return (
+                        <div key={hexastatKey}>
+                            <Title>
+                                헥사 스탯
+                                {displayNumber}
+                            </Title>
+                            <div>
+                                {statinfo?.map((item: any, index: number) => (
+                                    <Stat key={index}>
+                                        <div>
+                                            {item.main_stat_name} :{' '}
+                                            {item.main_stat_level}
+                                        </div>
+                                        <div>
+                                            {item.sub_stat_name_1} :{' '}
+                                            {item.sub_stat_level_1}
+                                        </div>
+                                        <div>
+                                            {item.sub_stat_name_2} :{' '}
+                                            {item.sub_stat_level_2}
+                                        </div>
+                                    </Stat>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })}
         </Total>
     );
 };
