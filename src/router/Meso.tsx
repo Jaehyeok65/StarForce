@@ -1530,9 +1530,7 @@ const Meso = () => {
                 total={false}
                 setToggle={setBossMesoToggle}
                 boss={boss}
-                reboot={reboot}
                 onCheckChange={onCheckChange}
-                onRebootChange={onRebootChange}
                 onBossMesoPlus={onBossMesoPlus}
                 onCancle={onCancle}
             />
@@ -1541,9 +1539,7 @@ const Meso = () => {
                 total={true}
                 setToggle={setTotalBossMesoToggle}
                 boss={boss}
-                reboot={reboot}
                 onCheckChange={onNumberChange}
-                onRebootChange={onRebootChange}
                 onBossMesoPlus={onTotalBossMesoPlus}
                 onCancle={onCancle}
             />

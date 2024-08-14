@@ -105,8 +105,8 @@ const HexaCoreInfo = ({ ocid, date }: { ocid: string; date: string }) => {
                     )}
             </Core>
             {Object.keys(stat)
-                .filter((key) => key.startsWith('character_hexa_stat_core'))
-                .map((hexastatKey) => {
+                ?.filter((key) => key.startsWith('character_hexa_stat_core'))
+                ?.map((hexastatKey) => {
                     // `_`로 나누어 마지막 부분을 추출
                     const parts = hexastatKey.split('_');
                     // 마지막 부분이 숫자인지 확인
@@ -116,10 +116,12 @@ const HexaCoreInfo = ({ ocid, date }: { ocid: string; date: string }) => {
                     const statinfo = stat[hexastatKey];
                     return (
                         <div key={hexastatKey}>
-                            <Title>
-                                헥사 스탯
-                                {displayNumber}
-                            </Title>
+                            { statinfo && 
+                                <Title>
+                                    헥사 스탯
+                                    {displayNumber}
+                                </Title>
+                            }
                             <div>
                                 {statinfo?.map((item: any, index: number) => (
                                     <Stat key={index}>

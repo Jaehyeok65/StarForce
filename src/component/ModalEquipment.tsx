@@ -291,7 +291,11 @@ const ModalEquipment: React.FC<ModalEquipmentProps> = ({
                     />
                     <EquipmentOption option={option} part="damage" />
                     <EquipmentOption option={option} part="all_stat" />
-                    {option?.cuttable_count !== '255' && <div style={{ color : '#DAA520'}}>가위 사용 가능 횟수 : {option?.cuttable_count}회</div>}
+                    {option?.cuttable_count !== '255' && (
+                        <div style={{ color: '#DAA520' }}>
+                            가위 사용 가능 횟수 : {option?.cuttable_count}회
+                        </div>
+                    )}
                 </ItemOption>
                 <DottedLine />
                 {option.potential_option_grade && (

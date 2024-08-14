@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import ModalBoss from './ModalBoss';
 
 const Info = styled.div`
-    font-size: 12px;
+    font-size: 11px;
     display: grid;
     place-items: center;
     gap: 5px;
@@ -34,8 +34,10 @@ interface bossinfo {
     done: boolean; //보스돌이 완료여부
     bossToggle: boolean;
     meso: number;
-    setBossToggle : any;
-    onCancle : any;
+    setBossToggle: any;
+    onCancle: any;
+    onCheckChange: any;
+    onBossMesoPlus: any;
 }
 
 const BossCharacterInfo: React.FC<bossinfo> = ({
@@ -45,7 +47,9 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
     bossToggle,
     meso,
     setBossToggle,
-    onCancle
+    onCancle,
+    onCheckChange,
+    onBossMesoPlus,
 }) => {
     const { isLoading, data, isError, error } = useQuery({
         queryKey: ['bossinfo', ocid],
@@ -63,7 +67,7 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
                 <div>
                     <Button onClick={() => setBossToggle(ocid)}>입력</Button>
                 </div>
-                <div>{meso && meso}</div>
+                <div>{meso && meso.toLocaleString()}</div>
                 <div>{<Checkbox type="checkbox" checked={false} />}</div>
             </Info>
             <ModalBoss
@@ -71,6 +75,8 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
                 setToggle={() => setBossToggle(ocid)}
                 onCancle={() => onCancle(() => setBossToggle(ocid))}
                 boss={boss}
+                onCheckChange={(e) => onCheckChange(e, ocid)}
+                onBossMesoPlus={(e) => onBossMesoPlus(e, ocid)}
             />
         </React.Fragment>
     );

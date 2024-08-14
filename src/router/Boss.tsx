@@ -21,6 +21,18 @@ const Section = styled.div`
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     gap: 20px;
+
+     @media screen and (max-width: 1200px) {
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    @media screen and (max-width: 1000px) {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    @media screen and (max-width: 600px) {
+       grid-template-columns: repeat(3, 1fr);
+    }
 `;
 
 const Button = styled.button`
@@ -225,26 +237,86 @@ const Boss = () => {
         }
     }, [ocid]);
 
-    const setBossToggle = (ocid : number) => { //어느 캐릭터를 클릭했는지를 알아야하기 때문에 ocid를 매개변수로 받음
+    const setBossToggle = (ocid: string, meso?: number) => {
+        //어느 캐릭터를 클릭했는지를 알아야하기 때문에 ocid를 매개변수로 받음
         const newBossArray = [...BossArray]; //불변성을 유지하며 state를 변경하기 위해 복사
         const index = BossArray.findIndex((item) => item.ocid === ocid);
         const prev = BossArray[index];
-        const next = {
+        const next = meso ? {
             ...prev,
-            bosstoggle : !prev.bosstoggle
-        }
+            bosstoggle : !prev.bosstoggle,
+            meso : meso
+        } : {
+            ...prev,
+            bosstoggle: !prev.bosstoggle,
+        };
         newBossArray[index] = next;
         setBossArray(newBossArray);
-    }
+    };
 
-    const onCancle = (
-        setBossToggle : any
-    ) => {
+    const onCancle = (setBossToggle: any) => {
         setBossToggle();
     };
 
     const onClick = () => {
         refetch();
+    };
+
+    const onBossCheckChange = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        ocid: string
+    ) => {
+        const { name } = e.target;
+        const newBossArray = [...BossArray];
+        const index = BossArray.findIndex((item) => item.ocid === ocid);
+        const prev = BossArray[index];
+        const next = {
+            ...prev,
+            boss: prev?.boss.map((item: any) => {
+                if (item.name === name) {
+                    //체크한 name과 일치하는 경우 check 상태를 바꿈
+                    return {
+                        ...item,
+                        check: !item.check,
+                    };
+                } else {
+                    return item;
+                }
+            }),
+        };
+        newBossArray[index] = next;
+        setBossArray(newBossArray);
+    };
+
+    const onBossMesoPlus = (
+        e: React.MouseEvent<HTMLButtonElement>,
+        ocid: string
+    ) => {
+        const newBossArray = [...BossArray];
+        const index = BossArray.findIndex((item) => item.ocid === ocid);
+        const prev = BossArray[index];
+        const mesoarray: number[] = [];
+        const count = 12; //결정석 개수는 12개가 한계
+        let meso = 0;
+        prev?.boss?.forEach((item: any) => {
+            if (item.check) {
+                mesoarray.push(item.meso);
+            }
+        });
+        mesoarray
+            .sort((a, b) => b - a)
+            .slice(0, count)
+            .forEach((item: any) => {
+                meso += item;
+            });
+
+        const next = {
+            ...prev,
+            meso: meso,
+        };
+        newBossArray[index] = next;
+        setBossArray(newBossArray);
+        setBossToggle(ocid,meso);
     };
 
     return (
@@ -271,6 +343,8 @@ const Boss = () => {
                                 meso={info.meso}
                                 setBossToggle={setBossToggle}
                                 onCancle={onCancle}
+                                onCheckChange={onBossCheckChange}
+                                onBossMesoPlus={onBossMesoPlus}
                             />
                         ))}
                 </Section>

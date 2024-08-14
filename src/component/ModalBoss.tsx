@@ -25,24 +25,12 @@ const ModalHead = styled.div`
     margin-top: 7%;
 `;
 
-const ModalNav = styled.div`
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 5%;
-    margin-right: 10%;
-    font-size: 12px;
-`;
-
 const Head = styled.div`
     display: flex;
     justify-content: center;
     margin-bottom: 10%;
 `;
 
-const NavGrid = styled.div`
-    display: grid;
-    grid-template-columns: 60% 40%;
-`;
 const Checkbox = styled.input`
     width: 20px;
     height: 16px;
@@ -74,13 +62,14 @@ interface Boss {
 
 interface ModalBossProps {
     toggle: boolean;
-    total: boolean;
+    total?: boolean;
     setToggle: React.Dispatch<React.SetStateAction<boolean>>;
-    boss: Boss[];
-    reboot: boolean;
-    onCheckChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onRebootChange: () => void;
-    onBossMesoPlus: () => void;
+    boss?: Boss[];
+    onCheckChange?: (
+        e: React.ChangeEvent<HTMLInputElement>,
+        ocid?: string
+    ) => void;
+    onBossMesoPlus?: (e: React.MouseEvent<HTMLButtonElement>, ocid?: string) => void;
     onCancle: (onToggle: React.Dispatch<React.SetStateAction<boolean>>) => void;
 }
 
@@ -89,8 +78,6 @@ const ModalBoss: React.FC<ModalBossProps> = ({
     total,
     setToggle,
     boss,
-    reboot,
-    onRebootChange,
     onCheckChange,
     onBossMesoPlus,
     onCancle,
@@ -102,48 +89,34 @@ const ModalBoss: React.FC<ModalBossProps> = ({
                     ? '잡은 보스의 수를 입력하세요.'
                     : '잡은 보스를 체크하세요.'}
             </ModalHead>
-            <ModalNav>
-                <NavGrid>
-                    <div>리부트</div>
-                    <Checkbox
-                        type="checkbox"
-                        checked={reboot}
-                        onChange={onRebootChange}
-                    />
-                </NavGrid>
-            </ModalNav>
             <ModalContent>
-                {boss.map((item) => (
-                    <ModalColumns key={item.name}>
-                        <div>{item.name}</div>
-                        <div>
-                            {reboot
-                                ? (item.meso * 5).toLocaleString()
-                                : item.meso.toLocaleString()}
-                        </div>
-                        {total ? (
-                            <Input
-                                type="number"
-                                name={item.name}
-                                value={item.num}
-                                onChange={onCheckChange}
-                            />
-                        ) : (
-                            <Checkbox
-                                type="checkbox"
-                                checked={item.check}
-                                name={item.name}
-                                onChange={onCheckChange}
-                            />
-                        )}
-                    </ModalColumns>
-                ))}
+                {boss &&
+                    boss.map((item) => (
+                        <ModalColumns key={item.name}>
+                            <div>{item.name}</div>
+                            <div>{item.meso.toLocaleString()}</div>
+                            {total ? (
+                                <Input
+                                    type="number"
+                                    name={item.name}
+                                    value={item.num}
+                                    onChange={onCheckChange}
+                                />
+                            ) : (
+                                <Checkbox
+                                    type="checkbox"
+                                    checked={item.check}
+                                    name={item.name}
+                                    onChange={onCheckChange}
+                                />
+                            )}
+                        </ModalColumns>
+                    ))}
             </ModalContent>
             <Head>
                 <Button width="100px" onClick={onBossMesoPlus}>
                     적용하기
                 </Button>
-
                 <Button width="100px" onClick={() => onCancle(setToggle)}>
                     닫기
                 </Button>
