@@ -141,8 +141,6 @@ const CharacterInfo = ({ ocid, date }: { ocid: string; date: string }) => {
         return <div>{'오류가 발생했습니다. ' + infoerror}</div>;
     }
 
-    console.log(ability);
-
     return (
         <Background>
             <img src={info.character_image} alt={info.character_name} />

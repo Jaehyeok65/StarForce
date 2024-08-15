@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
-import { getOcidData } from 'api/Maple';
+import { getOcidData, getCharacterData } from 'api/Maple';
+import moment from 'moment';
 import BossCharacterInfo from 'component/BossCharacterInfo';
+
+const Background = styled.div`
+    width: 60%;
+    margin: 0 auto;
+
+    @media screen and (max-width: 767px) {
+        width: 100%;
+        margin: 0 auto;
+    }
+`;
 
 const Back = styled.div`
     margin: 5% 5% 5% 5%;
@@ -17,21 +28,20 @@ const Head = styled.div`
     margin-bottom: 5%;
 `;
 
+const Nav = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 5%;
+    font-size: 12px;
+`;
+
 const Section = styled.div`
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 
-     @media screen and (max-width: 1200px) {
-      grid-template-columns: repeat(6, 1fr);
-    }
-
     @media screen and (max-width: 1000px) {
-      grid-template-columns: repeat(5, 1fr);
-    }
-
-    @media screen and (max-width: 600px) {
-       grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
 `;
 
@@ -43,6 +53,12 @@ const Button = styled.button`
     cursor: pointer;
 `;
 
+const Input = styled.input`
+    width: 100%;
+    max-width: 200px;
+    border-radius: 8px;
+`;
+
 const array: any[] = [
     {
         check: false,
@@ -52,189 +68,210 @@ const array: any[] = [
     {
         check: false,
         name: '하드 힐라',
-        meso: 6392127,
+        meso: 6390000,
     },
     {
         check: false,
         name: '카오스 핑크빈',
-        meso: 7305607,
+        meso: 7310000,
     },
     {
         check: false,
         name: '노말 시그너스',
-        meso: 8334633,
+        meso: 8330000,
     },
     {
         check: false,
         name: '카오스 자쿰',
-        meso: 8983579,
+        meso: 8980000,
     },
     {
         check: false,
         name: '카오스 피에르',
-        meso: 9082212,
+        meso: 9080000,
     },
     {
         check: false,
         name: '카오스 반반',
-        meso: 9055409,
+        meso: 9060000,
     },
     {
         check: false,
         name: '카오스 블러디퀸',
-        meso: 9044348,
+        meso: 9040000,
     },
     {
         check: false,
         name: '카오스 벨룸',
-        meso: 11625317,
+        meso: 11600000,
     },
     {
         check: false,
         name: '하드 매그너스',
-        meso: 10688302,
+        meso: 10700000,
     },
     {
         check: false,
         name: '카오스 파풀라투스',
-        meso: 24692607,
+        meso: 24700000,
     },
     {
         check: false,
         name: '노말 스우',
-        meso: 31397803,
+        meso: 31400000,
     },
     {
         check: false,
         name: '노말 데미안',
-        meso: 32856018,
+        meso: 32900000,
     },
     {
         check: false,
         name: '노말 가디언 엔젤 슬라임',
-        meso: 43430893,
+        meso: 47800000,
     },
     {
         check: false,
         name: '이지 루시드',
-        meso: 44480040,
+        meso: 49000000,
     },
     {
         check: false,
         name: '이지 윌',
-        meso: 48271991,
+        meso: 53100000,
     },
     {
         check: false,
         name: '노말 루시드',
-        meso: 53238340,
+        meso: 58600000,
     },
     {
         check: false,
         name: '노말 윌',
-        meso: 61407942,
+        meso: 67600000,
     },
     {
         check: false,
         name: '노말 더스크',
-        meso: 65802229,
+        meso: 72400000,
     },
     {
         check: false,
         name: '노말 듄켈',
-        meso: 70960004,
+        meso: 78100000,
     },
     {
         check: false,
         name: '하드 데미안',
-        meso: 107165492,
+        meso: 113000000,
     },
     {
         check: false,
         name: '하드 스우',
-        meso: 112707970,
+        meso: 119000000,
     },
     {
         check: false,
         name: '하드 루시드',
-        meso: 128478755,
+        meso: 135000000,
     },
     {
         check: false,
         name: '하드 윌',
-        meso: 142163005,
+        meso: 165000000,
     },
     {
         check: false,
         name: '노말 진 힐라',
-        meso: 145210130,
+        meso: 153000000,
     },
     {
         check: false,
         name: '카오스 가디언 엔젤 슬라임',
-        meso: 152450582,
+        meso: 161000000,
     },
     {
         check: false,
         name: '카오스 더스크',
-        meso: 157064123,
+        meso: 150000000,
     },
     {
         check: false,
         name: '하드 듄켈',
-        meso: 168568855,
+        meso: 177000000,
     },
     {
         check: false,
         name: '하드 진 힐라',
-        meso: 190205043,
+        meso: 200000000,
     },
     {
         check: false,
         name: '노말 선택받은 세렌',
-        meso: 219903983,
+        meso: 220000000,
     },
     {
         check: false,
         name: '하드 선택받은 세렌',
-        meso: 304012024,
+        meso: 325000000,
     },
 ];
 
 const Boss = () => {
     const [name, setName] = useState<string>('');
     const [BossArray, setBossArray] = useState<any[]>([]);
-    const {
-        data: ocid,
-        refetch,
-        isError,
-        error,
-    } = useQuery({
+    const { data: ocid, refetch } = useQuery({
         queryKey: ['bossocid'], //쿼리키에 변수 종속성을 추가하면 Input창이 변경될 때 마다 자동으로 가져오므로 종속성 추가X
         queryFn: () => getOcidData(name),
         enabled: false,
     });
+    const [WeeklyMeso, setWeeklyMeso] = useState<number>(0);
 
     useEffect(() => {
-        if (ocid) {
-            setBossArray((prev) => {
-                // ocid 값이 배열 내에 이미 존재하는지 확인
-                const isOcidExists = prev.some((item) => item.ocid === ocid);
-                if (!isOcidExists) {
-                    return [
-                        ...prev,
-                        {
-                            ocid: ocid,
-                            bosstoggle: false,
-                            meso: 0,
-                            boss: array,
-                        },
-                    ];
-                }
+        // 캐릭터 데이터를 먼저 가져온 후 ocid가 유효한지 확인
+        const fetchCharacterData = async () => {
+            if (ocid) {
+                try {
+                    const characterData = await getCharacterData(
+                        ocid,
+                        moment().format('YYYY-MM-DD')
+                    );
 
-                return prev;
-            });
-        }
+                    // 캐릭터 데이터가 유효한 경우에만 BossArray에 추가
+                    if (characterData && characterData.character_name) {
+                        setBossArray((prev) => {
+                            const isOcidExists = prev.some(
+                                (item) => item.ocid === ocid
+                            );
+                            if (!isOcidExists) {
+                                return [
+                                    ...prev,
+                                    {
+                                        ocid: ocid,
+                                        bosstoggle: false,
+                                        meso: 0,
+                                        boss: array,
+                                        done: false,
+                                        characterData,
+                                    },
+                                ];
+                            }
+                            return prev;
+                        });
+                    } else {
+                        window.alert('유효하지 않은 캐릭터 데이터입니다.');
+                        console.error('유효하지 않은 캐릭터 데이터입니다.');
+                    }
+                } catch (error) {
+                    console.error(
+                        '캐릭터 데이터를 가져오는 중 오류가 발생했습니다:',
+                        error
+                    );
+                }
+            }
+        };
+
+        fetchCharacterData();
     }, [ocid]);
 
     const setBossToggle = (ocid: string, meso?: number) => {
@@ -242,14 +279,16 @@ const Boss = () => {
         const newBossArray = [...BossArray]; //불변성을 유지하며 state를 변경하기 위해 복사
         const index = BossArray.findIndex((item) => item.ocid === ocid);
         const prev = BossArray[index];
-        const next = meso ? {
-            ...prev,
-            bosstoggle : !prev.bosstoggle,
-            meso : meso
-        } : {
-            ...prev,
-            bosstoggle: !prev.bosstoggle,
-        };
+        const next = meso
+            ? {
+                  ...prev,
+                  bosstoggle: !prev.bosstoggle,
+                  meso: meso,
+              }
+            : {
+                  ...prev,
+                  bosstoggle: !prev.bosstoggle,
+              };
         newBossArray[index] = next;
         setBossArray(newBossArray);
     };
@@ -258,10 +297,20 @@ const Boss = () => {
         setBossToggle();
     };
 
-    const onClick = () => {
-        refetch();
+    const onClick = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            const result = await refetch();
+            if (result.isError) {
+                window.alert(
+                    '에러가 발생했습니다: ' + (result.error as Error).message
+                );
+                console.error('Error fetching OCID:', result.error);
+            }
+        } catch (error) {
+            console.error('Error during refetch:', error);
+        }
     };
-
     const onBossCheckChange = (
         e: React.ChangeEvent<HTMLInputElement>,
         ocid: string
@@ -315,40 +364,89 @@ const Boss = () => {
             meso: meso,
         };
         newBossArray[index] = next;
+        onWeeklyMesoChange(newBossArray);
         setBossArray(newBossArray);
-        setBossToggle(ocid,meso);
+        setBossToggle(ocid, meso);
+    };
+
+    const onWeeklyMesoChange = (newBossArray: any[]) => {
+        let meso = 0;
+        newBossArray.forEach((item: any) => {
+            if (item.done) {
+                meso += item.meso;
+            }
+        });
+        setWeeklyMeso(meso);
+    };
+
+    const onBossDoneChange = (ocid: string) => {
+        const newBossArray = [...BossArray];
+        const index = BossArray.findIndex((item) => item.ocid === ocid);
+        const prev = BossArray[index];
+        const next = {
+            ...prev,
+            done: !prev.done,
+        };
+        newBossArray[index] = next;
+        onWeeklyMesoChange(newBossArray);
+        setBossArray(newBossArray);
+    };
+
+    const onCharacterDelete = (ocid: string) => {
+        const confirm = window.confirm('데이터를 삭제하시겠습니까?');
+        if (confirm) {
+            const newBossArray = BossArray.filter(
+                (item: any) => item.ocid !== ocid
+            );
+            setBossArray(newBossArray);
+            onWeeklyMesoChange(newBossArray);
+        }
     };
 
     return (
         <React.Fragment>
-            <Back>
-                <Head>
-                    <input
-                        name="character"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                    &nbsp;
-                    <Button onClick={onClick}>캐릭터 추가</Button>
-                </Head>
-                <Section>
-                    {BossArray.length > 0 &&
-                        BossArray.map((info: any) => (
-                            <BossCharacterInfo
-                                key={info.ocid}
-                                ocid={info.ocid}
-                                boss={info.boss}
-                                done={info.check}
-                                bossToggle={info.bosstoggle}
-                                meso={info.meso}
-                                setBossToggle={setBossToggle}
-                                onCancle={onCancle}
-                                onCheckChange={onBossCheckChange}
-                                onBossMesoPlus={onBossMesoPlus}
+            <Background>
+                <Back>
+                    <form onSubmit={onClick}>
+                        <Head>
+                            <Input
+                                name="character"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                             />
-                        ))}
-                </Section>
-            </Back>
+                            &nbsp;
+                            <Button>캐릭터 추가</Button>
+                        </Head>
+                    </form>
+                    <Nav>
+                        <div>
+                            {'주간 획득 메소 : ' +
+                                WeeklyMeso.toLocaleString() +
+                                ' 메소'}
+                        </div>
+                    </Nav>
+                    <Section>
+                        {BossArray.length > 0 &&
+                            BossArray.map((info: any) => (
+                                <BossCharacterInfo
+                                    key={info.ocid}
+                                    ocid={info.ocid}
+                                    boss={info.boss}
+                                    done={info.done}
+                                    bossToggle={info.bosstoggle}
+                                    meso={info.meso}
+                                    setBossToggle={setBossToggle}
+                                    onCancle={onCancle}
+                                    onCheckChange={onBossCheckChange}
+                                    onBossMesoPlus={onBossMesoPlus}
+                                    onBossDoneChange={onBossDoneChange}
+                                    data={info.characterData}
+                                    onCharacterDelete={onCharacterDelete}
+                                />
+                            ))}
+                    </Section>
+                </Back>
+            </Background>
         </React.Fragment>
     );
 };

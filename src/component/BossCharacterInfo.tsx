@@ -1,7 +1,4 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getCharacterData } from 'api/Maple';
-import moment from 'moment';
 import styled from 'styled-components';
 import ModalBoss from './ModalBoss';
 
@@ -9,7 +6,7 @@ const Info = styled.div`
     font-size: 11px;
     display: grid;
     place-items: center;
-    gap: 5px;
+    gap: 8px;
 `;
 
 const Checkbox = styled.input`
@@ -38,6 +35,9 @@ interface bossinfo {
     onCancle: any;
     onCheckChange: any;
     onBossMesoPlus: any;
+    data: any;
+    onBossDoneChange: any;
+    onCharacterDelete : any;
 }
 
 const BossCharacterInfo: React.FC<bossinfo> = ({
@@ -50,25 +50,31 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
     onCancle,
     onCheckChange,
     onBossMesoPlus,
+    data,
+    onBossDoneChange,
+    onCharacterDelete
 }) => {
-    const { isLoading, data, isError, error } = useQuery({
-        queryKey: ['bossinfo', ocid],
-        queryFn: () => getCharacterData(ocid, moment().format('YYYY-MM-DD')),
-        enabled: !!ocid,
-    });
-
     return (
         <React.Fragment>
             <Info>
                 <img src={data?.character_image} alt={data?.character_name} />
                 <div>{data?.character_name}</div>
-                <div>{data?.character_level}</div>
+                <div>{data?.character_level + '레벨'}</div>
                 <div>{data?.character_class}</div>
                 <div>
-                    <Button onClick={() => setBossToggle(ocid)}>입력</Button>
+                    <Button onClick={() => setBossToggle(ocid)}>입력</Button>&nbsp;
+                    <Button onClick={() => onCharacterDelete(ocid)}>삭제</Button>
                 </div>
-                <div>{meso && meso.toLocaleString()}</div>
-                <div>{<Checkbox type="checkbox" checked={false} />}</div>
+                <div>{meso + "메소" && meso.toLocaleString() + '메소'}</div>
+                <div>
+                    {
+                        <Checkbox
+                            type="checkbox"
+                            checked={done}
+                            onChange={() => onBossDoneChange(ocid)}
+                        />
+                    }
+                </div>
             </Info>
             <ModalBoss
                 toggle={bossToggle}
