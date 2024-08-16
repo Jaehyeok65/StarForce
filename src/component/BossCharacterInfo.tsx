@@ -37,7 +37,7 @@ interface bossinfo {
     onBossMesoPlus: any;
     data: any;
     onBossDoneChange: any;
-    onCharacterDelete : any;
+    onCharacterDelete: any;
 }
 
 const BossCharacterInfo: React.FC<bossinfo> = ({
@@ -52,7 +52,7 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
     onBossMesoPlus,
     data,
     onBossDoneChange,
-    onCharacterDelete
+    onCharacterDelete,
 }) => {
     return (
         <React.Fragment>
@@ -62,10 +62,21 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
                 <div>{data?.character_level + '레벨'}</div>
                 <div>{data?.character_class}</div>
                 <div>
-                    <Button onClick={() => setBossToggle(ocid)}>입력</Button>&nbsp;
-                    <Button onClick={() => onCharacterDelete(ocid)}>삭제</Button>
+                    <Button onClick={() => setBossToggle(ocid)}>입력</Button>
+                    &nbsp;
+                    <Button onClick={() => onCharacterDelete(ocid)}>
+                        삭제
+                    </Button>
                 </div>
-                <div>{meso + "메소" && meso.toLocaleString() + '메소'}</div>
+                <div>
+                    <img
+                        src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
+                        width="13px"
+                        alt="메소"
+                    />
+                    &nbsp;
+                    {meso && meso.toLocaleString()}
+                </div>
                 <div>
                     {
                         <Checkbox

@@ -30,9 +30,9 @@ const Head = styled.div`
 
 const Nav = styled.div`
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     margin-bottom: 5%;
-    font-size: 12px;
+    font-size: 13px;
 `;
 
 const Section = styled.div`
@@ -57,6 +57,10 @@ const Input = styled.input`
     width: 100%;
     max-width: 200px;
     border-radius: 8px;
+
+    @media screen and (max-width: 1000px) {
+        max-width: 130px;
+    }
 `;
 
 const array: any[] = [
@@ -226,6 +230,7 @@ const Boss = () => {
         enabled: false,
     });
     const [WeeklyMeso, setWeeklyMeso] = useState<number>(0);
+    const [WeeklyCount, setWeeklyCount] = useState<number>(0);
 
     useEffect(() => {
         // 캐릭터 데이터를 먼저 가져온 후 ocid가 유효한지 확인
@@ -273,6 +278,17 @@ const Boss = () => {
 
         fetchCharacterData();
     }, [ocid]);
+
+    useEffect(() => {
+        onWeeklyBossDateCheck(BossArray);
+    }, [BossArray]); // bossArray가 변경될 때마다 이 효과가 실행됨
+
+    useEffect(() => {
+        const newBossArray = getBossFromLocalStorage();
+        setBossArray(newBossArray);
+        onWeeklyMesoChange(newBossArray);
+        onWeeklyCountChange(newBossArray);
+    }, []);
 
     const setBossToggle = (ocid: string, meso?: number) => {
         //어느 캐릭터를 클릭했는지를 알아야하기 때문에 ocid를 매개변수로 받음
@@ -334,7 +350,22 @@ const Boss = () => {
             }),
         };
         newBossArray[index] = next;
+        setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
         setBossArray(newBossArray);
+    };
+
+    const setBossToLocalStorage = (bossarray: any[]) => {
+        if (bossarray && bossarray.length > 0) {
+            localStorage.setItem('bossarray', JSON.stringify(bossarray));
+        }
+    };
+
+    const getBossFromLocalStorage = () => {
+        const prev = localStorage.getItem('bossarray');
+        if (prev) {
+            const next = JSON.parse(prev);
+            return next;
+        }
     };
 
     const onBossMesoPlus = (
@@ -362,11 +393,13 @@ const Boss = () => {
         const next = {
             ...prev,
             meso: meso,
+            bosstoggle: false,
         };
         newBossArray[index] = next;
+        setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
         onWeeklyMesoChange(newBossArray);
+        onWeeklyCountChange(newBossArray);
         setBossArray(newBossArray);
-        setBossToggle(ocid, meso);
     };
 
     const onWeeklyMesoChange = (newBossArray: any[]) => {
@@ -388,8 +421,76 @@ const Boss = () => {
             done: !prev.done,
         };
         newBossArray[index] = next;
+        setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
         onWeeklyMesoChange(newBossArray);
+        onWeeklyCountChange(newBossArray);
         setBossArray(newBossArray);
+    };
+
+    const onWeeklyCountChange = (newBossArray: any[]) => {
+        let count = 0; // 리턴할 총 개수
+        newBossArray.forEach((item: any) => {
+            if (item.done) {
+                let innercount = 0; //체크된 보스 카운트용
+                item?.boss?.forEach((bossitem: any) => {
+                    if (bossitem.check) {
+                        innercount++;
+                    }
+                });
+                if (innercount > 12) {
+                    count += 12;
+                } else {
+                    count += innercount;
+                }
+            }
+        });
+        setWeeklyCount(count);
+    };
+
+    const getStartOfWeek = (date: any) => {
+        // 주의 시작일을 목요일로 설정
+        const day = date.getDay();
+        const diff = day >= 4 ? day - 4 : day + 3; // 목요일 기준으로 이동
+        const startOfWeek = new Date(date);
+        startOfWeek.setDate(date.getDate() - diff);
+        return startOfWeek;
+    };
+
+    const onWeeklyBossDateCheck = (BossArray: any[]) => {
+        const prevDateString = localStorage.getItem('bossDate');
+        const currentDate = new Date('2024-08-22T00:00:00Z');
+        const currentStartOfWeek = getStartOfWeek(currentDate);
+
+        if (!prevDateString) {
+            // 이전 날짜가 없으면 현재 주의 목요일을 로컬 스토리지에 저장
+            localStorage.setItem('bossDate', currentStartOfWeek.toISOString());
+            return;
+        }
+
+        const prevDate = new Date(prevDateString);
+        const prevStartOfWeek = getStartOfWeek(prevDate);
+
+        // 현재 주와 이전 주의 목요일을 비교
+        if (currentStartOfWeek > prevStartOfWeek) {
+            // 새 주가 시작된 경우 주간 초기화 로직 호출
+            onWeeklyBossInitialize(BossArray);
+
+            // 초기화 후 현재 주의 목요일을 로컬 스토리지에 저장
+            localStorage.setItem('bossDate', currentStartOfWeek.toISOString());
+        }
+    };
+    const onWeeklyBossInitialize = (BossArray: any[]) => {
+        //주간보스를 초기화해야하므로 boss의 check를 초기화 및 done을 초기화
+        if (BossArray.length > 0) {
+            const newBossArray = BossArray.map((item: any) => {
+                return {
+                    ...item,
+                    done: false,
+                };
+            });
+            setBossToLocalStorage(newBossArray);
+            setBossArray(newBossArray);
+        }
     };
 
     const onCharacterDelete = (ocid: string) => {
@@ -398,6 +499,7 @@ const Boss = () => {
             const newBossArray = BossArray.filter(
                 (item: any) => item.ocid !== ocid
             );
+            setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
             setBossArray(newBossArray);
             onWeeklyMesoChange(newBossArray);
         }
@@ -420,9 +522,24 @@ const Boss = () => {
                     </form>
                     <Nav>
                         <div>
-                            {'주간 획득 메소 : ' +
-                                WeeklyMeso.toLocaleString() +
-                                ' 메소'}
+                            <img
+                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgysFgGzGq2i8Nz1-4JSOCttyUHcQjdZ30ig&usqp=CAU"
+                                width="20px"
+                                alt="결정석"
+                                style={{ verticalAlign: 'middle' }}
+                            />
+                            &nbsp;
+                            {`${WeeklyCount} / 180개`}
+                        </div>
+                        <div>
+                            <img
+                                src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
+                                width="20px"
+                                alt="메소"
+                                style={{ verticalAlign: 'middle' }}
+                            />
+                            &nbsp;
+                            {WeeklyMeso.toLocaleString() + ' 메소'}
                         </div>
                     </Nav>
                     <Section>
