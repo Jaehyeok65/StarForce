@@ -223,7 +223,11 @@ const array: any[] = [
 
 const Boss = () => {
     const [name, setName] = useState<string>('');
-    const [BossArray, setBossArray] = useState<any[]>([]);
+    const [BossArray, setBossArray] = useState<any[]>(() => {
+        // 로컬 스토리지에서 초기 데이터를 불러옴
+        const storedBossArray = localStorage.getItem('bossArray');
+        return storedBossArray ? JSON.parse(storedBossArray) : [];
+    });
     const { data: ocid, refetch } = useQuery({
         queryKey: ['bossocid'], //쿼리키에 변수 종속성을 추가하면 Input창이 변경될 때 마다 자동으로 가져오므로 종속성 추가X
         queryFn: () => getOcidData(name),
@@ -244,25 +248,27 @@ const Boss = () => {
 
                     // 캐릭터 데이터가 유효한 경우에만 BossArray에 추가
                     if (characterData && characterData.character_name) {
-                        setBossArray((prev) => {
-                            const isOcidExists = prev.some(
-                                (item) => item.ocid === ocid
-                            );
-                            if (!isOcidExists) {
-                                return [
-                                    ...prev,
-                                    {
-                                        ocid: ocid,
-                                        bosstoggle: false,
-                                        meso: 0,
-                                        boss: array,
-                                        done: false,
-                                        characterData,
-                                    },
-                                ];
-                            }
-                            return prev;
-                        });
+                        const updatedBossArray = [...BossArray] || []; // 현재 BossArray 복사
+                        const isOcidExists = updatedBossArray.some(
+                            (item) => item.ocid === ocid
+                        );
+
+                        if (!isOcidExists) {
+                            updatedBossArray.push({
+                                ocid: ocid,
+                                bosstoggle: false,
+                                meso: 0,
+                                boss: array,
+                                done: false,
+                                characterData,
+                            });
+                        }
+
+                        // 로컬 스토리지에 저장
+                        setBossToLocalStorage(updatedBossArray);
+
+                        // 상태 업데이트
+                        setBossArray(updatedBossArray);
                     } else {
                         window.alert('유효하지 않은 캐릭터 데이터입니다.');
                         console.error('유효하지 않은 캐릭터 데이터입니다.');
@@ -278,6 +284,7 @@ const Boss = () => {
 
         fetchCharacterData();
     }, [ocid]);
+
 
     useEffect(() => {
         onWeeklyBossDateCheck(BossArray);
@@ -355,7 +362,8 @@ const Boss = () => {
     };
 
     const setBossToLocalStorage = (bossarray: any[]) => {
-        if (bossarray && bossarray.length > 0) {
+        console.log(bossarray);
+        if (bossarray) {
             localStorage.setItem('bossarray', JSON.stringify(bossarray));
         }
     };
@@ -403,13 +411,15 @@ const Boss = () => {
     };
 
     const onWeeklyMesoChange = (newBossArray: any[]) => {
-        let meso = 0;
-        newBossArray.forEach((item: any) => {
-            if (item.done) {
-                meso += item.meso;
-            }
-        });
-        setWeeklyMeso(meso);
+        if (newBossArray && newBossArray.length > 0) {
+            let meso = 0;
+            newBossArray.forEach((item: any) => {
+                if (item.done) {
+                    meso += item.meso;
+                }
+            });
+            setWeeklyMeso(meso);
+        }
     };
 
     const onBossDoneChange = (ocid: string) => {
@@ -428,23 +438,25 @@ const Boss = () => {
     };
 
     const onWeeklyCountChange = (newBossArray: any[]) => {
-        let count = 0; // 리턴할 총 개수
-        newBossArray.forEach((item: any) => {
-            if (item.done) {
-                let innercount = 0; //체크된 보스 카운트용
-                item?.boss?.forEach((bossitem: any) => {
-                    if (bossitem.check) {
-                        innercount++;
+        if (newBossArray && newBossArray.length > 0) {
+            let count = 0; // 리턴할 총 개수
+            newBossArray.forEach((item: any) => {
+                if (item.done) {
+                    let innercount = 0; //체크된 보스 카운트용
+                    item?.boss?.forEach((bossitem: any) => {
+                        if (bossitem.check) {
+                            innercount++;
+                        }
+                    });
+                    if (innercount > 12) {
+                        count += 12;
+                    } else {
+                        count += innercount;
                     }
-                });
-                if (innercount > 12) {
-                    count += 12;
-                } else {
-                    count += innercount;
                 }
-            }
-        });
-        setWeeklyCount(count);
+            });
+            setWeeklyCount(count);
+        }
     };
 
     const getStartOfWeek = (date: any) => {
@@ -481,7 +493,7 @@ const Boss = () => {
     };
     const onWeeklyBossInitialize = (BossArray: any[]) => {
         //주간보스를 초기화해야하므로 boss의 check를 초기화 및 done을 초기화
-        if (BossArray.length > 0) {
+        if (BossArray && BossArray.length > 0) {
             const newBossArray = BossArray.map((item: any) => {
                 return {
                     ...item,
@@ -499,6 +511,7 @@ const Boss = () => {
             const newBossArray = BossArray.filter(
                 (item: any) => item.ocid !== ocid
             );
+            console.log(newBossArray);
             setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
             setBossArray(newBossArray);
             onWeeklyMesoChange(newBossArray);
@@ -543,7 +556,7 @@ const Boss = () => {
                         </div>
                     </Nav>
                     <Section>
-                        {BossArray.length > 0 &&
+                        {BossArray && BossArray.length > 0 &&
                             BossArray.map((info: any) => (
                                 <BossCharacterInfo
                                     key={info.ocid}
