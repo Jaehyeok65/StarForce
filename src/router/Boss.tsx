@@ -223,11 +223,7 @@ const array: any[] = [
 
 const Boss = () => {
     const [name, setName] = useState<string>('');
-    const [BossArray, setBossArray] = useState<any[]>(() => {
-        // 로컬 스토리지에서 초기 데이터를 불러옴
-        const storedBossArray = localStorage.getItem('bossArray');
-        return storedBossArray ? JSON.parse(storedBossArray) : [];
-    });
+    const [BossArray, setBossArray] = useState<any[]>([]);
     const { data: ocid, refetch } = useQuery({
         queryKey: ['bossocid'], //쿼리키에 변수 종속성을 추가하면 Input창이 변경될 때 마다 자동으로 가져오므로 종속성 추가X
         queryFn: () => getOcidData(name),
@@ -248,7 +244,10 @@ const Boss = () => {
 
                     // 캐릭터 데이터가 유효한 경우에만 BossArray에 추가
                     if (characterData && characterData.character_name) {
-                        const updatedBossArray = [...BossArray] || []; // 현재 BossArray 복사
+                        const updatedBossArray =
+                            BossArray && Array.isArray(BossArray)
+                                ? [...BossArray]
+                                : []; // 현재 BossArray 복사
                         const isOcidExists = updatedBossArray.some(
                             (item) => item.ocid === ocid
                         );
@@ -285,14 +284,13 @@ const Boss = () => {
         fetchCharacterData();
     }, [ocid]);
 
-
     useEffect(() => {
-        onWeeklyBossDateCheck(BossArray);
-    }, [BossArray]); // bossArray가 변경될 때마다 이 효과가 실행됨
-
-    useEffect(() => {
-        const newBossArray = getBossFromLocalStorage();
-        setBossArray(newBossArray);
+        const newBossArray = getBossFromLocalStorage(); //LocalStorage에 저장된 배열을 가져옴
+        if (newBossArray && newBossArray.length > 0) {
+            //배열이 있으며, 데이터가 있다면
+            setBossArray(newBossArray);
+            onWeeklyBossDateCheck(newBossArray);
+        }
         onWeeklyMesoChange(newBossArray);
         onWeeklyCountChange(newBossArray);
     }, []);
@@ -362,7 +360,6 @@ const Boss = () => {
     };
 
     const setBossToLocalStorage = (bossarray: any[]) => {
-        console.log(bossarray);
         if (bossarray) {
             localStorage.setItem('bossarray', JSON.stringify(bossarray));
         }
@@ -556,7 +553,8 @@ const Boss = () => {
                         </div>
                     </Nav>
                     <Section>
-                        {BossArray && BossArray.length > 0 &&
+                        {BossArray &&
+                            BossArray.length > 0 &&
                             BossArray.map((info: any) => (
                                 <BossCharacterInfo
                                     key={info.ocid}
