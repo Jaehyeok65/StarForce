@@ -52,6 +52,7 @@ const infoarray: any[] = [
     'world_name',
     'character_class',
     'character_guild_name',
+    'character_exp_rate',
 ];
 
 const name: any = {
@@ -60,6 +61,7 @@ const name: any = {
     world_name: '월드',
     character_class: '직업',
     character_guild_name: '길드',
+    character_exp_rate: '경험치',
 };
 
 const statarray: any[] = [
@@ -111,6 +113,8 @@ const CharacterInfo = ({ ocid, date }: { ocid: string; date: string }) => {
         enabled: !!ocid,
     });
 
+    console.log(info);
+
     const formatting = (stat_name: string, stat_value: string): string => {
         if (
             stat_name === '보스 몬스터 데미지' ||
@@ -152,7 +156,10 @@ const CharacterInfo = ({ ocid, date }: { ocid: string; date: string }) => {
                             {Object.keys(info).map(
                                 (item1: any, index1: number) => (
                                     <div key={index1}>
-                                        {item === item1 && info[item]}
+                                        {item === 'character_exp_rate'
+                                            ? item === item1 &&
+                                              info[item] + ' %'
+                                            : item === item1 && info[item]}
                                     </div>
                                 )
                             )}
