@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import ModalBoss from './ModalBoss';
+import ModalCharacter from './ModalCharacter';
+import { FaRegTrashCan } from 'react-icons/fa6';
 
 const Info = styled.div`
     font-size: 11px;
@@ -25,6 +27,14 @@ const Button = styled.button`
     font-size: 12px;
 `;
 
+const Inner = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap : 5px;
+    place-items: center;
+`;
+
+
 interface bossinfo {
     ocid: string; //캐릭터 ocid
     boss: any[]; //처치 보스 목록
@@ -38,6 +48,10 @@ interface bossinfo {
     data: any;
     onBossDoneChange: any;
     onCharacterDelete: any;
+    BossArray : any;
+    onBossCopy : any;
+    setCopyToggle : any;
+    copyToggle : boolean;
 }
 
 const BossCharacterInfo: React.FC<bossinfo> = ({
@@ -53,6 +67,10 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
     data,
     onBossDoneChange,
     onCharacterDelete,
+    BossArray,
+    onBossCopy,
+    setCopyToggle,
+    copyToggle
 }) => {
     return (
         <React.Fragment>
@@ -61,13 +79,14 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
                 <div>{data?.character_name}</div>
                 <div>{data?.character_level + '레벨'}</div>
                 <div>{data?.character_class}</div>
-                <div>
+                <Inner>
+                    <div>
                     <Button onClick={() => setBossToggle(ocid)}>입력</Button>
-                    &nbsp;
-                    <Button onClick={() => onCharacterDelete(ocid)}>
-                        삭제
-                    </Button>
-                </div>
+                    </div>
+                    <div>
+                    <Button onClick={() => setCopyToggle(ocid)}>복사</Button>
+                    </div>
+                </Inner>
                 <div>
                     <img
                         src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
@@ -77,15 +96,22 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
                     &nbsp;
                     {meso && meso.toLocaleString()}
                 </div>
-                <div>
-                    {
-                        <Checkbox
-                            type="checkbox"
-                            checked={done}
-                            onChange={() => onBossDoneChange(ocid)}
-                        />
-                    }
-                </div>
+                <Inner>
+                    <div>
+                        {
+                            <Checkbox
+                                type="checkbox"
+                                checked={done}
+                                onChange={() => onBossDoneChange(ocid)}
+                            />
+                        }
+                    </div>
+                    <div>
+                        <Button onClick={() => onCharacterDelete(ocid)}>
+                            <FaRegTrashCan />
+                        </Button>
+                    </div>
+                </Inner>
             </Info>
             <ModalBoss
                 toggle={bossToggle}
@@ -94,6 +120,13 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
                 boss={boss}
                 onCheckChange={(e) => onCheckChange(e, ocid)}
                 onBossMesoPlus={(e) => onBossMesoPlus(e, ocid)}
+            />
+            <ModalCharacter 
+                toggle={copyToggle}
+                setToggle={() => setCopyToggle(ocid)}
+                onCancle={() => onCancle(() => setCopyToggle(ocid))}
+                onBossCopy={onBossCopy}
+                BossArray={BossArray}
             />
         </React.Fragment>
     );

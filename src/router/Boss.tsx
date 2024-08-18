@@ -273,6 +273,7 @@ const Boss = () => {
                 updatedBossArray.push({
                     ocid: ocid,
                     bosstoggle: false,
+                    copytoggle: false,
                     meso: 0,
                     boss: array,
                     done: false,
@@ -312,7 +313,18 @@ const Boss = () => {
         setBossArray(newBossArray);
     };
 
-    
+    const setCopyToggle = (ocid: string) => {
+        //어느 캐릭터를 클릭했는지를 알아야하기 때문에 ocid를 매개변수로 받음
+        const newBossArray = [...BossArray]; //불변성을 유지하며 state를 변경하기 위해 복사
+        const index = BossArray.findIndex((item) => item.ocid === ocid);
+        const prev = BossArray[index];
+        const next = {
+            ...prev,
+            copytoggle: !prev.copytoggle,
+        };
+        newBossArray[index] = next;
+        setBossArray(newBossArray);
+    };
 
     const onCancle = (setBossToggle: any) => {
         setBossToggle();
@@ -463,7 +475,31 @@ const Boss = () => {
         }
     };
 
+    const onBossCopy = (copyocid: string, copyedocid: string) => {
+        const newBossArray = [...BossArray];
+        const copyindex = BossArray.findIndex((item) => item.ocid === copyocid); //복사할 캐릭터의 ocid를 선택
+        const copyprev = BossArray[copyindex]; //복사할 캐릭터의 이전 상태
 
+        const copyedindex = BossArray.findIndex(
+            (item) => item.ocid === copyedocid
+        ); //복사될 캐릭터의 ocid를 선택
+        const copyedprev = BossArray[copyedindex]; //복사될 캐릭터의 이전 상태
+
+        const copynext = {
+            //이전 상태를 복사하며 meso와 boss만 변경
+            ...copyprev,
+            meso: copyedprev?.meso,
+            boss: copyedprev?.boss,
+            copytoggle: false,
+        }; //복사할 캐릭터의 다음 상태
+
+        newBossArray[copyindex] = copynext;
+        const SortedArray = onSortBossArray(newBossArray); //meso가 변경되면 정렬을 해야함
+        setBossToLocalStorage(SortedArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
+        onWeeklyMesoChange(SortedArray);
+        onWeeklyCountChange(SortedArray);
+        setBossArray(SortedArray);
+    };
 
     const getStartOfWeek = (date: any) => {
         // 주의 시작일을 목요일로 설정
@@ -521,6 +557,7 @@ const Boss = () => {
             setBossToLocalStorage(SortedArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
             setBossArray(SortedArray);
             onWeeklyMesoChange(SortedArray);
+            onWeeklyCountChange(SortedArray);
         }
     };
 
@@ -579,8 +616,10 @@ const Boss = () => {
                                     onBossDoneChange={onBossDoneChange}
                                     data={info?.characterData}
                                     onCharacterDelete={onCharacterDelete}
-                                   
-                                    
+                                    BossArray={BossArray}
+                                    onBossCopy={onBossCopy}
+                                    copyToggle={info?.copytoggle}
+                                    setCopyToggle={setCopyToggle}
                                 />
                             ))}
                     </Section>
