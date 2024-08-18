@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { getOcidData, getCharacterData } from 'api/Maple';
 import moment from 'moment';
 import BossCharacterInfo from 'component/BossCharacterInfo';
@@ -224,65 +224,27 @@ const array: any[] = [
 const Boss = () => {
     const [name, setName] = useState<string>('');
     const [BossArray, setBossArray] = useState<any[]>([]);
-    const { data: ocid, refetch } = useQuery({
-        queryKey: ['bossocid'], //쿼리키에 변수 종속성을 추가하면 Input창이 변경될 때 마다 자동으로 가져오므로 종속성 추가X
-        queryFn: () => getOcidData(name),
-        enabled: false,
+
+    const OcidMutation = useMutation({
+        mutationFn: (name: string) => {
+            return getOcidData(name);
+        },
+        onSuccess: (data: string) => {
+            CharacterMutation.mutate(data);
+        },
     });
+
+    const CharacterMutation = useMutation({
+        mutationFn: (ocid: string) => {
+            return getCharacterData(ocid, moment().format('YYYY-MM-DD'));
+        },
+        onSuccess: (data: any) => {
+            setBossArrayFromCharacterData(data, data?.ocid);
+        },
+    });
+
     const [WeeklyMeso, setWeeklyMeso] = useState<number>(0);
     const [WeeklyCount, setWeeklyCount] = useState<number>(0);
-
-    useEffect(() => {
-        // 캐릭터 데이터를 먼저 가져온 후 ocid가 유효한지 확인
-        const fetchCharacterData = async () => {
-            if (ocid) {
-                try {
-                    const characterData = await getCharacterData(
-                        ocid,
-                        moment().format('YYYY-MM-DD')
-                    );
-
-                    // 캐릭터 데이터가 유효한 경우에만 BossArray에 추가
-                    if (characterData && characterData.character_name) {
-                        const updatedBossArray =
-                            BossArray && Array.isArray(BossArray)
-                                ? [...BossArray]
-                                : []; // 현재 BossArray 복사
-                        const isOcidExists = updatedBossArray.some(
-                            (item) => item.ocid === ocid
-                        );
-
-                        if (!isOcidExists) {
-                            updatedBossArray.push({
-                                ocid: ocid,
-                                bosstoggle: false,
-                                meso: 0,
-                                boss: array,
-                                done: false,
-                                characterData,
-                            });
-                        }
-
-                        // 로컬 스토리지에 저장
-                        setBossToLocalStorage(updatedBossArray);
-
-                        // 상태 업데이트
-                        setBossArray(updatedBossArray);
-                    } else {
-                        window.alert('유효하지 않은 캐릭터 데이터입니다.');
-                        console.error('유효하지 않은 캐릭터 데이터입니다.');
-                    }
-                } catch (error) {
-                    console.error(
-                        '캐릭터 데이터를 가져오는 중 오류가 발생했습니다:',
-                        error
-                    );
-                }
-            }
-        };
-
-        fetchCharacterData();
-    }, [ocid]);
 
     useEffect(() => {
         const newBossArray = getBossFromLocalStorage(); //LocalStorage에 저장된 배열을 가져옴
@@ -294,6 +256,42 @@ const Boss = () => {
         onWeeklyMesoChange(newBossArray);
         onWeeklyCountChange(newBossArray);
     }, []);
+
+    const setBossArrayFromCharacterData = (
+        characterData: any,
+        ocid: string
+    ) => {
+        // 캐릭터 데이터가 유효한 경우에만 BossArray에 추가
+        if (characterData && characterData.character_name) {
+            const updatedBossArray =
+                BossArray && Array.isArray(BossArray) ? [...BossArray] : []; // 현재 BossArray 복사
+            const isOcidExists = updatedBossArray.some(
+                (item) => item.ocid === ocid
+            );
+
+            if (!isOcidExists) {
+                updatedBossArray.push({
+                    ocid: ocid,
+                    bosstoggle: false,
+                    meso: 0,
+                    boss: array,
+                    done: false,
+                    characterData,
+                });
+            }
+
+            //기존의 배열을 메소, 레벨 내림차순으로 정렬
+            const SortedArray = onSortBossArray(updatedBossArray);
+            // 로컬 스토리지에 저장
+            setBossToLocalStorage(SortedArray);
+
+            // 상태 업데이트
+            setBossArray(SortedArray);
+        } else {
+            window.alert('유효하지 않은 캐릭터 데이터입니다.');
+            console.error('유효하지 않은 캐릭터 데이터입니다.');
+        }
+    };
 
     const setBossToggle = (ocid: string, meso?: number) => {
         //어느 캐릭터를 클릭했는지를 알아야하기 때문에 ocid를 매개변수로 받음
@@ -314,23 +312,15 @@ const Boss = () => {
         setBossArray(newBossArray);
     };
 
+    
+
     const onCancle = (setBossToggle: any) => {
         setBossToggle();
     };
 
     const onClick = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        try {
-            const result = await refetch();
-            if (result.isError) {
-                window.alert(
-                    '에러가 발생했습니다: ' + (result.error as Error).message
-                );
-                console.error('Error fetching OCID:', result.error);
-            }
-        } catch (error) {
-            console.error('Error during refetch:', error);
-        }
+        OcidMutation.mutate(name);
     };
     const onBossCheckChange = (
         e: React.ChangeEvent<HTMLInputElement>,
@@ -373,6 +363,22 @@ const Boss = () => {
         }
     };
 
+    const onSortBossArray = (bossArray: any[]) => {
+        const SortedArray = [...bossArray];
+        return SortedArray.sort((a, b) => {
+            // meso를 내림차순으로 정렬
+            if (b.meso !== a.meso) {
+                return b.meso - a.meso;
+            }
+
+            // meso가 같을 경우, level을 내림차순으로 정렬
+            return (
+                (b.characterData?.character_level || 0) -
+                (a.characterData?.character_level || 0)
+            );
+        });
+    };
+
     const onBossMesoPlus = (
         e: React.MouseEvent<HTMLButtonElement>,
         ocid: string
@@ -401,10 +407,11 @@ const Boss = () => {
             bosstoggle: false,
         };
         newBossArray[index] = next;
-        setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
-        onWeeklyMesoChange(newBossArray);
-        onWeeklyCountChange(newBossArray);
-        setBossArray(newBossArray);
+        const SortedArray = onSortBossArray(newBossArray); //meso가 변경되면 정렬을 해야함
+        setBossToLocalStorage(SortedArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
+        onWeeklyMesoChange(SortedArray);
+        onWeeklyCountChange(SortedArray);
+        setBossArray(SortedArray);
     };
 
     const onWeeklyMesoChange = (newBossArray: any[]) => {
@@ -455,6 +462,8 @@ const Boss = () => {
             setWeeklyCount(count);
         }
     };
+
+
 
     const getStartOfWeek = (date: any) => {
         // 주의 시작일을 목요일로 설정
@@ -508,10 +517,10 @@ const Boss = () => {
             const newBossArray = BossArray.filter(
                 (item: any) => item.ocid !== ocid
             );
-            console.log(newBossArray);
-            setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
-            setBossArray(newBossArray);
-            onWeeklyMesoChange(newBossArray);
+            const SortedArray = onSortBossArray(newBossArray);
+            setBossToLocalStorage(SortedArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
+            setBossArray(SortedArray);
+            onWeeklyMesoChange(SortedArray);
         }
     };
 
@@ -557,19 +566,21 @@ const Boss = () => {
                             BossArray.length > 0 &&
                             BossArray.map((info: any) => (
                                 <BossCharacterInfo
-                                    key={info.ocid}
-                                    ocid={info.ocid}
-                                    boss={info.boss}
-                                    done={info.done}
-                                    bossToggle={info.bosstoggle}
-                                    meso={info.meso}
+                                    key={info?.ocid}
+                                    ocid={info?.ocid}
+                                    boss={info?.boss}
+                                    done={info?.done}
+                                    bossToggle={info?.bosstoggle}
+                                    meso={info?.meso}
                                     setBossToggle={setBossToggle}
                                     onCancle={onCancle}
                                     onCheckChange={onBossCheckChange}
                                     onBossMesoPlus={onBossMesoPlus}
                                     onBossDoneChange={onBossDoneChange}
-                                    data={info.characterData}
+                                    data={info?.characterData}
                                     onCharacterDelete={onCharacterDelete}
+                                   
+                                    
                                 />
                             ))}
                     </Section>
