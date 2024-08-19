@@ -33,6 +33,22 @@ const ModalNavigation = styled.div`
     grid-template-columns: 1fr 1fr 1fr;
     margin: 5% 10%;
     gap: 20px;
+
+    @media screen and (max-width: 600px) {
+        margin: 5% 7%;
+        gap: 10px;
+    }
+`;
+
+const ModalMeso = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    margin: 5% 10%;
+    font-size : 12px;
+
+    @media screen and (max-width: 600px) {
+        margin: 5% 7%;
+    }
 `;
 
 const Head = styled.div`
@@ -42,13 +58,13 @@ const Head = styled.div`
     gap: 10px;
 `;
 
-const Button = styled.button<{ $width: string }>`
+const Button = styled.button<{ $width: string; $mode?: boolean }>`
     font-size: 12px;
     border: 1px solid gray;
     padding: 4px 8px;
-    background-color: white;
+    background-color: ${(props) => (props.$mode ? 'black' : 'white')};
+    color: ${(props) => (props.$mode ? 'white' : 'black')};
     width: ${(props) => props.$width};
-    backgroud-color: white;
     cursor: pointer;
     border-radius: 8px;
 `;
@@ -95,13 +111,17 @@ const ImageContainer = styled.div<{ $difficulty: string; $checked: boolean }>`
 `;
 
 const Image = styled.img<{ $checked: boolean }>`
-    width: 100px;
+    width: 110px;
     height: 100px;
     border: 1px solid gray;
     border-radius: 8px;
     transition: filter 0.3s ease-in-out, opacity 0.3s ease-in-out;
     filter: ${({ $checked }) =>
         $checked ? 'grayscale(100%) brightness(75%)' : ''};
+
+    @media screen and (max-width: 600px) {
+        width: 100px;
+    }
 `;
 
 interface Boss {
@@ -136,11 +156,14 @@ const ModalBoss: React.FC<ModalBossProps> = ({
     const [SortedBoss, setSortedBoss] = useState<any[]>([]); //결정석 가격 오름차순으로 정렬
     const [difficulty, setDifficulty] = useState<any>('EASY'); //hard, extreme
     const [ocid, setOcid] = useState<any>('');
+    const [currentMeso, setCurrentMeso] = useState<number>(0);
 
     useEffect(() => {
         if (toggle) {
-            console.log(boss);
             if (boss && Array.isArray(boss)) {
+                const meso = setCurrentMesoFromBossArray(boss);
+                setCurrentMeso(meso);
+
                 if (difficulty === 'EASY') {
                     //사용자가 이지를 클릭했다면
                     const newBossArray = boss.filter((item: any) => !item.hard);
@@ -180,6 +203,25 @@ const ModalBoss: React.FC<ModalBossProps> = ({
         }
     }, [toggle]);
 
+    const setCurrentMesoFromBossArray = (boss: any[]) => {
+        const mesoarray: number[] = [];
+        const count = 12; //결정석 개수는 12개가 한계
+        let meso = 0;
+        boss?.forEach((item: any) => {
+            if (item.check) {
+                mesoarray.push(item.meso);
+            }
+        });
+        mesoarray
+            .sort((a, b) => b - a)
+            .slice(0, count)
+            .forEach((item: any) => {
+                meso += item;
+            });
+
+        return meso;
+    };
+
     const onSortBossArray = (bossArray: any[]) => {
         const SortedArray = [...bossArray];
         return SortedArray.sort((a, b) => {
@@ -190,20 +232,38 @@ const ModalBoss: React.FC<ModalBossProps> = ({
     return (
         <Modal toggle={toggle}>
             <ModalHead>금주에 처치한 보스를 체크해주세요</ModalHead>
+            <ModalMeso>
+                <img
+                    src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
+                    width="15px"
+                    alt="메소"
+                />
+                &nbsp;
+                {currentMeso.toLocaleString()}
+            </ModalMeso>
             <ModalNavigation>
                 <div>
-                    <Button $width="100%" onClick={() => setDifficulty('EASY')}>
+                    <Button
+                        $width="100%"
+                        $mode={difficulty === 'EASY'}
+                        onClick={() => setDifficulty('EASY')}
+                    >
                         이지
                     </Button>
                 </div>
                 <div>
-                    <Button $width="100%" onClick={() => setDifficulty('HARD')}>
+                    <Button
+                        $width="100%"
+                        $mode={difficulty === 'HARD'}
+                        onClick={() => setDifficulty('HARD')}
+                    >
                         하드
                     </Button>
                 </div>
                 <div>
                     <Button
                         $width="100%"
+                        $mode={difficulty === 'EXTREME'}
                         onClick={() => setDifficulty('EXTREME')}
                     >
                         익스트림
