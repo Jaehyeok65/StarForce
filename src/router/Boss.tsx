@@ -527,18 +527,16 @@ const Boss = () => {
         e.preventDefault();
         OcidMutation.mutate(name);
     };
-    const onBossCheckChange = (
-        e: React.ChangeEvent<HTMLInputElement>,
-        ocid: string
-    ) => {
-        const { name } = e.target;
+
+
+    const onBossClickChange = (ocid: string, clickedBoss: string) => {
         const newBossArray = [...BossArray];
         const index = BossArray.findIndex((item) => item.ocid === ocid);
         const prev = BossArray[index];
         const next = {
             ...prev,
             boss: prev?.boss.map((item: any) => {
-                if (item.name === name) {
+                if (item.name === clickedBoss) {
                     //체크한 name과 일치하는 경우 check 상태를 바꿈
                     return {
                         ...item,
@@ -552,34 +550,6 @@ const Boss = () => {
         newBossArray[index] = next;
         setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
         setBossArray(newBossArray);
-    };
-
-    const onBossClickChange = (
-        ocid: string,
-        clickedBoss : string
-    ) => {
-        const newBossArray = [...BossArray];
-        const index = BossArray.findIndex((item) => item.ocid === ocid);
-        const prev = BossArray[index];
-        console.log(clickedBoss);
-
-        /*const next = {
-            ...prev,
-            boss: prev?.boss.map((item: any) => {
-                if (item.name === name) {
-                    //체크한 name과 일치하는 경우 check 상태를 바꿈
-                    return {
-                        ...item,
-                        check: !item.check,
-                    };
-                } else {
-                    return item;
-                }
-            }),
-        };
-        newBossArray[index] = next;
-        setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
-        setBossArray(newBossArray);*/
     };
 
     const setBossToLocalStorage = (bossarray: any[]) => {
@@ -832,7 +802,6 @@ const Boss = () => {
                                     meso={info?.meso}
                                     setBossToggle={setBossToggle}
                                     onCancle={onCancle}
-                                    onCheckChange={onBossCheckChange}
                                     onBossMesoPlus={onBossMesoPlus}
                                     onBossDoneChange={onBossDoneChange}
                                     data={info?.characterData}

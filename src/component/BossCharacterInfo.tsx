@@ -43,7 +43,6 @@ interface bossinfo {
     meso: number;
     setBossToggle: any;
     onCancle: any;
-    onCheckChange: any;
     onBossMesoPlus: any;
     data: any;
     onBossDoneChange: any;
@@ -63,7 +62,6 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
     meso,
     setBossToggle,
     onCancle,
-    onCheckChange,
     onBossMesoPlus,
     data,
     onBossDoneChange,
@@ -120,9 +118,9 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
                 setToggle={() => setBossToggle(ocid)}
                 onCancle={() => onCancle(() => setBossToggle(ocid))}
                 boss={boss}
-                onCheckChange={(e) => onCheckChange(e, ocid)}
                 onBossMesoPlus={(e) => onBossMesoPlus(e, ocid)}
                 onBossClick={onBossClick}
+                BossArray={BossArray}
             />
             <ModalCharacter 
                 toggle={copyToggle}

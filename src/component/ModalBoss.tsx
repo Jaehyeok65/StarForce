@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Modal from './Modal';
+import { FaCheck } from 'react-icons/fa6';
 
 const ModalContent = styled.div`
     display: grid;
-    gap: 30px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
     row-gap: 10px;
     position: relative;
     margin: 7% 10% 7% 10%;
@@ -15,13 +17,8 @@ const ModalContent = styled.div`
 
     @media screen and (max-width: 600px) {
         margin: 7% 7% 7% 7%;
+        gap: 10px;
     }
-`;
-
-const ModalColumns = styled.div`
-    display: grid;
-    grid-template-columns: 40% 40% 20%;
-    align-items: center;
 `;
 
 const ModalHead = styled.div`
@@ -45,13 +42,6 @@ const Head = styled.div`
     gap: 10px;
 `;
 
-const Checkbox = styled.input`
-    width: 20px;
-    height: 16px;
-    border: 1px solid gray;
-    border-radius: 4px;
-`;
-
 const Button = styled.button<{ $width: string }>`
     font-size: 12px;
     border: 1px solid gray;
@@ -63,11 +53,12 @@ const Button = styled.button<{ $width: string }>`
     border-radius: 8px;
 `;
 
-const ImageContainer = styled.div<{ $difficulty: string }>`
+const ImageContainer = styled.div<{ $difficulty: string; $checked: boolean }>`
     position: relative;
     display: inline-block;
+    cursor: pointer;
 
-    > div {
+    > div:nth-child(2) {
         position: absolute;
         bottom: 10%; /* 이미지의 아래쪽에서 10% 위에 배치 */
         right: 5%; /* 이미지의 오른쪽에서 10% 왼쪽에 배치 */
@@ -89,13 +80,28 @@ const ImageContainer = styled.div<{ $difficulty: string }>`
         font-weight: bold;
         z-index: 10; /* 텍스트가 이미지 위에 오도록 설정 */
     }
+
+    > div:nth-child(3) {
+        opacity: ${({ $checked }) => ($checked ? 1 : 0)};
+        position: absolute;
+        top: 50%; /* 이미지 중앙에 배치 */
+        left: 50%;
+        transform: translate(-50%, -50%); /* 중앙 정렬 */
+        color: #4baf4b;
+        font-size: 30px;
+        font-weight: bold; /* 텍스트 굵기 */
+        z-index: 10; /* 텍스트가 이미지 위에 오도록 설정 */
+    }
 `;
 
-const Image = styled.img`
+const Image = styled.img<{ $checked: boolean }>`
     width: 100px;
     height: 100px;
     border: 1px solid gray;
     border-radius: 8px;
+    transition: filter 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    filter: ${({ $checked }) =>
+        $checked ? 'grayscale(100%) brightness(75%)' : ''};
 `;
 
 interface Boss {
@@ -109,26 +115,23 @@ interface ModalBossProps {
     toggle: boolean;
     setToggle: React.Dispatch<React.SetStateAction<boolean>>;
     boss?: Boss[];
-    onCheckChange?: (
-        e: React.ChangeEvent<HTMLInputElement>,
-        ocid?: string
-    ) => void;
     onBossMesoPlus?: (
         e: React.MouseEvent<HTMLButtonElement>,
         ocid?: string
     ) => void;
     onCancle: (onToggle: React.Dispatch<React.SetStateAction<boolean>>) => void;
-    onBossClick : any;
+    onBossClick: any;
+    BossArray: any[];
 }
 
 const ModalBoss: React.FC<ModalBossProps> = ({
     toggle,
     setToggle,
     boss,
-    onCheckChange,
     onBossMesoPlus,
     onCancle,
-    onBossClick
+    onBossClick,
+    BossArray,
 }) => {
     const [SortedBoss, setSortedBoss] = useState<any[]>([]); //결정석 가격 오름차순으로 정렬
     const [difficulty, setDifficulty] = useState<any>('EASY'); //hard, extreme
@@ -136,13 +139,8 @@ const ModalBoss: React.FC<ModalBossProps> = ({
 
     useEffect(() => {
         if (toggle) {
+            console.log(boss);
             if (boss && Array.isArray(boss)) {
-                //boss가 undefined가 아니며 배열이라면
-                const prev  = boss.filter(
-                    (item: any) => item.bosstoggle === true
-                );
-                console.log(boss);
-              
                 if (difficulty === 'EASY') {
                     //사용자가 이지를 클릭했다면
                     const newBossArray = boss.filter((item: any) => !item.hard);
@@ -166,6 +164,21 @@ const ModalBoss: React.FC<ModalBossProps> = ({
             }
         }
     }, [toggle, difficulty, boss]);
+
+    useEffect(() => {
+        if (BossArray && Array.isArray(BossArray)) {
+            const newBossArray = BossArray.filter(
+                (item: any) => item.bosstoggle === true
+            );
+            if (
+                newBossArray &&
+                Array.isArray(newBossArray) &&
+                newBossArray.length > 0
+            ) {
+                setOcid(newBossArray[0].ocid);
+            }
+        }
+    }, [toggle]);
 
     const onSortBossArray = (bossArray: any[]) => {
         const SortedArray = [...bossArray];
@@ -200,13 +213,22 @@ const ModalBoss: React.FC<ModalBossProps> = ({
             <ModalContent>
                 {SortedBoss &&
                     SortedBoss.map((item: any) => (
-                        <ModalColumns key={item.name}>
-                            <div>
-                                <ImageContainer $difficulty={item.difficulty} onClick={() => onBossClick()}>
-                                    <Image src={item.src} alt={item.name} />
-                                    <div>{item?.difficulty}</div>
-                                </ImageContainer>
-                            </div>
+                        <div key={item.name}>
+                            <ImageContainer
+                                $difficulty={item.difficulty}
+                                $checked={item.check}
+                                onClick={() => onBossClick(ocid, item.name)}
+                            >
+                                <Image
+                                    src={item.src}
+                                    alt={item.name}
+                                    $checked={item.check}
+                                />
+                                <div>{item?.difficulty}</div>
+                                <div>
+                                    <FaCheck />
+                                </div>
+                            </ImageContainer>
                             <div>
                                 <img
                                     src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
@@ -216,13 +238,7 @@ const ModalBoss: React.FC<ModalBossProps> = ({
                                 &nbsp;
                                 {item?.meso.toLocaleString()}
                             </div>
-                            <Checkbox
-                                type="checkbox"
-                                checked={item?.check}
-                                name={item?.name}
-                                onChange={onCheckChange}
-                            />
-                        </ModalColumns>
+                        </div>
                     ))}
             </ModalContent>
             <Head>
