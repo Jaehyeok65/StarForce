@@ -11,6 +11,11 @@ const ModalContent = styled.div`
     > div {
         font-size: 12px;
     }
+
+    @media screen and (max-width: 600px) {
+        margin: 4% 4%;
+        gap: 5px;
+    }
 `;
 
 const Info = styled.div`
@@ -61,7 +66,6 @@ const ModalBoss: React.FC<ModalBossProps> = ({
 }) => {
     const [BossCharacter, setBossCharacter] = useState<any[]>([]);
     const [copyocid, setCopyOcid] = useState<any>('');
-    
 
     useEffect(() => {
         if (toggle) {
@@ -71,8 +75,14 @@ const ModalBoss: React.FC<ModalBossProps> = ({
                 const newBossArray = BossArray.filter(
                     (item: any) => item.copytoggle === false
                 );
-                const CopyPrev = BossArray.filter((item : any) => item.copytoggle === true);
-                if(CopyPrev && Array.isArray(CopyPrev) && CopyPrev.length > 0) {
+                const CopyPrev = BossArray.filter(
+                    (item: any) => item.copytoggle === true
+                );
+                if (
+                    CopyPrev &&
+                    Array.isArray(CopyPrev) &&
+                    CopyPrev.length > 0
+                ) {
                     setCopyOcid(CopyPrev[0].ocid);
                 }
                 setBossCharacter(newBossArray);
@@ -104,13 +114,30 @@ const ModalBoss: React.FC<ModalBossProps> = ({
                                 {character?.characterData?.character_name}
                             </div>
                             <div>
-                            {character?.characterData?.character_level+"레벨"}
+                                {character?.characterData?.character_level +
+                                    '레벨'}
                             </div>
                             <div>
-                            {character?.characterData?.character_class}
+                                {character?.characterData?.character_class}
                             </div>
                             <div>
-                                <Button onClick={() => onBossCopy(copyocid,character?.ocid)}>복사하기</Button>
+                                <img
+                                    src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
+                                    width="13px"
+                                    alt="메소"
+                                />
+                                &nbsp;
+                                {character?.meso &&
+                                    character?.meso.toLocaleString()}
+                            </div>
+                            <div>
+                                <Button
+                                    onClick={() =>
+                                        onBossCopy(copyocid, character?.ocid)
+                                    }
+                                >
+                                    복사하기
+                                </Button>
                             </div>
                         </Info>
                     ))}

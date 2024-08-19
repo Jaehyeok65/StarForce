@@ -1525,24 +1525,6 @@ const Meso = () => {
                 onPropertyPlus={onPropertyPlus}
                 onCancle={onCancle}
             />
-            <ModalBoss
-                toggle={bossmesotoggle}
-                total={false}
-                setToggle={setBossMesoToggle}
-                boss={boss}
-                onCheckChange={onCheckChange}
-                onBossMesoPlus={onBossMesoPlus}
-                onCancle={onCancle}
-            />
-            <ModalBoss
-                toggle={totalbossmesotoggle}
-                total={true}
-                setToggle={setTotalBossMesoToggle}
-                boss={boss}
-                onCheckChange={onNumberChange}
-                onBossMesoPlus={onTotalBossMesoPlus}
-                onCancle={onCancle}
-            />
             <ModalErda
                 toggle={erdatoggle}
                 src4={src4}

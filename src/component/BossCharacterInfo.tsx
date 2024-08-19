@@ -52,6 +52,7 @@ interface bossinfo {
     onBossCopy : any;
     setCopyToggle : any;
     copyToggle : boolean;
+    onBossClick : any;
 }
 
 const BossCharacterInfo: React.FC<bossinfo> = ({
@@ -70,7 +71,8 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
     BossArray,
     onBossCopy,
     setCopyToggle,
-    copyToggle
+    copyToggle,
+    onBossClick
 }) => {
     return (
         <React.Fragment>
@@ -120,6 +122,7 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
                 boss={boss}
                 onCheckChange={(e) => onCheckChange(e, ocid)}
                 onBossMesoPlus={(e) => onBossMesoPlus(e, ocid)}
+                onBossClick={onBossClick}
             />
             <ModalCharacter 
                 toggle={copyToggle}
