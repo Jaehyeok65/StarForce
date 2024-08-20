@@ -528,11 +528,15 @@ const Boss = () => {
         OcidMutation.mutate(name);
     };
 
-
     const onBossClickChange = (ocid: string, clickedBoss: string) => {
         const newBossArray = [...BossArray];
         const index = BossArray.findIndex((item) => item.ocid === ocid);
         const prev = BossArray[index];
+        if (onBossOverLapCheck(prev?.boss, clickedBoss)) {
+            //true라면 중복 체크
+            window.alert('이미 처치한 보스입니다');
+            return;
+        }
         const next = {
             ...prev,
             boss: prev?.boss.map((item: any) => {
@@ -550,6 +554,28 @@ const Boss = () => {
         newBossArray[index] = next;
         setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
         setBossArray(newBossArray);
+    };
+
+    const onBossOverLapCheck = (bossarray: any[], clickedBoss: string) => {
+        //하드보스와 노말보스를 중복으로 처치할 수 없으므로 중복체크를 해야함
+        const clickedBossDiffiCulty = clickedBoss?.split(' ')[0]; //클릭된 보스의 난이도
+        const clckedBossName = clickedBoss?.split(' ')[1]; //클릭된 보스의 이름
+        const newBossArray = bossarray.filter(
+            (item: any) => item.check === true
+        );
+        let flag = false;
+        newBossArray.forEach((boss: any) => {
+            const BossDiffiCulty = boss?.name?.split(' ')[0];
+            const BossName = boss?.name?.split(' ')[1];
+            if (
+                clckedBossName === BossName &&
+                clickedBossDiffiCulty !== BossDiffiCulty
+            ) {
+                //클릭된 보스와 이미 처치된 보스의 이름이 같으며 난이도가 다르면 true 리턴
+                flag = true;
+            }
+        });
+        return flag;
     };
 
     const setBossToLocalStorage = (bossarray: any[]) => {

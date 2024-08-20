@@ -6,6 +6,7 @@ import { FaCheck } from 'react-icons/fa6';
 const ModalContent = styled.div`
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    place-items: center;
     gap: 10px;
     row-gap: 10px;
     position: relative;
@@ -17,7 +18,7 @@ const ModalContent = styled.div`
 
     @media screen and (max-width: 600px) {
         margin: 7% 7% 7% 7%;
-        gap: 10px;
+        grid-template-columns: repeat(2, 1fr);
     }
 `;
 
@@ -44,7 +45,7 @@ const ModalMeso = styled.div`
     display: flex;
     justify-content: flex-end;
     margin: 5% 10%;
-    font-size : 12px;
+    font-size: 12px;
 
     @media screen and (max-width: 600px) {
         margin: 5% 7%;
@@ -111,8 +112,8 @@ const ImageContainer = styled.div<{ $difficulty: string; $checked: boolean }>`
 `;
 
 const Image = styled.img<{ $checked: boolean }>`
-    width: 110px;
-    height: 100px;
+    width: 120px;
+    height: 130px;
     border: 1px solid gray;
     border-radius: 8px;
     transition: filter 0.3s ease-in-out, opacity 0.3s ease-in-out;
@@ -120,7 +121,7 @@ const Image = styled.img<{ $checked: boolean }>`
         $checked ? 'grayscale(100%) brightness(75%)' : ''};
 
     @media screen and (max-width: 600px) {
-        width: 100px;
+        width: 140px;
     }
 `;
 
