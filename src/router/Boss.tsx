@@ -15,6 +15,21 @@ const Background = styled.div`
     }
 `;
 
+const ImageContainer = styled.div`
+    margin-right: 10px;
+`;
+
+const LienHeightContainer = styled.div`
+    line-height: 30px;
+`;
+
+const LienHeightContainer2 = styled.div`
+    line-height: 60px;
+`;
+
+const LienHeightContainer3 = styled.div`
+    line-height: 22px;
+`;
 const Back = styled.div`
     margin: 5% 5% 5% 5%;
     border: 1px solid gray;
@@ -29,10 +44,16 @@ const Head = styled.div`
 `;
 
 const Nav = styled.div`
+    display: grid;
+    grid-template-columns: 1fr;
+    place-items: right;
+    justify-items: end;
+    row-gap: 10px;
+    font-size: 12px;
+`;
+
+const Inner = styled.div`
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 5%;
-    font-size: 13px;
 `;
 
 const Section = styled.div`
@@ -438,6 +459,7 @@ const Boss = () => {
 
     const [WeeklyMeso, setWeeklyMeso] = useState<number>(0);
     const [WeeklyCount, setWeeklyCount] = useState<number>(0);
+    const [WeeklyDoneCharacter, setWeeklyDoneCharacter] = useState<number>(0);
 
     useEffect(() => {
         const newBossArray = getBossFromLocalStorage(); //LocalStorage에 저장된 배열을 가져옴
@@ -445,9 +467,10 @@ const Boss = () => {
             //배열이 있으며, 데이터가 있다면
             setBossArray(newBossArray);
             onWeeklyBossDateCheck(newBossArray);
+            onWeeklyMesoChange(newBossArray);
+            onWeeklyCountChange(newBossArray);
+            onWeeklyDoneCharacterChange(newBossArray);
         }
-        onWeeklyMesoChange(newBossArray);
-        onWeeklyCountChange(newBossArray);
     }, []);
 
     const setBossArrayFromCharacterData = (
@@ -667,6 +690,7 @@ const Boss = () => {
         setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
         onWeeklyMesoChange(newBossArray);
         onWeeklyCountChange(newBossArray);
+        onWeeklyDoneCharacterChange(newBossArray);
         setBossArray(newBossArray);
     };
 
@@ -689,6 +713,16 @@ const Boss = () => {
                 }
             });
             setWeeklyCount(count);
+        }
+    };
+
+    const onWeeklyDoneCharacterChange = (newBossArray: any[]) => {
+        if (newBossArray) {
+            let count = 0;
+            newBossArray.forEach((item: any) => {
+                count += item.done;
+            });
+            setWeeklyDoneCharacter(count);
         }
     };
 
@@ -772,9 +806,10 @@ const Boss = () => {
             );
             const SortedArray = onSortBossArray(newBossArray);
             setBossToLocalStorage(SortedArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
-            setBossArray(SortedArray);
             onWeeklyMesoChange(SortedArray);
             onWeeklyCountChange(SortedArray);
+            onWeeklyDoneCharacterChange(SortedArray);
+            setBossArray(SortedArray);
         }
     };
 
@@ -794,26 +829,43 @@ const Boss = () => {
                         </Head>
                     </form>
                     <Nav>
-                        <div>
-                            <img
-                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgysFgGzGq2i8Nz1-4JSOCttyUHcQjdZ30ig&usqp=CAU"
-                                width="20px"
-                                alt="결정석"
-                                style={{ verticalAlign: 'middle' }}
-                            />
-                            &nbsp;
-                            {`${WeeklyCount} / 180개`}
-                        </div>
-                        <div>
-                            <img
-                                src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
-                                width="20px"
-                                alt="메소"
-                                style={{ verticalAlign: 'middle' }}
-                            />
-                            &nbsp;
-                            {WeeklyMeso.toLocaleString() + ' 메소'}
-                        </div>
+                        <Inner>
+                            <ImageContainer>
+                                <img
+                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgysFgGzGq2i8Nz1-4JSOCttyUHcQjdZ30ig&usqp=CAU"
+                                    width="20px"
+                                    alt="결정석"
+                                    style={{ verticalAlign: 'middle' }}
+                                />
+                            </ImageContainer>
+                            <LienHeightContainer>{`${WeeklyCount} / 180 개`}</LienHeightContainer>
+                        </Inner>
+                        <Inner>
+                            <ImageContainer>
+                                <img
+                                    src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
+                                    width="20px"
+                                    alt="메소"
+                                    style={{ verticalAlign: 'middle' }}
+                                />
+                            </ImageContainer>
+                            <LienHeightContainer3>{WeeklyMeso.toLocaleString() + ' 메소'}</LienHeightContainer3>
+                        </Inner>
+                        <Inner>
+                            <ImageContainer>
+                                <img
+                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOkOwhHWNKJYNC60_ErXLGfIHfv-9GjwmRyg&s"
+                                    alt="캐릭터"
+                                    width="50px"
+                                    height="50px"
+                                />
+                            </ImageContainer>
+                            <LienHeightContainer2>
+                                {BossArray &&
+                                    Array.isArray(BossArray) &&
+                                    `${WeeklyDoneCharacter} / ${BossArray.length} 캐릭터`}
+                            </LienHeightContainer2>
+                        </Inner>
                     </Nav>
                     <Section>
                         {BossArray &&
