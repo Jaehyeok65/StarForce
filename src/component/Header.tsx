@@ -9,18 +9,18 @@ const HeaderBar = styled.div`
     height: 5vh;
     background-color: orange;
     top: 0;
-    z-index : 999;
+    z-index: 999;
 `;
 
 const HeaderContent = styled.div`
     display: flex;
     justify-content: center;
-    font-size : 18px;
+    font-size: 18px;
 `;
 
 const StyledLink = styled(Link)`
-    color : inherit;
-    text-decoration : none;
+    color: inherit;
+    text-decoration: none;
 `;
 
 const Header = () => {
@@ -32,17 +32,15 @@ const Header = () => {
             return '스타포스 강화';
         } else if (sub === '/solerda') {
             return '헥사 스탯 시뮬레이터';
-        } 
-        else if(sub === '/simulate') {
+        } else if (sub === '/simulate') {
             return '스타포스 시뮬레이터';
-        }
-        else if(sub === '/meso') {
+        } else if (sub === '/meso') {
             return '메소 수급 기록';
-        }
-        else if(sub === '/info') {
+        } else if (sub.startsWith('/info')) {
             return '캐릭터 정보 조회';
-        }
-        else {
+        } else if (sub === '/boss') {
+            return '주간 보스 기록';
+        } else {
             return 'MapleStory';
         }
     };
@@ -53,7 +51,9 @@ const Header = () => {
 
     return (
         <HeaderBar>
-            <HeaderContent><StyledLink to={'/'}>{subject}</StyledLink></HeaderContent>
+            <HeaderContent>
+                <StyledLink to={'/'}>{subject}</StyledLink>
+            </HeaderContent>
         </HeaderBar>
     );
 };

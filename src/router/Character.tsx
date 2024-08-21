@@ -6,7 +6,7 @@ import CharacterResult from 'component/CharacterResult';
 import { FaSistrix } from 'react-icons/fa6';
 import ModalEquipment from 'component/ModalEquipment';
 import moment from 'moment';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 
 const Background = styled.div`
     width: 60%;
@@ -78,6 +78,7 @@ const Character = () => {
             setOcid(data);
         },
     });
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (characterName) {
@@ -92,7 +93,7 @@ const Character = () => {
     }, [ocid]);
 
     const onClick = () => {
-        OcidMutation.mutate(name);
+        navigate(`/info/${name}`); //url로 가져오도록 navigate를 사용
     };
 
     const onEnterClick = (e: React.KeyboardEvent<HTMLInputElement>) => {
