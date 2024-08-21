@@ -113,8 +113,6 @@ const CharacterInfo = ({ ocid, date }: { ocid: string; date: string }) => {
         enabled: !!ocid,
     });
 
-    console.log(info);
-
     const formatting = (stat_name: string, stat_value: string): string => {
         if (
             stat_name === '보스 몬스터 데미지' ||

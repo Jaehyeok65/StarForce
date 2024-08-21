@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { getOcidData, getCharacterData } from 'api/Maple';
 import moment from 'moment';
 import BossCharacterInfo from 'component/BossCharacterInfo';
+import { useNavigate } from 'react-router';
 
 const Background = styled.div`
     width: 60%;
@@ -439,6 +440,8 @@ const Boss = () => {
     const [name, setName] = useState<string>('');
     const [BossArray, setBossArray] = useState<any[]>([]);
 
+    const navigate = useNavigate();
+
     const OcidMutation = useMutation({
         mutationFn: (name: string) => {
             return getOcidData(name);
@@ -763,7 +766,7 @@ const Boss = () => {
 
     const onWeeklyBossDateCheck = (BossArray: any[]) => {
         const prevDateString = localStorage.getItem('bossDate');
-        const currentDate = new Date('2024-08-22T00:00:00Z');
+        const currentDate = new Date();
         const currentStartOfWeek = getStartOfWeek(currentDate);
 
         if (!prevDateString) {
@@ -797,6 +800,10 @@ const Boss = () => {
             setBossArray(newBossArray);
         }
     };
+
+    const onClickCharacterInfo = (characterName : string) => {
+        navigate(`/info/${characterName}`);
+    }
 
     const onCharacterDelete = (ocid: string) => {
         const confirm = window.confirm('데이터를 삭제하시겠습니까?');
@@ -889,6 +896,7 @@ const Boss = () => {
                                     copyToggle={info?.copytoggle}
                                     setCopyToggle={setCopyToggle}
                                     onBossClick={onBossClickChange}
+                                    onClickCharacterInfo={onClickCharacterInfo}
                                 />
                             ))}
                     </Section>

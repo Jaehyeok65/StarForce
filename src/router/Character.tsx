@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { getOcidData } from 'api/Maple';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import CharacterResult from 'component/CharacterResult';
 import { FaSistrix } from 'react-icons/fa6';
 import ModalEquipment from 'component/ModalEquipment';
 import moment from 'moment';
+import { useParams } from 'react-router';
 
 const Background = styled.div`
     width: 60%;
@@ -62,28 +63,36 @@ export type mode =
     | '링크스킬';
 
 const Character = () => {
+    const { characterName } = useParams();
     const [name, setName] = useState<string>('');
     const [mode, setMode] = useState<mode>('정보');
     const [equipmenttoggle, setEquipmentToggle] = useState<boolean>(false);
     const [equipment, setEquipment] = useState<any>({});
     const [date, setDate] = useState<string>(moment().format('YYYY-MM-DD'));
-    const {
-        data: ocid,
-        refetch,
-        isError,
-        error,
-    } = useQuery({
-        queryKey: ['ocid'], //쿼리키에 변수 종속성을 추가하면 Input창이 변경될 때 마다 자동으로 가져오므로 종속성 추가X
-        queryFn: () => getOcidData(name),
-        enabled: false,
+    const [ocid, setOcid] = useState<string>('');
+    const OcidMutation = useMutation({
+        mutationFn: (name: string) => {
+            return getOcidData(name);
+        },
+        onSuccess: (data: string) => {
+            setOcid(data);
+        },
     });
+
+    useEffect(() => {
+        if (characterName) {
+            //url로 characterName을 가져올 경우
+            setName(characterName);
+            OcidMutation.mutate(characterName);
+        }
+    }, [characterName]);
 
     useEffect(() => {
         setMode(() => '정보');
     }, [ocid]);
 
     const onClick = () => {
-        refetch();
+        OcidMutation.mutate(name);
     };
 
     const onEnterClick = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -123,8 +132,6 @@ const Character = () => {
                             ocid={ocid}
                             setEquipment={setEquipment}
                             setEquipmentToggle={setEquipmentToggle}
-                            isError={isError}
-                            error={error}
                             date={date}
                         />
                     )}

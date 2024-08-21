@@ -59,8 +59,6 @@ const CharacterResult = ({
     setMode,
     setEquipment,
     setEquipmentToggle,
-    isError,
-    error,
     ocid,
     date
 }: {
@@ -68,14 +66,10 @@ const CharacterResult = ({
     setMode: React.Dispatch<React.SetStateAction<mode>>;
     setEquipment: React.Dispatch<React.SetStateAction<any>>;
     setEquipmentToggle: React.Dispatch<React.SetStateAction<boolean>>;
-    isError: any;
-    error: any;
     ocid: string;
     date : string
 }) => {
-    if (isError) {
-        return <div>{'오류가 발생했습니다.' + error}</div>;
-    }
+   
     return (
         <Background>
             <Mode>

@@ -30,10 +30,9 @@ const Button = styled.button`
 const Inner = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap : 5px;
+    gap: 5px;
     place-items: center;
 `;
-
 
 interface bossinfo {
     ocid: string; //캐릭터 ocid
@@ -47,11 +46,12 @@ interface bossinfo {
     data: any;
     onBossDoneChange: any;
     onCharacterDelete: any;
-    BossArray : any;
-    onBossCopy : any;
-    setCopyToggle : any;
-    copyToggle : boolean;
-    onBossClick : any;
+    BossArray: any;
+    onBossCopy: any;
+    setCopyToggle: any;
+    copyToggle: boolean;
+    onBossClick: any;
+    onClickCharacterInfo: any;
 }
 
 const BossCharacterInfo: React.FC<bossinfo> = ({
@@ -70,7 +70,8 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
     onBossCopy,
     setCopyToggle,
     copyToggle,
-    onBossClick
+    onBossClick,
+    onClickCharacterInfo,
 }) => {
     return (
         <React.Fragment>
@@ -79,12 +80,25 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
                 <div>{data?.character_name}</div>
                 <div>{data?.character_level + '레벨'}</div>
                 <div>{data?.character_class}</div>
+                <div>
+                    <Button
+                        onClick={() =>
+                            onClickCharacterInfo(data?.character_name)
+                        }
+                    >
+                        정보보기
+                    </Button>
+                </div>
                 <Inner>
                     <div>
-                    <Button onClick={() => setBossToggle(ocid)}>입력</Button>
+                        <Button onClick={() => setBossToggle(ocid)}>
+                            입력
+                        </Button>
                     </div>
                     <div>
-                    <Button onClick={() => setCopyToggle(ocid)}>복사</Button>
+                        <Button onClick={() => setCopyToggle(ocid)}>
+                            복사
+                        </Button>
                     </div>
                 </Inner>
                 <div>
@@ -122,7 +136,7 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
                 onBossClick={onBossClick}
                 BossArray={BossArray}
             />
-            <ModalCharacter 
+            <ModalCharacter
                 toggle={copyToggle}
                 setToggle={() => setCopyToggle(ocid)}
                 onCancle={() => onCancle(() => setCopyToggle(ocid))}
