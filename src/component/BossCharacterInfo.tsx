@@ -15,7 +15,7 @@ const ImageContainer = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr;
     justify-items: start;
-    align-items: end;
+    align-items: start;
 `;
 
 const ImageInfo = styled.div`
@@ -111,21 +111,21 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
                                 정보보기
                             </Button>
                         </div>
+                        <Inner>
+                            <div>
+                                <Button onClick={() => setBossToggle(ocid)}>
+                                    입력
+                                </Button>
+                            </div>
+                            <div>
+                                <Button onClick={() => setCopyToggle(ocid)}>
+                                    복사
+                                </Button>
+                            </div>
+                        </Inner>
                     </ImageInfo>
                 </ImageContainer>
 
-                <Inner>
-                    <div>
-                        <Button onClick={() => setBossToggle(ocid)}>
-                            입력
-                        </Button>
-                    </div>
-                    <div>
-                        <Button onClick={() => setCopyToggle(ocid)}>
-                            복사
-                        </Button>
-                    </div>
-                </Inner>
                 <div>
                     <img
                         src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
