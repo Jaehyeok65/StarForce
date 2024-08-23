@@ -57,13 +57,14 @@ const Inner = styled.div`
     display: flex;
 `;
 
+
 const Section = styled.div`
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 
-    @media screen and (max-width: 1000px) {
-        grid-template-columns: repeat(3, 1fr);
+    @media screen and (max-width: 1300px) {
+        grid-template-columns: repeat(2, 1fr);
     }
 `;
 
@@ -721,6 +722,7 @@ const Boss = () => {
 
     const onWeeklyDoneCharacterChange = (newBossArray: any[]) => {
         if (newBossArray) {
+            console.log(newBossArray);
             let count = 0;
             newBossArray.forEach((item: any) => {
                 count += item.done;
@@ -761,22 +763,25 @@ const Boss = () => {
         const diff = day >= 4 ? day - 4 : day + 3; // 목요일 기준으로 이동
         const startOfWeek = new Date(date);
         startOfWeek.setDate(date.getDate() - diff);
-        return startOfWeek;
+        return startOfWeek.toISOString().slice(0,10);
     };
 
     const onWeeklyBossDateCheck = (BossArray: any[]) => {
         const prevDateString = localStorage.getItem('bossDate');
-        const currentDate = new Date();
+        const currentDate = new Date('2024-08-29');
         const currentStartOfWeek = getStartOfWeek(currentDate);
+       
 
         if (!prevDateString) {
             // 이전 날짜가 없으면 현재 주의 목요일을 로컬 스토리지에 저장
-            localStorage.setItem('bossDate', currentStartOfWeek.toISOString());
+            localStorage.setItem('bossDate', currentStartOfWeek);
             return;
         }
 
         const prevDate = new Date(prevDateString);
         const prevStartOfWeek = getStartOfWeek(prevDate);
+        console.log(currentStartOfWeek);
+        console.log(prevStartOfWeek);
 
         // 현재 주와 이전 주의 목요일을 비교
         if (currentStartOfWeek > prevStartOfWeek) {
@@ -784,7 +789,7 @@ const Boss = () => {
             onWeeklyBossInitialize(BossArray);
 
             // 초기화 후 현재 주의 목요일을 로컬 스토리지에 저장
-            localStorage.setItem('bossDate', currentStartOfWeek.toISOString());
+            localStorage.setItem('bossDate', currentStartOfWeek);
         }
     };
     const onWeeklyBossInitialize = (BossArray: any[]) => {
@@ -796,6 +801,9 @@ const Boss = () => {
                     done: false,
                 };
             });
+            onWeeklyMesoChange(newBossArray);
+            onWeeklyCountChange(newBossArray);
+            onWeeklyDoneCharacterChange(newBossArray);
             setBossToLocalStorage(newBossArray);
             setBossArray(newBossArray);
         }

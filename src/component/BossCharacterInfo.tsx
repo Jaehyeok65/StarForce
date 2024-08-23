@@ -11,6 +11,23 @@ const Info = styled.div`
     gap: 8px;
 `;
 
+const ImageContainer = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: start;
+    align-items: end;
+`;
+
+const ImageInfo = styled.div`
+    display: grid;
+    row-gap: 5px;
+    margin-left: 2.5px;
+
+    @media screen and (max-width: 1300px) {
+        margin-left: -2px;
+    }
+`;
+
 const Checkbox = styled.input`
     width: 20px;
     height: 16px;
@@ -76,19 +93,27 @@ const BossCharacterInfo: React.FC<bossinfo> = ({
     return (
         <React.Fragment>
             <Info>
-                <img src={data?.character_image} alt={data?.character_name} />
-                <div>{data?.character_name}</div>
-                <div>{data?.character_level + '레벨'}</div>
-                <div>{data?.character_class}</div>
-                <div>
-                    <Button
-                        onClick={() =>
-                            onClickCharacterInfo(data?.character_name)
-                        }
-                    >
-                        정보보기
-                    </Button>
-                </div>
+                <ImageContainer>
+                    <img
+                        src={data?.character_image}
+                        alt={data?.character_name}
+                    />
+                    <ImageInfo>
+                        <div>{data?.character_name}</div>
+                        <div>{data?.character_level + '레벨'}</div>
+                        <div>{data?.character_class}</div>
+                        <div>
+                            <Button
+                                onClick={() =>
+                                    onClickCharacterInfo(data?.character_name)
+                                }
+                            >
+                                정보보기
+                            </Button>
+                        </div>
+                    </ImageInfo>
+                </ImageContainer>
+
                 <Inner>
                     <div>
                         <Button onClick={() => setBossToggle(ocid)}>

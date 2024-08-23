@@ -158,12 +158,15 @@ const ModalBoss: React.FC<ModalBossProps> = ({
     const [difficulty, setDifficulty] = useState<any>('EASY'); //hard, extreme
     const [ocid, setOcid] = useState<any>('');
     const [currentMeso, setCurrentMeso] = useState<number>(0);
+    const [currentCheck, setCurrentCheck] = useState<number>(0);
 
     useEffect(() => {
         if (toggle) {
             if (boss && Array.isArray(boss)) {
                 const meso = setCurrentMesoFromBossArray(boss);
                 setCurrentMeso(meso);
+                const check = setCurrentCheckFromBossArray(boss);
+                setCurrentCheck(check);
 
                 if (difficulty === 'EASY') {
                     //사용자가 이지를 클릭했다면
@@ -223,6 +226,16 @@ const ModalBoss: React.FC<ModalBossProps> = ({
         return meso;
     };
 
+    const setCurrentCheckFromBossArray = (boss : any[]) => {
+        let check = 0;
+        boss?.forEach((item : any) => {
+            if(item.check) {
+                check++;
+            }
+        })
+        return check > 12 ? 12 : check;
+    };
+
     const onSortBossArray = (bossArray: any[]) => {
         const SortedArray = [...bossArray];
         return SortedArray.sort((a, b) => {
@@ -233,6 +246,15 @@ const ModalBoss: React.FC<ModalBossProps> = ({
     return (
         <Modal toggle={toggle}>
             <ModalHead>금주에 처치한 보스를 체크해주세요</ModalHead>
+            <ModalMeso>
+                <img
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgysFgGzGq2i8Nz1-4JSOCttyUHcQjdZ30ig&usqp=CAU"
+                    width="15px"
+                    alt="결정석"
+                />
+                &nbsp;
+                {` ${currentCheck} / 12`}
+            </ModalMeso>
             <ModalMeso>
                 <img
                     src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
