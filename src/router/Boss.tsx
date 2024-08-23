@@ -36,6 +36,10 @@ const Back = styled.div`
     border: 1px solid gray;
     border-radius: 12px;
     padding: 2% 5% 2% 5%;
+
+    @media screen and (max-width: 500px) {
+        padding: 2%;
+    }
 `;
 
 const Head = styled.div`
@@ -56,7 +60,6 @@ const Nav = styled.div`
 const Inner = styled.div`
     display: flex;
 `;
-
 
 const Section = styled.div`
     display: grid;
@@ -470,10 +473,7 @@ const Boss = () => {
         if (newBossArray && newBossArray.length > 0) {
             //배열이 있으며, 데이터가 있다면
             setBossArray(newBossArray);
-            onWeeklyBossDateCheck(newBossArray);
-            onWeeklyMesoChange(newBossArray);
-            onWeeklyCountChange(newBossArray);
-            onWeeklyDoneCharacterChange(newBossArray);
+            onWeeklyBossDateCheck(newBossArray); //DateCheck로 초기화되면 두 번 실행되므로 
         }
     }, []);
 
@@ -722,7 +722,6 @@ const Boss = () => {
 
     const onWeeklyDoneCharacterChange = (newBossArray: any[]) => {
         if (newBossArray) {
-            console.log(newBossArray);
             let count = 0;
             newBossArray.forEach((item: any) => {
                 count += item.done;
@@ -763,14 +762,13 @@ const Boss = () => {
         const diff = day >= 4 ? day - 4 : day + 3; // 목요일 기준으로 이동
         const startOfWeek = new Date(date);
         startOfWeek.setDate(date.getDate() - diff);
-        return startOfWeek.toISOString().slice(0,10);
+        return startOfWeek.toISOString().slice(0, 10);
     };
 
     const onWeeklyBossDateCheck = (BossArray: any[]) => {
         const prevDateString = localStorage.getItem('bossDate');
-        const currentDate = new Date('2024-08-29');
+        const currentDate = new Date();
         const currentStartOfWeek = getStartOfWeek(currentDate);
-       
 
         if (!prevDateString) {
             // 이전 날짜가 없으면 현재 주의 목요일을 로컬 스토리지에 저장
@@ -780,8 +778,6 @@ const Boss = () => {
 
         const prevDate = new Date(prevDateString);
         const prevStartOfWeek = getStartOfWeek(prevDate);
-        console.log(currentStartOfWeek);
-        console.log(prevStartOfWeek);
 
         // 현재 주와 이전 주의 목요일을 비교
         if (currentStartOfWeek > prevStartOfWeek) {
@@ -790,6 +786,11 @@ const Boss = () => {
 
             // 초기화 후 현재 주의 목요일을 로컬 스토리지에 저장
             localStorage.setItem('bossDate', currentStartOfWeek);
+        }
+        else { //주간 초기화 로직을 하지 않을 경우도 로컬스토리지에서 초기화를 해야함
+            onWeeklyMesoChange(BossArray);
+            onWeeklyCountChange(BossArray);
+            onWeeklyDoneCharacterChange(BossArray);
         }
     };
     const onWeeklyBossInitialize = (BossArray: any[]) => {
@@ -809,9 +810,9 @@ const Boss = () => {
         }
     };
 
-    const onClickCharacterInfo = (characterName : string) => {
+    const onClickCharacterInfo = (characterName: string) => {
         navigate(`/info/${characterName}`);
-    }
+    };
 
     const onCharacterDelete = (ocid: string) => {
         const confirm = window.confirm('데이터를 삭제하시겠습니까?');
@@ -864,7 +865,9 @@ const Boss = () => {
                                     style={{ verticalAlign: 'middle' }}
                                 />
                             </ImageContainer>
-                            <LienHeightContainer3>{WeeklyMeso.toLocaleString() + ' 메소'}</LienHeightContainer3>
+                            <LienHeightContainer3>
+                                {WeeklyMeso.toLocaleString() + ' 메소'}
+                            </LienHeightContainer3>
                         </Inner>
                         <Inner>
                             <ImageContainer>

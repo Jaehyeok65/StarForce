@@ -85,6 +85,10 @@ const Character = () => {
             //url로 characterName을 가져올 경우
             setName(characterName);
             OcidMutation.mutate(characterName);
+        } else {
+            //url로 정보를 검색하는 만큼 characterName이 없다면 정보를 초기화해야함
+            setName('');
+            setOcid('');
         }
     }, [characterName]);
 
