@@ -473,7 +473,7 @@ const Boss = () => {
         if (newBossArray && newBossArray.length > 0) {
             //배열이 있으며, 데이터가 있다면
             setBossArray(newBossArray);
-            onWeeklyBossDateCheck(newBossArray); //DateCheck로 초기화되면 두 번 실행되므로 
+            onWeeklyBossDateCheck(newBossArray); //DateCheck로 초기화되면 두 번 실행되므로
         }
     }, []);
 
@@ -756,19 +756,39 @@ const Boss = () => {
         setBossArray(SortedArray);
     };
 
-    const getStartOfWeek = (date: any) => {
-        // 주의 시작일을 목요일로 설정
-        const day = date.getDay();
-        const diff = day >= 4 ? day - 4 : day + 3; // 목요일 기준으로 이동
-        const startOfWeek = new Date(date);
-        startOfWeek.setDate(date.getDate() - diff);
-        return startOfWeek.toISOString().slice(0, 10);
+    const convertDateToThursDay = (date: any) => {
+        const day = date.getDay(); //현재 요일을 구함
+
+        if (day === 0) {
+            //일
+            date.setDate(date.getDate() - 3);
+        } else if (day === 1) {
+            //월
+            date.setDate(date.getDate() - 4);
+        } else if (day === 2) {
+            //화
+            date.setDate(date.getDate() - 5);
+        } else if (day === 3) {
+            //수
+            date.setDate(date.getDate() - 6);
+        } else if (day === 4) {
+            //목
+            date.setDate(date.getDate());
+        } else if (day === 5) {
+            //금
+            date.setDate(date.getDate() - 1);
+        } else if (day === 6) {
+            //토
+            date.setDate(date.getDate() - 2);
+        }
+
+        return date.toISOString().slice(0, 10);
     };
 
     const onWeeklyBossDateCheck = (BossArray: any[]) => {
         const prevDateString = localStorage.getItem('bossDate');
         const currentDate = new Date();
-        const currentStartOfWeek = getStartOfWeek(currentDate);
+        const currentStartOfWeek = convertDateToThursDay(currentDate);
 
         if (!prevDateString) {
             // 이전 날짜가 없으면 현재 주의 목요일을 로컬 스토리지에 저장
@@ -777,7 +797,7 @@ const Boss = () => {
         }
 
         const prevDate = new Date(prevDateString);
-        const prevStartOfWeek = getStartOfWeek(prevDate);
+        const prevStartOfWeek = convertDateToThursDay(prevDate);
 
         // 현재 주와 이전 주의 목요일을 비교
         if (currentStartOfWeek > prevStartOfWeek) {
@@ -786,8 +806,8 @@ const Boss = () => {
 
             // 초기화 후 현재 주의 목요일을 로컬 스토리지에 저장
             localStorage.setItem('bossDate', currentStartOfWeek);
-        }
-        else { //주간 초기화 로직을 하지 않을 경우도 로컬스토리지에서 초기화를 해야함
+        } else {
+            //주간 초기화 로직을 하지 않을 경우도 로컬스토리지에서 초기화를 해야함
             onWeeklyMesoChange(BossArray);
             onWeeklyCountChange(BossArray);
             onWeeklyDoneCharacterChange(BossArray);
