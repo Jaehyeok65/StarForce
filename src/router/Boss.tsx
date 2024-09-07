@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueries } from '@tanstack/react-query';
 import { getOcidData, getCharacterData } from 'api/Maple';
 import moment from 'moment';
 import BossCharacterInfo from 'component/BossCharacterInfo';
@@ -468,6 +468,50 @@ const Boss = () => {
     const [WeeklyCount, setWeeklyCount] = useState<number>(0);
     const [WeeklyDoneCharacter, setWeeklyDoneCharacter] = useState<number>(0);
 
+    const getBossFromLocalStorage = () => {
+        const prev = localStorage.getItem('bossarray');
+        if (prev) {
+            const next = JSON.parse(prev);
+            return next;
+        }
+    };
+
+    const localStorageBossArray = getBossFromLocalStorage();
+
+    const queryResults: any = useQueries({
+        queries: localStorageBossArray.map((item: any) => ({
+            queryKey: ['characterData', item.ocid],
+            queryFn: () =>
+                getCharacterData(item.ocid, moment().format('YYYY-MM-DD')),
+        })),
+    });
+
+    const allQueriesSuccessful = queryResults.every(
+        (query: any) => query.isSuccess
+    );
+
+    useEffect(() => {
+        if (allQueriesSuccessful) {
+            const updatedState = onCharacterStateUpdate(queryResults);
+            setBossArray(updatedState);
+            setBossToLocalStorage(updatedState);
+        }
+    }, [allQueriesSuccessful]); // queryResults 대신 allQueriesSuccessful 사용
+
+    const onCharacterStateUpdate = (queryResults: any) => {
+        //목요일에 최신화를 할 때 캐릭터의 상태를 업데이트함 (레벨 정보, 등등)
+        const prevState = getBossFromLocalStorage(); //
+        //console.log(queryResults);
+        const nextState = prevState.map((item: any, index: number) => {
+            return {
+                ...item,
+                characterData: queryResults[index]?.data,
+            };
+        });
+
+        return nextState;
+    };
+
     useEffect(() => {
         const newBossArray = getBossFromLocalStorage(); //LocalStorage에 저장된 배열을 가져옴
         if (newBossArray && newBossArray.length > 0) {
@@ -608,14 +652,6 @@ const Boss = () => {
     const setBossToLocalStorage = (bossarray: any[]) => {
         if (bossarray) {
             localStorage.setItem('bossarray', JSON.stringify(bossarray));
-        }
-    };
-
-    const getBossFromLocalStorage = () => {
-        const prev = localStorage.getItem('bossarray');
-        if (prev) {
-            const next = JSON.parse(prev);
-            return next;
         }
     };
 
