@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/StarForce/static/css/main.e6c13ad2.css",
-    "main.js": "/StarForce/static/js/main.fba4d79f.js",
+    "main.js": "/StarForce/static/js/main.ddc74f47.js",
     "static/js/787.33caf079.chunk.js": "/StarForce/static/js/787.33caf079.chunk.js",
     "index.html": "/StarForce/index.html",
     "main.e6c13ad2.css.map": "/StarForce/static/css/main.e6c13ad2.css.map",
-    "main.fba4d79f.js.map": "/StarForce/static/js/main.fba4d79f.js.map",
+    "main.ddc74f47.js.map": "/StarForce/static/js/main.ddc74f47.js.map",
     "787.33caf079.chunk.js.map": "/StarForce/static/js/787.33caf079.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.fba4d79f.js"
+    "static/js/main.ddc74f47.js"
   ]
 }
