@@ -5,6 +5,9 @@ import { getOcidData, getCharacterData } from 'api/Maple';
 import moment from 'moment';
 import BossCharacterInfo from 'component/BossCharacterInfo';
 import { useNavigate } from 'react-router';
+import { useDispatch } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
+import { showAlert } from '../redux/action/index';
 
 const Background = styled.div`
     width: 60%;
@@ -446,6 +449,8 @@ const Boss = () => {
 
     const navigate = useNavigate();
 
+    const dispatch = useDispatch();
+
     const OcidMutation = useMutation({
         mutationFn: (name: string) => {
             return getOcidData(name);
@@ -485,7 +490,7 @@ const Boss = () => {
                 getCharacterData(item.ocid, moment().format('YYYY-MM-DD')),
             staleTime: 1000 * 60 * 5,
             cacheTime: 1000 * 60 * 10,
-            retry : 1,
+            retry: 1,
             refetchOnWindowFocus: false,
         })),
     });
@@ -537,7 +542,15 @@ const Boss = () => {
                 (item) => item.ocid === ocid
             );
 
-            if (!isOcidExists) {
+            if (isOcidExists) {
+                //캐릭터가 존재하는 경우 알림창을 띄우고 검색창을 초기화
+                dispatch(
+                    showAlert('이미 등록된 캐릭터입니다!', uuidv4(), 4000)
+                );
+                setName('');
+                return;
+            } else if (!isOcidExists) {
+                //캐릭터가 추가된 경우에는 어떤 캐릭터를 입력했는지 보여주기 위해 검색창 초기화 생략
                 updatedBossArray.push({
                     ocid: ocid,
                     bosstoggle: false,
@@ -547,6 +560,7 @@ const Boss = () => {
                     done: false,
                     characterData,
                 });
+                dispatch(showAlert('캐릭터를 등록했습니다!', uuidv4(), 4000));
             }
 
             //기존의 배열을 메소, 레벨 내림차순으로 정렬
@@ -557,8 +571,8 @@ const Boss = () => {
             // 상태 업데이트
             setBossArray(SortedArray);
         } else {
-            window.alert('유효하지 않은 캐릭터 데이터입니다.');
-            console.error('유효하지 않은 캐릭터 데이터입니다.');
+            dispatch(showAlert('유효하지 않은 캐릭터 데이터입니다!', uuidv4(), 4000));
+            console.error('유효하지 않은 캐릭터 데이터입니다!');
         }
     };
 

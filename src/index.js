@@ -3,12 +3,22 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Provider } from 'react-redux';
+import rootreducer from './redux/reducer';
+import { createStore } from 'redux';
+
+const client = new QueryClient();
+
+const store = createStore(rootreducer);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+    <QueryClientProvider client={client}>
+        <Provider store={store}>
+            <App />
+        </Provider>
+    </QueryClientProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
