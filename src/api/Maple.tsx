@@ -60,8 +60,12 @@ export const getCharacterData = async (ocid: string, date: string) => {
                 'x-nxopen-api-key': API_KEY,
             },
         });
+        const Data = {
+            ...answer?.data,
+            ocid
+        };
 
-        return answer?.data;
+        return Data;
     } catch (e) {
         console.log(e);
     }

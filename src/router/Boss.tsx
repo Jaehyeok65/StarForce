@@ -51,6 +51,11 @@ const Head = styled.div`
     margin-bottom: 5%;
 `;
 
+const NavContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+`;
+
 const Nav = styled.div`
     display: grid;
     grid-template-columns: 1fr;
@@ -58,6 +63,10 @@ const Nav = styled.div`
     justify-items: end;
     row-gap: 10px;
     font-size: 12px;
+`;
+
+const NavInner = styled.div`
+    margin-left: 12px;
 `;
 
 const Inner = styled.div`
@@ -526,7 +535,6 @@ const Boss = () => {
         if (newBossArray && newBossArray.length > 0) {
             //배열이 있으며, 데이터가 있다면
             setBossArray(newBossArray);
-            onWeeklyBossDateCheck(newBossArray); //DateCheck로 초기화되면 두 번 실행되므로
         }
     }, []);
 
@@ -571,7 +579,9 @@ const Boss = () => {
             // 상태 업데이트
             setBossArray(SortedArray);
         } else {
-            dispatch(showAlert('유효하지 않은 캐릭터 데이터입니다!', uuidv4(), 4000));
+            dispatch(
+                showAlert('유효하지 않은 캐릭터 데이터입니다!', uuidv4(), 4000)
+            );
             console.error('유효하지 않은 캐릭터 데이터입니다!');
         }
     };
@@ -810,63 +820,6 @@ const Boss = () => {
         setBossArray(SortedArray);
     };
 
-    const convertDateToThursDay = (date: any) => {
-        const day = date.getDay(); //현재 요일을 구함
-
-        if (day === 0) {
-            //일
-            date.setDate(date.getDate() - 3);
-        } else if (day === 1) {
-            //월
-            date.setDate(date.getDate() - 4);
-        } else if (day === 2) {
-            //화
-            date.setDate(date.getDate() - 5);
-        } else if (day === 3) {
-            //수
-            date.setDate(date.getDate() - 6);
-        } else if (day === 4) {
-            //목
-            date.setDate(date.getDate());
-        } else if (day === 5) {
-            //금
-            date.setDate(date.getDate() - 1);
-        } else if (day === 6) {
-            //토
-            date.setDate(date.getDate() - 2);
-        }
-
-        return date.toISOString().slice(0, 10);
-    };
-
-    const onWeeklyBossDateCheck = (BossArray: any[]) => {
-        const prevDateString = localStorage.getItem('bossDate');
-        const currentDate = new Date();
-        const currentStartOfWeek = convertDateToThursDay(currentDate);
-
-        if (!prevDateString) {
-            // 이전 날짜가 없으면 현재 주의 목요일을 로컬 스토리지에 저장
-            localStorage.setItem('bossDate', currentStartOfWeek);
-            return;
-        }
-
-        const prevDate = new Date(prevDateString);
-        const prevStartOfWeek = convertDateToThursDay(prevDate);
-
-        // 현재 주와 이전 주의 목요일을 비교
-        if (currentStartOfWeek > prevStartOfWeek) {
-            // 새 주가 시작된 경우 주간 초기화 로직 호출
-            onWeeklyBossInitialize(BossArray);
-
-            // 초기화 후 현재 주의 목요일을 로컬 스토리지에 저장
-            localStorage.setItem('bossDate', currentStartOfWeek);
-        } else {
-            //주간 초기화 로직을 하지 않을 경우도 로컬스토리지에서 초기화를 해야함
-            onWeeklyMesoChange(BossArray);
-            onWeeklyCountChange(BossArray);
-            onWeeklyDoneCharacterChange(BossArray);
-        }
-    };
     const onWeeklyBossInitialize = (BossArray: any[]) => {
         //주간보스를 초기화해야하므로 boss의 check를 초기화 및 done을 초기화
         if (BossArray && BossArray.length > 0) {
@@ -918,47 +871,58 @@ const Boss = () => {
                             <Button>캐릭터 추가</Button>
                         </Head>
                     </form>
-                    <Nav>
-                        <Inner>
-                            <ImageContainer>
-                                <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgysFgGzGq2i8Nz1-4JSOCttyUHcQjdZ30ig&usqp=CAU"
-                                    width="20px"
-                                    alt="결정석"
-                                    style={{ verticalAlign: 'middle' }}
-                                />
-                            </ImageContainer>
-                            <LienHeightContainer>{`${WeeklyCount} / 180 개`}</LienHeightContainer>
-                        </Inner>
-                        <Inner>
-                            <ImageContainer>
-                                <img
-                                    src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
-                                    width="20px"
-                                    alt="메소"
-                                    style={{ verticalAlign: 'middle' }}
-                                />
-                            </ImageContainer>
-                            <LienHeightContainer3>
-                                {WeeklyMeso.toLocaleString() + ' 메소'}
-                            </LienHeightContainer3>
-                        </Inner>
-                        <Inner>
-                            <ImageContainer>
-                                <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOkOwhHWNKJYNC60_ErXLGfIHfv-9GjwmRyg&s"
-                                    alt="캐릭터"
-                                    width="50px"
-                                    height="50px"
-                                />
-                            </ImageContainer>
-                            <LienHeightContainer2>
-                                {BossArray &&
-                                    Array.isArray(BossArray) &&
-                                    `${WeeklyDoneCharacter} / ${BossArray.length} 캐릭터`}
-                            </LienHeightContainer2>
-                        </Inner>
-                    </Nav>
+                    <NavContainer>
+                        <NavInner>
+                            <Button
+                                onClick={() =>
+                                    onWeeklyBossInitialize(BossArray)
+                                }
+                            >
+                                보스 처치 기록 초기화
+                            </Button>
+                        </NavInner>
+                        <Nav>
+                            <Inner>
+                                <ImageContainer>
+                                    <img
+                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgysFgGzGq2i8Nz1-4JSOCttyUHcQjdZ30ig&usqp=CAU"
+                                        width="20px"
+                                        alt="결정석"
+                                        style={{ verticalAlign: 'middle' }}
+                                    />
+                                </ImageContainer>
+                                <LienHeightContainer>{`${WeeklyCount} / 180 개`}</LienHeightContainer>
+                            </Inner>
+                            <Inner>
+                                <ImageContainer>
+                                    <img
+                                        src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
+                                        width="20px"
+                                        alt="메소"
+                                        style={{ verticalAlign: 'middle' }}
+                                    />
+                                </ImageContainer>
+                                <LienHeightContainer3>
+                                    {WeeklyMeso.toLocaleString() + ' 메소'}
+                                </LienHeightContainer3>
+                            </Inner>
+                            <Inner>
+                                <ImageContainer>
+                                    <img
+                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOkOwhHWNKJYNC60_ErXLGfIHfv-9GjwmRyg&s"
+                                        alt="캐릭터"
+                                        width="50px"
+                                        height="50px"
+                                    />
+                                </ImageContainer>
+                                <LienHeightContainer2>
+                                    {BossArray &&
+                                        Array.isArray(BossArray) &&
+                                        `${WeeklyDoneCharacter} / ${BossArray.length} 캐릭터`}
+                                </LienHeightContainer2>
+                            </Inner>
+                        </Nav>
+                    </NavContainer>
                     <Section>
                         {BossArray &&
                             BossArray.length > 0 &&
