@@ -535,6 +535,9 @@ const Boss = () => {
         if (newBossArray && newBossArray.length > 0) {
             //배열이 있으며, 데이터가 있다면
             setBossArray(newBossArray);
+            onWeeklyMesoChange(newBossArray);
+            onWeeklyCountChange(newBossArray);
+            onWeeklyDoneCharacterChange(newBossArray);
         }
     }, []);
 
