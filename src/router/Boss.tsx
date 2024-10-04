@@ -483,11 +483,11 @@ const Boss = () => {
     const [WeeklyDoneCharacter, setWeeklyDoneCharacter] = useState<number>(0);
 
     const getBossFromLocalStorage = () => {
+        // localStorage에서 데이터를 가져옴
         const prev = localStorage.getItem('bossarray');
-        if (prev) {
-            const next = JSON.parse(prev);
-            return next;
-        }
+
+        // 데이터가 있을 경우 JSON으로 파싱, 없으면 빈 배열 반환
+        return prev ? JSON.parse(prev) : [];
     };
 
     const localStorageBossArray = getBossFromLocalStorage();
