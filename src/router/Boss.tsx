@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { showAlert } from '../redux/action/index';
+import { DateToThursDay, storeArrayToLocalStorage } from 'component/Storage';
 
 const Background = styled.div`
     width: 60%;
@@ -67,6 +68,10 @@ const Nav = styled.div`
 
 const NavInner = styled.div`
     margin-left: 12px;
+    display: grid;
+    grid-template-columns: 1fr;
+    max-height: 50px;
+    row-gap: 30px;
 `;
 
 const Inner = styled.div`
@@ -99,6 +104,14 @@ const Input = styled.input`
     @media screen and (max-width: 1000px) {
         max-width: 130px;
     }
+`;
+
+const Message = styled.div`
+    color: gray;
+    display: flex;
+    justify-content: center;
+    margin-top: 10%;
+    margin-bottom: 10%;
 `;
 
 const array: any[] = [
@@ -455,6 +468,9 @@ const array: any[] = [
 const Boss = () => {
     const [name, setName] = useState<string>('');
     const [BossArray, setBossArray] = useState<any[]>([]);
+    const [day, setDay] = useState<any>(
+        DateToThursDay(moment().format('YYYY-MM-DD'))
+    );
 
     const navigate = useNavigate();
 
@@ -482,15 +498,46 @@ const Boss = () => {
     const [WeeklyCount, setWeeklyCount] = useState<number>(0);
     const [WeeklyDoneCharacter, setWeeklyDoneCharacter] = useState<number>(0);
 
-    const getBossFromLocalStorage = () => {
-        // localStorage에서 데이터를 가져옴
-        const prev = localStorage.getItem('bossarray');
-
-        // 데이터가 있을 경우 JSON으로 파싱, 없으면 빈 배열 반환
-        return prev ? JSON.parse(prev) : [];
+    const getBossFromLocalStorageToDate = (day: string) => {
+        const prev = localStorage.getItem('bossmeso');
+        if (prev) {
+            const next = JSON.parse(prev);
+            //console.log(next);
+            const todayData = next.find((item: any) => item.date === day);
+            if (todayData) {
+                //날짜에 맞는 데이터가 있다면 해당 데이터를 리턴
+                return todayData.data;
+            } else {
+                //bossmeso 데이터는 있으나 날짜에 맞는 데이터가 없다면
+                const firstAvailableData = next.find(
+                    (item: any) => item.data?.length > 0
+                );
+                if (firstAvailableData) {
+                    const newBossArray = firstAvailableData?.data?.map(
+                        (item: any) => {
+                            return {
+                                ...item,
+                                done: false,
+                            };
+                        }
+                    );
+                    return newBossArray;
+                } else {
+                    return [];
+                }
+            }
+        } else {
+            return [];
+        }
     };
 
-    const localStorageBossArray = getBossFromLocalStorage();
+    const setBossToLocalStorageToDate = (bossarray: any[], day: string) => {
+        if (bossarray) {
+            storeArrayToLocalStorage('bossmeso', day, bossarray);
+        }
+    };
+
+    const localStorageBossArray = getBossFromLocalStorageToDate(day);
 
     const queryResults: any = useQueries({
         queries: localStorageBossArray.map((item: any) => ({
@@ -510,15 +557,15 @@ const Boss = () => {
 
     useEffect(() => {
         if (allQueriesSuccessful) {
-            const updatedState = onCharacterStateUpdate(queryResults);
+            const updatedState = onCharacterStateUpdate(queryResults, day);
             setBossArray(updatedState);
-            setBossToLocalStorage(updatedState);
+            setBossToLocalStorageToDate(updatedState, day);
         }
-    }, [allQueriesSuccessful]); // queryResults 대신 allQueriesSuccessful 사용
+    }, [allQueriesSuccessful, day]); // queryResults 대신 allQueriesSuccessful 사용
 
-    const onCharacterStateUpdate = (queryResults: any) => {
+    const onCharacterStateUpdate = (queryResults: any, day: string) => {
         //목요일에 최신화를 할 때 캐릭터의 상태를 업데이트함 (레벨 정보, 등등)
-        const prevState = getBossFromLocalStorage(); //
+        const prevState = getBossFromLocalStorageToDate(day); //
         //console.log(queryResults);
         const nextState = prevState.map((item: any, index: number) => {
             return {
@@ -531,15 +578,15 @@ const Boss = () => {
     };
 
     useEffect(() => {
-        const newBossArray = getBossFromLocalStorage(); //LocalStorage에 저장된 배열을 가져옴
-        if (newBossArray && newBossArray.length > 0) {
-            //배열이 있으며, 데이터가 있다면
+        const newBossArray = getBossFromLocalStorageToDate(day); //LocalStorage에 저장된 배열을 가져옴
+        if (newBossArray && Array.isArray(newBossArray)) {
+            //배열이라면
             setBossArray(newBossArray);
             onWeeklyMesoChange(newBossArray);
             onWeeklyCountChange(newBossArray);
             onWeeklyDoneCharacterChange(newBossArray);
         }
-    }, []);
+    }, [day]);
 
     const setBossArrayFromCharacterData = (
         characterData: any,
@@ -577,7 +624,7 @@ const Boss = () => {
             //기존의 배열을 메소, 레벨 내림차순으로 정렬
             const SortedArray = onSortBossArray(updatedBossArray);
             // 로컬 스토리지에 저장
-            setBossToLocalStorage(SortedArray);
+            setBossToLocalStorageToDate(SortedArray, day); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
 
             // 상태 업데이트
             setBossArray(SortedArray);
@@ -654,7 +701,7 @@ const Boss = () => {
             }),
         };
         newBossArray[index] = next;
-        setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
+        //setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
         setBossArray(newBossArray);
     };
 
@@ -678,12 +725,6 @@ const Boss = () => {
             }
         });
         return flag;
-    };
-
-    const setBossToLocalStorage = (bossarray: any[]) => {
-        if (bossarray) {
-            localStorage.setItem('bossarray', JSON.stringify(bossarray));
-        }
     };
 
     const onSortBossArray = (bossArray: any[]) => {
@@ -731,7 +772,7 @@ const Boss = () => {
         };
         newBossArray[index] = next;
         const SortedArray = onSortBossArray(newBossArray); //meso가 변경되면 정렬을 해야함
-        setBossToLocalStorage(SortedArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
+        setBossToLocalStorageToDate(SortedArray, day); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
         onWeeklyMesoChange(SortedArray);
         onWeeklyCountChange(SortedArray);
         setBossArray(SortedArray);
@@ -758,7 +799,7 @@ const Boss = () => {
             done: !prev.done,
         };
         newBossArray[index] = next;
-        setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
+        setBossToLocalStorageToDate(newBossArray, day); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
         onWeeklyMesoChange(newBossArray);
         onWeeklyCountChange(newBossArray);
         onWeeklyDoneCharacterChange(newBossArray);
@@ -817,7 +858,6 @@ const Boss = () => {
 
         newBossArray[copyindex] = copynext;
         const SortedArray = onSortBossArray(newBossArray); //meso가 변경되면 정렬을 해야함
-        setBossToLocalStorage(SortedArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
         onWeeklyMesoChange(SortedArray);
         onWeeklyCountChange(SortedArray);
         setBossArray(SortedArray);
@@ -835,7 +875,7 @@ const Boss = () => {
             onWeeklyMesoChange(newBossArray);
             onWeeklyCountChange(newBossArray);
             onWeeklyDoneCharacterChange(newBossArray);
-            setBossToLocalStorage(newBossArray);
+            setBossToLocalStorageToDate(newBossArray, day); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
             setBossArray(newBossArray);
         }
     };
@@ -851,11 +891,19 @@ const Boss = () => {
                 (item: any) => item.ocid !== ocid
             );
             const SortedArray = onSortBossArray(newBossArray);
-            setBossToLocalStorage(SortedArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
             onWeeklyMesoChange(SortedArray);
             onWeeklyCountChange(SortedArray);
             onWeeklyDoneCharacterChange(SortedArray);
+            setBossToLocalStorageToDate(SortedArray, day); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
             setBossArray(SortedArray);
+        }
+    };
+
+    const onDateChange = (e: any) => {
+        const { value } = e.target;
+        if (value) {
+            const newDay = DateToThursDay(value);
+            setDay(newDay);
         }
     };
 
@@ -883,6 +931,7 @@ const Boss = () => {
                             >
                                 보스 처치 기록 초기화
                             </Button>
+                            <input type="date" value={day} onChange={onDateChange} />
                         </NavInner>
                         <Nav>
                             <Inner>
@@ -952,6 +1001,9 @@ const Boss = () => {
                                 />
                             ))}
                     </Section>
+                    {(!BossArray || BossArray.length) === 0 && (
+                        <Message>아직 등록된 캐릭터가 없습니다.</Message>
+                    )}
                 </Back>
             </Background>
         </React.Fragment>
