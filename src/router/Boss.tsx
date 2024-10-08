@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { showAlert } from '../redux/action/index';
 import { DateToThursDay, storeArrayToLocalStorage } from 'component/Storage';
+import { array } from 'util/BossArray';
 
 const Background = styled.div`
     width: 60%;
@@ -114,357 +115,6 @@ const Message = styled.div`
     margin-bottom: 10%;
 `;
 
-const array: any[] = [
-    {
-        check: false,
-        name: '이지 시그너스',
-        meso: 5059464,
-        src: 'https://i.namu.wiki/i/xy1onLF2Eh3QsHM1hGbowtATA3XFLNDua8oGrIu1YQbrAQYAnNyycWVJymqpH9TNle09BNPJBBkNwaNXf1PSXQ.webp',
-        hard: false,
-        difficulty: 'EASY',
-    },
-    {
-        check: false,
-        name: '하드 힐라',
-        meso: 6390000,
-        src: 'https://i.namu.wiki/i/xkAv49nm21rPWT5mpuFDGBF2S0gc70tqMLTVyKj1qNNmaVPpjBOceuqlc9rsvQJFlh4mFGbPgaZqBun5vrOQtQ.webp',
-        hard: false,
-        difficulty: 'HARD',
-    },
-    {
-        check: false,
-        name: '카오스 핑크빈',
-        meso: 7310000,
-        src: 'https://i.namu.wiki/i/wqDvuAFvinyQZnJ5n9vwvsaT_ZWzUbVACT3jyExnO2aCnMpSvjoLQqad49NjfY85CCJXdpK1L53tqzAADsZRWw.webp',
-        hard: false,
-        difficulty: 'CHAOS',
-    },
-    {
-        check: false,
-        name: '노말 시그너스',
-        meso: 8330000,
-        src: 'https://i.namu.wiki/i/xy1onLF2Eh3QsHM1hGbowtATA3XFLNDua8oGrIu1YQbrAQYAnNyycWVJymqpH9TNle09BNPJBBkNwaNXf1PSXQ.webp',
-        hard: false,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '카오스 자쿰',
-        meso: 8980000,
-        src: 'https://i.namu.wiki/i/KfsxkSC6DkvaKBQ22PHPc6pcMvObwSDp-mkwgSdL99Vw4OYHlfUKOGSQGKUJQoAo8ahSp3Kc9bO2RxcEkXtWUQ.webp',
-        hard: false,
-        difficulty: 'CHAOS',
-    },
-    {
-        check: false,
-        name: '카오스 피에르',
-        meso: 9080000,
-        src: 'https://i.namu.wiki/i/rRii1UpBFsO4y3MefnlY0QwuXeOpXK5dCV5h6Jq5pvb77SuF28VrsSMMSyFU6NWaQITnd6WWEETGKO8n8monIg.webp',
-        hard: false,
-        difficulty: 'CHAOS',
-    },
-    {
-        check: false,
-        name: '카오스 반반',
-        meso: 9060000,
-        src: 'https://i.namu.wiki/i/-VtxcgwbCe3C1hIr86TSKjjHDZfMquc8WG5sXQLJhGAzH_A6p_mml--2BLqK6v0aMS17F97JqIrhWxvWSjJx-g.webp',
-        hard: false,
-        difficulty: 'CHAOS',
-    },
-    {
-        check: false,
-        name: '카오스 블러디퀸',
-        meso: 9040000,
-        src: 'https://i.namu.wiki/i/zGHR27yvbeM4WJfRc1aRRTJD6t9G1Hs3Sr4U9p9P_mgbSBltqAAeydZwcogLq8XRHULHAz8uKfyyHaniucblOA.webp',
-        hard: false,
-        difficulty: 'CHAOS',
-    },
-    {
-        check: false,
-        name: '카오스 벨룸',
-        meso: 11600000,
-        src: 'https://i.namu.wiki/i/XWlfIMMZZSKby5FyBZ2UmL82I9Fl6iXpiP_CejECSHdwh3Abkflw2K9Pgp-M_TUJTTCS6EPeaO87iB6t5gXBeQ.webp',
-        hard: false,
-        difficulty: 'CHAOS',
-    },
-    {
-        check: false,
-        name: '하드 매그너스',
-        meso: 10700000,
-        src: 'https://i.namu.wiki/i/8IEIsgJYENvHw463fs7pTt8qwivTcj5kAF6LFH8FvtaHnqPQ1THyQjMqHs-nM4xogLApg-CTAbshZ9USFU3DyQ.webp',
-        hard: false,
-        difficulty: 'HARD',
-    },
-    {
-        check: false,
-        name: '카오스 파풀라투스',
-        meso: 24700000,
-        src: 'https://i.namu.wiki/i/-suBIbDeVJhzTkhXF8bNoVzCMcICvABpUmJ8DJcziBOJ2VLSaGy6DNDbMOIfsRYDsq1xinh7jJjoH2t1aS1l7Q.webp',
-        hard: false,
-        difficulty: 'CHAOS',
-    },
-    {
-        check: false,
-        name: '노말 스우',
-        meso: 31400000,
-        src: 'https://i.namu.wiki/i/ruflnxOS_pahmLa1F5ZGd0fGMayv2-2OeUsoE1f9amaqSvEabumApKDwKYiOtV1caYUhxrZ-glhPQ2cPC8ICPw.webp',
-        hard: false,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '노말 데미안',
-        meso: 32900000,
-        src: 'https://i.namu.wiki/i/dKLZC6dsM7hb1BnKvHm_9hsL9C_tTp890DxsFrJ95CBu64wzhp7Bw_qY8kFvO-1cpoiAUiFuWKCmvlEUkoDMpg.webp',
-        hard: false,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '노말 가디언 엔젤 슬라임',
-        meso: 47800000,
-        src: 'https://i.namu.wiki/i/NfyVXe5x1GSgN3ItCXYnMby76jSOjawGeKHZbCgkHLlx_0etsQmi-SBVPbfWaRxmnHZWio8z5XalVLb01O-jkg.webp',
-        hard: false,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '이지 루시드',
-        meso: 49000000,
-        src: 'https://i.namu.wiki/i/EX4mog9TVN7S0SlVKzLnDqUu1w2ymmpdEkgU4seIKdcVtKBOqx31uIQ8-Dg1TPmpoV1uPGqyDPFEDuWiUEezKQ.webp',
-        hard: false,
-        difficulty: 'EASY',
-    },
-    {
-        check: false,
-        name: '이지 윌',
-        meso: 53100000,
-        src: 'https://i.namu.wiki/i/f1qnRIpp0_pOjczEjEZt2mauZ7XE8RUqD3AD14w3PFiPDc-QHlkE6qVpKdrgPtBzfImPw5cl1mp-y6Lu5Uw8MQ.webp',
-        hard: false,
-        difficulty: 'EASY',
-    },
-    {
-        check: false,
-        name: '노말 루시드',
-        meso: 58600000,
-        src: 'https://i.namu.wiki/i/EX4mog9TVN7S0SlVKzLnDqUu1w2ymmpdEkgU4seIKdcVtKBOqx31uIQ8-Dg1TPmpoV1uPGqyDPFEDuWiUEezKQ.webp',
-        hard: false,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '노말 윌',
-        meso: 67600000,
-        src: 'https://i.namu.wiki/i/f1qnRIpp0_pOjczEjEZt2mauZ7XE8RUqD3AD14w3PFiPDc-QHlkE6qVpKdrgPtBzfImPw5cl1mp-y6Lu5Uw8MQ.webp',
-        hard: false,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '노말 더스크',
-        meso: 72400000,
-        src: 'https://i.namu.wiki/i/4eyeZXwJ1wnQwpm47kvf3o8JklnpjeyJA_bKlqOjMTPP1IDDD-FlAcbhUO1zueTwmZWA0yKFV2nQPv1T24jbCQ.webp',
-        hard: false,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '노말 듄켈',
-        meso: 78100000,
-        src: 'https://i.namu.wiki/i/Z2T13QUo0lfUtzcX5BH_0PQtp0Y7_jy8dFlzNyVLgReXrZRbtWjSssmEyi6-hrbN7XP5oJegXlmt7goyA5Jdzg.webp',
-        hard: false,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '하드 데미안',
-        meso: 113000000,
-        src: 'https://i.namu.wiki/i/dKLZC6dsM7hb1BnKvHm_9hsL9C_tTp890DxsFrJ95CBu64wzhp7Bw_qY8kFvO-1cpoiAUiFuWKCmvlEUkoDMpg.webp',
-        hard: true,
-        difficulty: 'HARD',
-    },
-    {
-        check: false,
-        name: '하드 스우',
-        meso: 119000000,
-        src: 'https://i.namu.wiki/i/ruflnxOS_pahmLa1F5ZGd0fGMayv2-2OeUsoE1f9amaqSvEabumApKDwKYiOtV1caYUhxrZ-glhPQ2cPC8ICPw.webp',
-        hard: true,
-        difficulty: 'HARD',
-    },
-    {
-        check: false,
-        name: '하드 루시드',
-        meso: 135000000,
-        src: 'https://i.namu.wiki/i/EX4mog9TVN7S0SlVKzLnDqUu1w2ymmpdEkgU4seIKdcVtKBOqx31uIQ8-Dg1TPmpoV1uPGqyDPFEDuWiUEezKQ.webp',
-        hard: true,
-        difficulty: 'HARD',
-    },
-    {
-        check: false,
-        name: '하드 윌',
-        meso: 165000000,
-        src: 'https://i.namu.wiki/i/f1qnRIpp0_pOjczEjEZt2mauZ7XE8RUqD3AD14w3PFiPDc-QHlkE6qVpKdrgPtBzfImPw5cl1mp-y6Lu5Uw8MQ.webp',
-        hard: true,
-        difficulty: 'HARD',
-    },
-    {
-        check: false,
-        name: '노말 진 힐라',
-        meso: 153000000,
-        src: 'https://i.namu.wiki/i/tEUqjqEdPq18JmCb4wQqUp8_VSrf3XuvGNyyCqTH-LQQhjt-wQQXuib7SY-eERKUr8FfBCm58NW35gDN7Ra0dg.webp',
-        hard: true,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '카오스 가디언 엔젤 슬라임',
-        meso: 161000000,
-        src: 'https://i.namu.wiki/i/NfyVXe5x1GSgN3ItCXYnMby76jSOjawGeKHZbCgkHLlx_0etsQmi-SBVPbfWaRxmnHZWio8z5XalVLb01O-jkg.webp',
-        hard: true,
-        difficulty: 'CHAOS',
-    },
-    {
-        check: false,
-        name: '카오스 더스크',
-        meso: 150000000,
-        src: 'https://i.namu.wiki/i/4eyeZXwJ1wnQwpm47kvf3o8JklnpjeyJA_bKlqOjMTPP1IDDD-FlAcbhUO1zueTwmZWA0yKFV2nQPv1T24jbCQ.webp',
-        hard: true,
-        difficulty: 'CHAOS',
-    },
-    {
-        check: false,
-        name: '하드 듄켈',
-        meso: 177000000,
-        src: 'https://i.namu.wiki/i/Z2T13QUo0lfUtzcX5BH_0PQtp0Y7_jy8dFlzNyVLgReXrZRbtWjSssmEyi6-hrbN7XP5oJegXlmt7goyA5Jdzg.webp',
-        hard: true,
-        difficulty: 'HARD',
-    },
-    {
-        check: false,
-        name: '하드 진 힐라',
-        meso: 200000000,
-        src: 'https://i.namu.wiki/i/tEUqjqEdPq18JmCb4wQqUp8_VSrf3XuvGNyyCqTH-LQQhjt-wQQXuib7SY-eERKUr8FfBCm58NW35gDN7Ra0dg.webp',
-        hard: true,
-        difficulty: 'HARD',
-    },
-    {
-        check: false,
-        name: '노말 선택받은 세렌',
-        meso: 220000000,
-        src: 'https://i.namu.wiki/i/DhzPskFnaHWVTfJk_Tb0GDDk7YWU8g-MS9IEau0kC03K7BKdFeZPheFglgLazh_9UuVj_jcaLdEH1L5dmM1jfQ.webp',
-        hard: true,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '하드 선택받은 세렌',
-        meso: 325000000,
-        src: 'https://i.namu.wiki/i/DhzPskFnaHWVTfJk_Tb0GDDk7YWU8g-MS9IEau0kC03K7BKdFeZPheFglgLazh_9UuVj_jcaLdEH1L5dmM1jfQ.webp',
-        hard: true,
-        difficulty: 'HARD',
-    },
-    {
-        check: false,
-        name: '이지 감시자 칼로스',
-        meso: 265000000,
-        src: 'https://i.namu.wiki/i/XKVybiizrvprkaLQltvNf3XfqPB1BSn1ItKV6ijJsIliqxdZCKeqmSQNQKWwGCkM6ZwJDKe7luq9plx6gDpAzg.webp',
-        hard: true,
-        difficulty: 'EASY',
-    },
-    {
-        check: false,
-        name: '노말 감시자 칼로스',
-        meso: 364000000,
-        src: 'https://i.namu.wiki/i/XKVybiizrvprkaLQltvNf3XfqPB1BSn1ItKV6ijJsIliqxdZCKeqmSQNQKWwGCkM6ZwJDKe7luq9plx6gDpAzg.webp',
-        hard: true,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '카오스 감시자 칼로스',
-        meso: 746000000,
-        src: 'https://i.namu.wiki/i/XKVybiizrvprkaLQltvNf3XfqPB1BSn1ItKV6ijJsIliqxdZCKeqmSQNQKWwGCkM6ZwJDKe7luq9plx6gDpAzg.webp',
-        hard: true,
-        difficulty: 'CHAOS',
-    },
-    {
-        check: false,
-        name: '익스트림 감시자 칼로스',
-        meso: 1500000000,
-        src: 'https://i.namu.wiki/i/XKVybiizrvprkaLQltvNf3XfqPB1BSn1ItKV6ijJsIliqxdZCKeqmSQNQKWwGCkM6ZwJDKe7luq9plx6gDpAzg.webp',
-        hard: true,
-        difficulty: 'EXTREME',
-        extreme: true,
-    },
-    {
-        check: false,
-        name: '익스트림 선택받은 세렌',
-        meso: 1340000000,
-        src: 'https://i.namu.wiki/i/DhzPskFnaHWVTfJk_Tb0GDDk7YWU8g-MS9IEau0kC03K7BKdFeZPheFglgLazh_9UuVj_jcaLdEH1L5dmM1jfQ.webp',
-        hard: true,
-        difficulty: 'EXTREME',
-        extreme: true,
-    },
-    {
-        check: false,
-        name: '이지 카링',
-        meso: 293000000,
-        src: 'https://i.namu.wiki/i/ex5ViuTKPKviftIb21RyUf36qfe6yCg5O1lyfmfNFFWpurlq54GpRRcI7KdOHcAgLgrRJDcpyoBvhdzuXNzGtQ.webp',
-        hard: true,
-        difficulty: 'EASY',
-    },
-    {
-        check: false,
-        name: '노말 카링',
-        meso: 425000000,
-        src: 'https://i.namu.wiki/i/ex5ViuTKPKviftIb21RyUf36qfe6yCg5O1lyfmfNFFWpurlq54GpRRcI7KdOHcAgLgrRJDcpyoBvhdzuXNzGtQ.webp',
-        hard: true,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '하드 카링',
-        meso: 870000000,
-        src: 'https://i.namu.wiki/i/ex5ViuTKPKviftIb21RyUf36qfe6yCg5O1lyfmfNFFWpurlq54GpRRcI7KdOHcAgLgrRJDcpyoBvhdzuXNzGtQ.webp',
-        hard: true,
-        difficulty: 'HARD',
-    },
-    {
-        check: false,
-        name: '익스트림 카링',
-        meso: 1750000000,
-        src: 'https://i.namu.wiki/i/ex5ViuTKPKviftIb21RyUf36qfe6yCg5O1lyfmfNFFWpurlq54GpRRcI7KdOHcAgLgrRJDcpyoBvhdzuXNzGtQ.webp',
-        hard: true,
-        difficulty: 'EXTREME',
-        extreme: true,
-    },
-    {
-        check: false,
-        name: '노말 림보',
-        meso: 600000000,
-        src: 'https://i.namu.wiki/i/7xXU2wR9QNoX1rCITJqb8qrxCCYeOVVt6fSGgxxlWAcWbxlfWCXlg3JG9IL5EldpZjdVgrAbFnbJ28zfu231fw.webp',
-        hard: true,
-        difficulty: 'NORMAL',
-    },
-    {
-        check: false,
-        name: '하드 림보',
-        meso: 1070000000,
-        src: 'https://i.namu.wiki/i/7xXU2wR9QNoX1rCITJqb8qrxCCYeOVVt6fSGgxxlWAcWbxlfWCXlg3JG9IL5EldpZjdVgrAbFnbJ28zfu231fw.webp',
-        hard: true,
-        difficulty: 'HARD',
-    },
-    {
-        check: false,
-        name: '익스트림 스우',
-        meso: 392000000,
-        src: 'https://i.namu.wiki/i/ruflnxOS_pahmLa1F5ZGd0fGMayv2-2OeUsoE1f9amaqSvEabumApKDwKYiOtV1caYUhxrZ-glhPQ2cPC8ICPw.webp',
-        hard: true,
-        difficulty: 'EXTREME',
-        extreme: true,
-    },
-];
-
 const Boss = () => {
     const [name, setName] = useState<string>('');
     const [BossArray, setBossArray] = useState<any[]>([]);
@@ -502,29 +152,89 @@ const Boss = () => {
         const prev = localStorage.getItem('bossmeso');
         if (prev) {
             const next = JSON.parse(prev);
-            //console.log(next);
+
+            // 주어진 day로부터 일주일 전의 날짜 계산
+            const givenDate = new Date(day);
+            const previousWeekDate = new Date(givenDate);
+            previousWeekDate.setDate(givenDate.getDate() - 7); // 7일 전으로 설정
+
+            // 가장 많은 캐릭터가 저장된 데이터 찾기
+            const largestDataSet = next.reduce((prevMax: any, current: any) => {
+                if (
+                    Array.isArray(current.data) &&
+                    current.data.length > prevMax.length
+                ) {
+                    return current.data;
+                }
+                return prevMax;
+            }, []);
+
+            console.log(largestDataSet);
+
+            const previousWeekDateString = previousWeekDate
+                .toISOString()
+                .split('T')[0];
+
+            // 주어진 날짜에 해당하는 데이터 가져오기
             const todayData = next.find((item: any) => item.date === day);
-            if (todayData) {
+            console.log(todayData);
+            // 이전 주 날짜에 해당하는 데이터 가져오기
+            const previousWeekData = next.find(
+                (item: any) => item.date === previousWeekDateString
+            );
+
+            if (
+                todayData &&
+                Array.isArray(todayData?.data) &&
+                todayData?.data?.length > 0
+            ) {
                 //날짜에 맞는 데이터가 있다면 해당 데이터를 리턴
                 return todayData.data;
-            } else {
+            } else if (
+                previousWeekData &&
+                Array.isArray(previousWeekData.data) &&
+                previousWeekData.data.length > 0
+            ) {
                 //bossmeso 데이터는 있으나 날짜에 맞는 데이터가 없다면
-                const firstAvailableData = next.find(
-                    (item: any) => item.data?.length > 0
+                const isPrevWeek = window.confirm(
+                    '이전 주의 데이터가 존재합니다. 데이터를 가져오시겠습니까?'
                 );
-                if (firstAvailableData) {
-                    const newBossArray = firstAvailableData?.data?.map(
-                        (item: any) => {
-                            return {
-                                ...item,
-                                done: false,
-                            };
-                        }
+                if (isPrevWeek) {
+                    const currentWeekData = previousWeekData.data.map(
+                        (char: any) => ({
+                            ...char,
+                            done: false, // 새로운 날짜에 맞춰 초기화
+                        })
                     );
-                    return newBossArray;
+                    setBossToLocalStorageToDate(currentWeekData, day);
+                    return currentWeekData;
                 } else {
                     return [];
                 }
+            } else if (
+                largestDataSet &&
+                Array.isArray(largestDataSet) &&
+                largestDataSet.length > 0
+            ) {
+                // 오늘 날짜와 이전 주 모두 데이터가 없는 경우, 사용자에게 선택권 제공
+                const usePreviousData = window.confirm(
+                    '가장 많은 캐릭터가 저장된 데이터를 불러오시겠습니까?'
+                );
+
+                if (usePreviousData) {
+                    // 가장 많은 캐릭터 데이터를 불러옴
+                    const currentWeekData = largestDataSet.map((char: any) => ({
+                        ...char,
+                        done: false, // 새로운 날짜에 맞춰 초기화
+                    }));
+                    setBossToLocalStorageToDate(currentWeekData, day);
+                    return currentWeekData;
+                } else {
+                    // 빈 배열을 반환하여 새로 등록할 수 있게 함
+                    return [];
+                }
+            } else {
+                return [];
             }
         } else {
             return [];
@@ -534,21 +244,27 @@ const Boss = () => {
     const setBossToLocalStorageToDate = (bossarray: any[], day: string) => {
         if (bossarray) {
             storeArrayToLocalStorage('bossmeso', day, bossarray);
+            dispatch(showAlert('데이터가 최신화 되었습니다!', uuidv4(), 4000));
         }
     };
 
-    const localStorageBossArray = getBossFromLocalStorageToDate(day);
-
+    // useEffect에서 localStorage에서 BossArray로 렌더링하기 때문에 BossArray가 렌더링되었을때만 쿼리 실행
     const queryResults: any = useQueries({
-        queries: localStorageBossArray.map((item: any) => ({
-            queryKey: ['characterData', item.ocid],
-            queryFn: () =>
-                getCharacterData(item.ocid, moment().format('YYYY-MM-DD')),
-            staleTime: 1000 * 60 * 5,
-            cacheTime: 1000 * 60 * 10,
-            retry: 1,
-            refetchOnWindowFocus: false,
-        })),
+        queries:
+            BossArray.length > 0
+                ? BossArray.map((item: any) => ({
+                      queryKey: ['characterData', item.ocid],
+                      queryFn: () =>
+                          getCharacterData(
+                              item.ocid,
+                              moment().format('YYYY-MM-DD')
+                          ),
+                      staleTime: 1000 * 60 * 5,
+                      cacheTime: 1000 * 60 * 10,
+                      retry: 1,
+                      refetchOnWindowFocus: false,
+                  }))
+                : [], // 빈 배열일 경우 쿼리도 빈 배열
     });
 
     const allQueriesSuccessful = queryResults.every(
@@ -556,16 +272,25 @@ const Boss = () => {
     );
 
     useEffect(() => {
-        if (allQueriesSuccessful) {
-            const updatedState = onCharacterStateUpdate(queryResults, day);
+        //로컬스토리지에서 데이터를 업데이트 하는 용도 == 의존성에 allQueriesSuccesful만을 둠
+        if (
+            allQueriesSuccessful &&
+            BossArray &&
+            Array.isArray(BossArray) &&
+            BossArray.length > 0
+        ) {
+            const updatedState = onCharacterStateUpdate(
+                queryResults,
+                BossArray
+            );
             setBossArray(updatedState);
             setBossToLocalStorageToDate(updatedState, day);
         }
-    }, [allQueriesSuccessful, day]); // queryResults 대신 allQueriesSuccessful 사용
+    }, [allQueriesSuccessful]); // queryResults 대신 allQueriesSuccessful 사용
 
-    const onCharacterStateUpdate = (queryResults: any, day: string) => {
+    const onCharacterStateUpdate = (queryResults: any, BossArray: any[]) => {
         //목요일에 최신화를 할 때 캐릭터의 상태를 업데이트함 (레벨 정보, 등등)
-        const prevState = getBossFromLocalStorageToDate(day); //
+        const prevState = BossArray;
         //console.log(queryResults);
         const nextState = prevState.map((item: any, index: number) => {
             return {
@@ -701,7 +426,6 @@ const Boss = () => {
             }),
         };
         newBossArray[index] = next;
-        //setBossToLocalStorage(newBossArray); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
         setBossArray(newBossArray);
     };
 
@@ -858,6 +582,7 @@ const Boss = () => {
 
         newBossArray[copyindex] = copynext;
         const SortedArray = onSortBossArray(newBossArray); //meso가 변경되면 정렬을 해야함
+        setBossToLocalStorageToDate(SortedArray, day); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
         onWeeklyMesoChange(SortedArray);
         onWeeklyCountChange(SortedArray);
         setBossArray(SortedArray);
@@ -931,7 +656,11 @@ const Boss = () => {
                             >
                                 보스 처치 기록 초기화
                             </Button>
-                            <input type="date" value={day} onChange={onDateChange} />
+                            <input
+                                type="date"
+                                value={day}
+                                onChange={onDateChange}
+                            />
                         </NavInner>
                         <Nav>
                             <Inner>
