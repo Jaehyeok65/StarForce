@@ -44,121 +44,74 @@ const Head = styled.div`
 `;
 
 interface ModalPropertyProps {
-    src1: string;
-    src3: string;
-    src4: string;
-    src5: string;
+    ocid: string;
+    mesoImage: string;
+    erdaImage: string;
     toggle: boolean;
-    propertynum: number;
-    property: number;
+    meso: number;
     erda: number;
-    gem: number;
-    totalproperty: number;
-    totalerda: number;
-    totalgem: number;
-    total: boolean;
     onInputChange: (
         e: React.ChangeEvent<HTMLInputElement>,
         setState: React.Dispatch<React.SetStateAction<number>>
     ) => void;
-    setPropertyNum: React.Dispatch<React.SetStateAction<number>>;
-    setProperty: React.Dispatch<React.SetStateAction<number>>;
+    setMeso: React.Dispatch<React.SetStateAction<number>>;
     setErda: React.Dispatch<React.SetStateAction<number>>;
-    setGem: React.Dispatch<React.SetStateAction<number>>;
     setToggle: React.Dispatch<React.SetStateAction<boolean>>;
-    formatting: (param: number) => string;
-    onPropertyPlus: () => void;
+    onMesoPlus: (ocid: string, meso: number, erda: number) => void;
     onCancle: (onToggle: React.Dispatch<React.SetStateAction<boolean>>) => void;
 }
 
 const ModalProperty: React.FC<ModalPropertyProps> = ({
-    src1,
-    src3,
-    src4,
-    src5,
+    mesoImage,
+    erdaImage,
     toggle,
-    propertynum,
-    property,
+    meso,
     erda,
-    gem,
-    totalproperty,
-    totalerda,
-    totalgem,
-    total,
     onInputChange,
-    setPropertyNum,
-    setProperty,
     setErda,
-    setGem,
+    setMeso,
     setToggle,
-    formatting,
-    onPropertyPlus,
+    onMesoPlus,
     onCancle,
+    ocid,
 }) => {
     return (
         <Modal toggle={toggle}>
-            {total ? (
-                <ModalHead>오늘 획득한 재화를 입력해주세요.</ModalHead>
-            ) : (
-                <ModalHead>획득한 재화를 입력해주세요.</ModalHead>
-            )}
+            <ModalHead>획득한 메소를 입력해주세요.</ModalHead>
             <ModalContent>
-                {total && (
-                    <div>
-                        <img src={src1} width="30px" alt="재획" />{' '}
-                        &nbsp;&nbsp;&nbsp;:
-                    </div>
-                )}
-                {total && (
-                    <div>
-                        <Input
-                            type="number"
-                            value={propertynum}
-                            onChange={(e) => onInputChange(e, setPropertyNum)}
-                        />
-                    </div>
-                )}
-                {total && <div>{propertynum}&nbsp;회</div>}
                 <div>
-                    <img src={src3} width="30px" alt="메소" />{' '}
+                    <img src={mesoImage} width="30px" alt="메소" />{' '}
                     &nbsp;&nbsp;&nbsp;:
                 </div>
                 <div>
                     <Input
                         type="number"
-                        value={total ? totalproperty : property}
-                        onChange={(e) => onInputChange(e, setProperty)}
+                        value={meso}
+                        onChange={(e) => onInputChange(e, setMeso)}
                     />
                 </div>
                 <div>
-                    {total ? formatting(totalproperty) : formatting(property)}
+                    {meso && meso.toLocaleString()}
                     &nbsp;메소
                 </div>
                 <div>
-                    <img src={src4} width="35px" alt="조각" /> &nbsp;&nbsp;:
+                    <img src={erdaImage} width="35px" alt="조각" />{' '}
+                    &nbsp;&nbsp;:
                 </div>
                 <div>
                     <Input
                         type="number"
-                        value={total ? totalerda : erda}
+                        value={erda}
                         onChange={(e) => onInputChange(e, setErda)}
                     />
                 </div>
-                <div>{total ? totalerda : erda}&nbsp;개</div>
-                <div>
-                    <img src={src5} width="35px" alt="코젬" /> &nbsp;&nbsp;:
-                </div>
-                <div>
-                    <Input
-                        type="number"
-                        value={total ? totalgem : gem}
-                        onChange={(e) => onInputChange(e, setGem)}
-                    />
-                </div>
-                <div>{total ? totalgem : gem}&nbsp;개</div>
+                <div>{erda && erda}&nbsp;개</div>
             </ModalContent>
             <Head>
-                <Button width="100px" onClick={() => onPropertyPlus()}>
+                <Button
+                    width="100px"
+                    onClick={() => onMesoPlus(ocid, meso, erda)}
+                >
                     적용하기
                 </Button>
                 <Button width="100px" onClick={() => onCancle(setToggle)}>
