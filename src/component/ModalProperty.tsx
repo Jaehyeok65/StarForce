@@ -50,15 +50,12 @@ interface ModalPropertyProps {
     toggle: boolean;
     meso: number;
     erda: number;
-    onInputChange: (
-        e: React.ChangeEvent<HTMLInputElement>,
-        setState: React.Dispatch<React.SetStateAction<number>>
-    ) => void;
-    setMeso: React.Dispatch<React.SetStateAction<number>>;
-    setErda: React.Dispatch<React.SetStateAction<number>>;
-    setToggle: React.Dispatch<React.SetStateAction<boolean>>;
+    onInputChange: any;
+    setMeso: any;
+    setErda: any;
+    setToggle: any;
     onMesoPlus: (ocid: string, meso: number, erda: number) => void;
-    onCancle: (onToggle: React.Dispatch<React.SetStateAction<boolean>>) => void;
+    onCancle: any;
 }
 
 const ModalProperty: React.FC<ModalPropertyProps> = ({
@@ -87,7 +84,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                     <Input
                         type="number"
                         value={meso}
-                        onChange={(e) => onInputChange(e, setMeso)}
+                        onChange={(e) => onInputChange(e, ocid, setMeso)}
                     />
                 </div>
                 <div>
@@ -102,7 +99,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                     <Input
                         type="number"
                         value={erda}
-                        onChange={(e) => onInputChange(e, setErda)}
+                        onChange={(e) => onInputChange(e, ocid, setErda)}
                     />
                 </div>
                 <div>{erda && erda}&nbsp;개</div>
@@ -114,7 +111,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                 >
                     적용하기
                 </Button>
-                <Button width="100px" onClick={() => onCancle(setToggle)}>
+                <Button width="100px" onClick={() => onCancle(ocid)}>
                     닫기
                 </Button>
             </Head>

@@ -169,15 +169,13 @@ const Boss = () => {
                 return prevMax;
             }, []);
 
-            console.log(largestDataSet);
-
             const previousWeekDateString = previousWeekDate
                 .toISOString()
                 .split('T')[0];
 
             // 주어진 날짜에 해당하는 데이터 가져오기
             const todayData = next.find((item: any) => item.date === day);
-            console.log(todayData);
+
             // 이전 주 날짜에 해당하는 데이터 가져오기
             const previousWeekData = next.find(
                 (item: any) => item.date === previousWeekDateString

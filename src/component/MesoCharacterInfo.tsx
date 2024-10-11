@@ -69,9 +69,10 @@ interface mesoinfo {
     erda: any;
     onClickCharacterInfo: any;
     onMesoPlus: any;
-    onInputChange : any;
-    setMeso : any;
-    setErda : any;
+    onInputChange: any;
+    setMeso: any;
+    setErda: any;
+    onCancle : any;
 }
 
 const MesoCharacterInfo: React.FC<mesoinfo> = ({
@@ -89,7 +90,8 @@ const MesoCharacterInfo: React.FC<mesoinfo> = ({
     onMesoPlus,
     onInputChange,
     setMeso,
-    setErda
+    setErda,
+    onCancle
 }) => {
     return (
         <React.Fragment>
@@ -161,7 +163,7 @@ const MesoCharacterInfo: React.FC<mesoinfo> = ({
                 erda={erda}
                 setToggle={setMesoToggle}
                 onMesoPlus={onMesoPlus}
-                onCancle={() => console.log('하이')}
+                onCancle={onCancle}
                 onInputChange={onInputChange}
                 setMeso={setMeso}
                 setErda={setErda}
