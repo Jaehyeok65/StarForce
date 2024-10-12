@@ -44,12 +44,6 @@ const Button = styled.button`
     white-space: nowrap;
 `;
 
-const Inner = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
-    place-items: center;
-`;
 
 // Styled Components 정의
 const InputContainer = styled.div`
@@ -63,7 +57,6 @@ interface mesoinfo {
     mesoToggle: boolean;
     setMesoToggle: any;
     data: any;
-    onMesoDoneChange: any;
     onCharacterDelete: any;
     meso: any;
     erda: any;
@@ -80,12 +73,9 @@ interface mesoinfo {
 
 const MesoCharacterInfo: React.FC<mesoinfo> = ({
     data,
-    mesoArray,
-    done,
     mesoToggle,
     setMesoToggle,
     ocid,
-    onMesoDoneChange,
     onCharacterDelete,
     meso,
     erda,
@@ -97,7 +87,6 @@ const MesoCharacterInfo: React.FC<mesoinfo> = ({
     onCancle,
     modalmeso,
     modalerda,
-    formatting
 }) => {
     return (
         <React.Fragment>
@@ -143,22 +132,11 @@ const MesoCharacterInfo: React.FC<mesoinfo> = ({
                 <div>
                     <Button onClick={() => setMesoToggle(ocid)}>입력</Button>
                 </div>
-                <Inner>
-                    <div>
-                        {
-                            <Checkbox
-                                type="checkbox"
-                                checked={done}
-                                onChange={() => onMesoDoneChange(ocid)}
-                            />
-                        }
-                    </div>
-                    <div>
+               
                         <Button onClick={() => onCharacterDelete(ocid)}>
                             <FaRegTrashCan />
                         </Button>
-                    </div>
-                </Inner>
+              
             </Info>
             <ModalProperty
                 ocid={ocid}
