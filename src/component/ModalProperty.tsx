@@ -72,6 +72,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
     onCancle,
     ocid,
 }) => {
+
     return (
         <Modal toggle={toggle}>
             <ModalHead>획득한 메소를 입력해주세요.</ModalHead>
@@ -84,7 +85,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                     <Input
                         type="number"
                         value={meso}
-                        onChange={(e) => onInputChange(e, ocid, setMeso)}
+                        onChange={(e) => onInputChange(e, setMeso)}
                     />
                 </div>
                 <div>
@@ -99,10 +100,10 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                     <Input
                         type="number"
                         value={erda}
-                        onChange={(e) => onInputChange(e, ocid, setErda)}
+                        onChange={(e) => onInputChange(e, setErda)}
                     />
                 </div>
-                <div>{erda && erda}&nbsp;개</div>
+                <div>{erda && erda.toLocaleString()}&nbsp;개</div>
             </ModalContent>
             <Head>
                 <Button

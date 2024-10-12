@@ -13,73 +13,36 @@ import { storeArrayToLocalStorage } from 'component/Storage';
 const Head = styled.div`
     display: flex;
     justify-content: center;
+    margin-bottom: 5%;
 `;
 
 const Nav = styled.div`
-    display: flex;
-    justify-content: space-between;
-    margin-top: 3%;
+    display: grid;
+    grid-template-columns: 1fr;
+    place-items: right;
+    justify-items: end;
+    row-gap: 10px;
+    font-size: 12px;
 `;
 
 const Background = styled.div`
     width: 60%;
     margin: 0 auto;
 
-    @media screen and (max-width: 1067px) {
-        width: 60%;
-        margin: 0 auto;
-    }
-
-    @media screen and (max-width: 867px) {
-        width: 80%;
-        margin: 0 auto;
-    }
-
-    @media screen and (max-width: 667px) {
+    @media screen and (max-width: 767px) {
         width: 100%;
         margin: 0 auto;
     }
-`;
-
-const Bold = styled.span`
-    font-weight: bold;
 `;
 
 const Back = styled.div`
     margin: 5% 5% 5% 5%;
     border: 1px solid gray;
     border-radius: 12px;
-    padding: 5% 5% 5% 5%;
+    padding: 2% 5% 2% 5%;
 
-    @media screen and (max-width: 767px) {
-        padding: 5% 3% 5% 3%;
-    }
-`;
-
-const DivBtn = styled.div`
-    border: 1px solid gray;
-    border-radius: 12px;
-    padding: 6px;
-    cursor: pointer;
-    margin-right: 6px;
-    font-size: 12px;
-    max-width: 200px;
-    text-align: center;
-`;
-
-const Content = styled.div`
-    display: flex;
-    justify-content: center;
-    margin: 10% 5% 7% 5%;
-
-    > div {
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-    }
-
-    @media screen and (max-width: 767px) {
-        margin: 7% 2% 7% 2%;
+    @media screen and (max-width: 500px) {
+        padding: 2%;
     }
 `;
 
@@ -105,7 +68,6 @@ const Section = styled.div`
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    margin-top: 10%;
 
     @media screen and (max-width: 1300px) {
         grid-template-columns: repeat(2, 1fr);
@@ -118,6 +80,39 @@ const Message = styled.div`
     justify-content: center;
     margin-top: 10%;
     margin-bottom: 10%;
+`;
+
+const Inner = styled.div`
+    display: flex;
+`;
+
+const NavContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+`;
+
+const LienHeightContainer = styled.div`
+    line-height: 30px;
+`;
+
+const LienHeightContainer2 = styled.div`
+    line-height: 60px;
+`;
+
+const LienHeightContainer3 = styled.div`
+    line-height: 22px;
+`;
+
+const NavInner = styled.div`
+    margin-left: 12px;
+    display: grid;
+    grid-template-columns: 1fr;
+    max-height: 50px;
+    row-gap: 30px;
+`;
+
+const ImageContainer = styled.div`
+    margin-right: 10px;
 `;
 
 interface meso {
@@ -133,6 +128,11 @@ const Meso = () => {
     const [day, setDay] = useState<any>(moment().format('YYYY-MM-DD'));
     const [name, setName] = useState<string>('');
     const [mesoArray, setMesoArray] = useState<meso[]>([]);
+    const [meso, setMeso] = useState<number>(0); //모달 창에서 변경될 state === 모달 창과 캐릭터 화면의 state를 분리함
+    const [erda, setErda] = useState<number>(0);
+    const [WeeklyMeso, setWeeklyMeso] = useState<number>(0);
+    const [WeeklyErda, setWeeklyErda] = useState<number>(0);
+    const [WeeklyDoneCharacter, setWeeklyDoneCharacter] = useState<number>(0);
 
     const navigate = useNavigate();
 
@@ -162,6 +162,9 @@ const Meso = () => {
         if (newMesoArray && Array.isArray(newMesoArray)) {
             //배열이라면
             setMesoArray(newMesoArray);
+            onWeeklyDoneCharacterChange(newMesoArray);
+            onWeeklyErdaChange(newMesoArray);
+            onWeeklyMesoChange(newMesoArray);
         }
     }, [day]);
 
@@ -193,7 +196,6 @@ const Meso = () => {
             // 주어진 날짜에 해당하는 데이터 가져오기
             const todayData = next.find((item: any) => item.date === day);
 
-
             // 하루 전 날짜에 해당하는 데이터 가져오기
             const yesterdayData = next.find(
                 (item: any) => item.date === yesterdayDateString
@@ -219,8 +221,8 @@ const Meso = () => {
                     const currentData = yesterdayData.data.map((char: any) => ({
                         ...char,
                         done: false, // 새로운 날짜에 맞춰 초기화
-                        meso : 0,
-                        erda : 0
+                        meso: 0,
+                        erda: 0,
                     }));
                     setMesoToLocalStorageToDate(currentData, day);
                     return currentData;
@@ -242,8 +244,8 @@ const Meso = () => {
                     const currentData = largestDataSet.map((char: any) => ({
                         ...char,
                         done: false, // 새로운 날짜에 맞춰 초기화
-                        meso : 0,
-                        erda : 0
+                        meso: 0,
+                        erda: 0,
                     }));
                     setMesoToLocalStorageToDate(currentData, day);
                     return currentData;
@@ -332,6 +334,9 @@ const Meso = () => {
         };
         newMesoArray[index] = next;
         setMesoArray(newMesoArray);
+        onWeeklyDoneCharacterChange(newMesoArray);
+        onWeeklyErdaChange(newMesoArray);
+        onWeeklyMesoChange(newMesoArray);
         setMesoToLocalStorageToDate(newMesoArray, day);
     };
 
@@ -369,31 +374,11 @@ const Meso = () => {
         };
         newMesoArray[index] = next;
         setMesoArray(newMesoArray);
+        onWeeklyErdaChange(newMesoArray);
+        onWeeklyMesoChange(newMesoArray);
+        setMeso(0);
+        setErda(0);
         setMesoToLocalStorageToDate(newMesoArray, day);
-    };
-
-    const setMeso = (ocid: string, value: any) => {
-        const newMesoArray = [...mesoArray];
-        const index = mesoArray.findIndex((item) => item.ocid === ocid);
-        const prev = mesoArray[index]; //이전 캐릭터의 재화 정보를 가져옴
-        const next = {
-            ...prev,
-            meso: value,
-        };
-        newMesoArray[index] = next;
-        setMesoArray(newMesoArray);
-    };
-
-    const setErda = (ocid: string, value: any) => {
-        const newMesoArray = [...mesoArray];
-        const index = mesoArray.findIndex((item) => item.ocid === ocid);
-        const prev = mesoArray[index]; //이전 캐릭터의 재화 정보를 가져옴
-        const next = {
-            ...prev,
-            erda: value,
-        };
-        newMesoArray[index] = next;
-        setMesoArray(newMesoArray);
     };
 
     const onCharacterDelete = (ocid: string) => {
@@ -404,17 +389,19 @@ const Meso = () => {
             );
             const SortedArray = onSortMesoArray(newMesoArray);
             setMesoArray(SortedArray);
+            onWeeklyDoneCharacterChange(SortedArray);
+            onWeeklyErdaChange(SortedArray);
+            onWeeklyMesoChange(SortedArray);
             setMesoToLocalStorageToDate(SortedArray, day);
         }
     };
 
     const onInputChange = (
         e: React.ChangeEvent<HTMLInputElement>,
-        ocid: string,
         setState: any
     ) => {
         const { value } = e.target;
-        setState(ocid, Number(value));
+        setState(Number(value));
     };
 
     const onCancle = (ocid: string) => {
@@ -423,12 +410,71 @@ const Meso = () => {
         const prev = mesoArray[index]; //이전 캐릭터의 재화 정보를 가져옴
         const next = {
             ...prev,
-            meso: 0,
-            erda: 0,
             mesoToggle: !prev.mesoToggle,
         };
         newMesoArray[index] = next;
         setMesoArray(newMesoArray);
+        setMeso(0);
+        setErda(0);
+    };
+
+    const onWeeklyMesoChange = (newMesoArray: any[]) => {
+        if (newMesoArray) {
+            let meso = 0;
+            newMesoArray.forEach((item: any) => {
+                if (item.done) {
+                    meso += item.meso;
+                }
+            });
+            setWeeklyMeso(meso);
+        }
+    };
+
+    const onWeeklyErdaChange = (newMesoArray: any[]) => {
+        if (newMesoArray) {
+            let erda = 0;
+            newMesoArray.forEach((item: any) => {
+                if (item.done) {
+                    erda += item.erda;
+                }
+            });
+            setWeeklyErda(erda);
+        }
+    };
+
+    const onWeeklyDoneCharacterChange = (newBossArray: any[]) => {
+        if (newBossArray) {
+            let count = 0;
+            newBossArray.forEach((item: any) => {
+                count += item.done;
+            });
+            setWeeklyDoneCharacter(count);
+        }
+    };
+
+    const formatKoreanNumber = (number: number) => {
+        const oneEok = 100000000; // 1억
+        const tenMillion = 10000000; // 1천만
+
+        // 억 단위
+        const eokPart = Math.floor(number / oneEok); // 억 부분
+        let remainder = number % oneEok; // 남은 부분
+
+        // 천만 단위
+        const tenMillionPart = Math.floor(remainder / tenMillion); // 천만 부분
+        remainder = remainder % tenMillion; // 천만 단위 이후 남은 부분
+
+        // 결과 문자열 조합
+        let result = '';
+        if (eokPart > 0) {
+            result += `${eokPart}억 `;
+        }
+        if (tenMillionPart > 0) {
+            result += `${tenMillionPart}천만 `;
+        }
+        result += `${remainder}`;
+
+        return result.trim(); // 마지막 공백 제거
     };
 
     return (
@@ -446,14 +492,57 @@ const Meso = () => {
                             <Button>캐릭터 추가</Button>
                         </Head>
                     </form>
-                    <Nav>
-                        <DivBtn>금주 수익 조회</DivBtn>
-                        <Input
-                            type="date"
-                            value={day}
-                            onChange={(e: any) => setDay(e.target.value)}
-                        />
-                    </Nav>
+                    <NavContainer>
+                        <NavInner>
+                            <input
+                                type="date"
+                                value={day}
+                                onChange={(e: any) => setDay(e.target.value)}
+                            />
+                            <Button>수익 조회</Button>
+                        </NavInner>
+                        <Nav>
+                            <Inner>
+                                <ImageContainer>
+                                    <img
+                                        src="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
+                                        width="20px"
+                                        alt="메소"
+                                        style={{ verticalAlign: 'middle' }}
+                                    />
+                                </ImageContainer>
+                                <LienHeightContainer>
+                                    {WeeklyMeso.toLocaleString() + ' 메소'}
+                                </LienHeightContainer>
+                            </Inner>
+                            <Inner>
+                                <ImageContainer>
+                                    <img
+                                        src="image/jogak.PNG"
+                                        width="20px"
+                                        alt="조각"
+                                        style={{ verticalAlign: 'middle' }}
+                                    />
+                                </ImageContainer>
+                                <LienHeightContainer3>{`${WeeklyErda} 조각`}</LienHeightContainer3>
+                            </Inner>
+                            <Inner>
+                                <ImageContainer>
+                                    <img
+                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOkOwhHWNKJYNC60_ErXLGfIHfv-9GjwmRyg&s"
+                                        alt="캐릭터"
+                                        width="50px"
+                                        height="50px"
+                                    />
+                                </ImageContainer>
+                                <LienHeightContainer2>
+                                    {mesoArray &&
+                                        Array.isArray(mesoArray) &&
+                                        `${WeeklyDoneCharacter} / ${mesoArray.length} 캐릭터`}
+                                </LienHeightContainer2>
+                            </Inner>
+                        </Nav>
+                    </NavContainer>
                     <Section>
                         {mesoArray &&
                             mesoArray.length > 0 &&
@@ -476,6 +565,9 @@ const Meso = () => {
                                     setMeso={setMeso}
                                     setErda={setErda}
                                     onCancle={onCancle}
+                                    modalmeso={meso}
+                                    modalerda={erda}
+                                    formatting={formatKoreanNumber}
                                 />
                             ))}
                     </Section>

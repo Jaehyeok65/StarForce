@@ -72,7 +72,7 @@ const NavInner = styled.div`
     display: grid;
     grid-template-columns: 1fr;
     max-height: 50px;
-    row-gap: 30px;
+    row-gap: 20px;
 `;
 
 const Inner = styled.div`
@@ -647,6 +647,12 @@ const Boss = () => {
                     </form>
                     <NavContainer>
                         <NavInner>
+                        <input
+                                type="date"
+                                value={day}
+                                onChange={onDateChange}
+                            />
+                            <Button>수익 조회</Button>
                             <Button
                                 onClick={() =>
                                     onWeeklyBossInitialize(BossArray)
@@ -654,11 +660,6 @@ const Boss = () => {
                             >
                                 보스 처치 기록 초기화
                             </Button>
-                            <input
-                                type="date"
-                                value={day}
-                                onChange={onDateChange}
-                            />
                         </NavInner>
                         <Nav>
                             <Inner>

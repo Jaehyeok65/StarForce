@@ -73,6 +73,9 @@ interface mesoinfo {
     setMeso: any;
     setErda: any;
     onCancle : any;
+    modalmeso : number;
+    modalerda : number;
+    formatting : any;
 }
 
 const MesoCharacterInfo: React.FC<mesoinfo> = ({
@@ -91,7 +94,10 @@ const MesoCharacterInfo: React.FC<mesoinfo> = ({
     onInputChange,
     setMeso,
     setErda,
-    onCancle
+    onCancle,
+    modalmeso,
+    modalerda,
+    formatting
 }) => {
     return (
         <React.Fragment>
@@ -132,7 +138,7 @@ const MesoCharacterInfo: React.FC<mesoinfo> = ({
                         alt="솔에르다조각"
                     />
                     &nbsp;
-                    {erda && erda}&nbsp;개
+                    {erda && erda.toLocaleString()}&nbsp;개
                 </InputContainer>
                 <div>
                     <Button onClick={() => setMesoToggle(ocid)}>입력</Button>
@@ -159,8 +165,8 @@ const MesoCharacterInfo: React.FC<mesoinfo> = ({
                 mesoImage="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
                 erdaImage="image/jogak.PNG"
                 toggle={mesoToggle}
-                meso={meso}
-                erda={erda}
+                meso={modalmeso}
+                erda={modalerda}
                 setToggle={setMesoToggle}
                 onMesoPlus={onMesoPlus}
                 onCancle={onCancle}
