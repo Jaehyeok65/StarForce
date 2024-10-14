@@ -27,13 +27,6 @@ const ImageInfo = styled.div`
     }
 `;
 
-const Checkbox = styled.input`
-    width: 20px;
-    height: 16px;
-    border: 1px solid gray;
-    border-radius: 4px;
-`;
-
 const Button = styled.button`
     border: 1px solid gray;
     background-color: white;

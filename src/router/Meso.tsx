@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { showAlert } from '../redux/action/index';
 import { storeArrayToLocalStorage } from 'component/Storage';
+import ModalProfit from 'component/ModalProfit';
 
 const Head = styled.div`
     display: flex;
@@ -130,6 +131,7 @@ const Meso = () => {
     const [erda, setErda] = useState<number>(0);
     const [WeeklyMeso, setWeeklyMeso] = useState<number>(0);
     const [WeeklyErda, setWeeklyErda] = useState<number>(0);
+    const [profitToggle, setProfitToggle] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -155,7 +157,7 @@ const Meso = () => {
 
     useEffect(() => {
         const newMesoArray = getMesoFromLocalStorageToDate(day); //LocalStorage에 저장된 배열을 가져옴
-        console.log(newMesoArray);
+        
         if (newMesoArray && Array.isArray(newMesoArray)) {
             //배열이라면
             setMesoArray(newMesoArray);
@@ -468,7 +470,7 @@ const Meso = () => {
                                 value={day}
                                 onChange={(e: any) => setDay(e.target.value)}
                             />
-                            <Button>수익 조회</Button>
+                            <Button onClick={() => setProfitToggle((prev : any) => !prev)}>수익 조회</Button>
                         </NavInner>
                         <Nav>
                             <Inner>
@@ -509,7 +511,6 @@ const Meso = () => {
                                     mesoToggle={info?.mesoToggle}
                                     setMesoToggle={setMesoToggle}
                                     data={info?.characterData}
-
                                     onCharacterDelete={onCharacterDelete}
                                     meso={info.meso}
                                     erda={info.erda}
@@ -528,6 +529,7 @@ const Meso = () => {
                     {(!mesoArray || mesoArray.length) === 0 && (
                         <Message>아직 등록된 캐릭터가 없습니다.</Message>
                     )}
+                    <ModalProfit toggle={profitToggle} setToggle={setProfitToggle} />
                 </Back>
             </Background>
         </React.Fragment>

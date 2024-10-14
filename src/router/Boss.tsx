@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { showAlert } from '../redux/action/index';
 import { DateToThursDay, storeArrayToLocalStorage } from 'component/Storage';
 import { array } from 'util/BossArray';
+import ModalBossProfit from 'component/ModalBossProfit';
 
 const Background = styled.div`
     width: 60%;
@@ -121,6 +122,7 @@ const Boss = () => {
     const [day, setDay] = useState<any>(
         DateToThursDay(moment().format('YYYY-MM-DD'))
     );
+    const [bossProfitToggle, setBossProfitToggle] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -347,7 +349,7 @@ const Boss = () => {
             //기존의 배열을 메소, 레벨 내림차순으로 정렬
             const SortedArray = onSortBossArray(updatedBossArray);
             // 로컬 스토리지에 저장
-            setBossToLocalStorageToDate(SortedArray, day); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
+            //setBossToLocalStorageToDate(SortedArray, day); //BossArray상태가 변경되기 때문에 로컬스토리지에도 저장
 
             // 상태 업데이트
             setBossArray(SortedArray);
@@ -652,7 +654,7 @@ const Boss = () => {
                                 value={day}
                                 onChange={onDateChange}
                             />
-                            <Button>수익 조회</Button>
+                            <Button onClick={() => setBossProfitToggle((prev : any) => !prev)}>수익 조회</Button>
                             <Button
                                 onClick={() =>
                                     onWeeklyBossInitialize(BossArray)
@@ -732,6 +734,7 @@ const Boss = () => {
                     {(!BossArray || BossArray.length) === 0 && (
                         <Message>아직 등록된 캐릭터가 없습니다.</Message>
                     )}
+                    <ModalBossProfit toggle={bossProfitToggle} setToggle={setBossProfitToggle}/>
                 </Back>
             </Background>
         </React.Fragment>
