@@ -496,13 +496,14 @@ const Meso = () => {
                                     data={info?.characterData}
                                     onCharacterDelete={onCharacterDelete}
                                     meso={info?.property?.totalmeso}
-                                    erda={info?.property?.totalerda}
+                                    erda={info?.property?.erda}
                                     onClickCharacterInfo={onClickCharacterInfo}
                                     onMesoPlus={onMesoPlus}
                                     onCancle={onCancle}
                                     formatting={formatKoreanNumber}
                                     property={property}
                                     setProperty={setProperty}
+                                    characterProperty={info?.property}
                                 />
                             ))}
                     </Section>

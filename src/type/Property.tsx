@@ -9,7 +9,6 @@ export interface Property {
     milk : number; //순록의 우유
     pure : number; //순백
     totalmeso : number; //캐릭터 창에 보여질 메소
-    totalerda : number; //캐릭터 창에 보여질 에르다
 };
 
 export const defaultProperty : Property = {
@@ -23,5 +22,4 @@ export const defaultProperty : Property = {
     milk : 0,
     pure : 0,
     totalmeso : 0,
-    totalerda : 0
 };

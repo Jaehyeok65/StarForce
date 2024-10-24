@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import Modal from './Modal';
 import { Property, defaultProperty } from 'type/Property';
 
 const ModalContent = styled.div`
     display: grid;
-    grid-template-columns: 10% 35% 55%;
+    grid-template-columns: 40% 60%;
     gap: 40px;
     row-gap: 30px;
     margin: 10% 20% 10% 20%;
@@ -44,13 +44,27 @@ const Head = styled.div`
     margin-bottom: 10%;
 `;
 
+const propertyToKorean: any = {
+    meso: '메소',
+    erda: '조각',
+    gem: '코어 젬스톤',
+    innocent: '이노센트',
+    epicabillity: '에픽잠재',
+    editional: '에디셔널',
+    dew: '황혼의 이슬',
+    milk: '순록의 우유',
+    pure: '순백',
+    totalmeso: '총 메소',
+};
+
 interface ModalPropertyProps {
     ocid: string;
     toggle: boolean;
     onMesoPlus: any;
     onCancle: any;
-    property : any;
-    setProperty : any;
+    property: any;
+    setProperty: any;
+    characterProperty: any;
 }
 
 const ModalProperty: React.FC<ModalPropertyProps> = ({
@@ -59,29 +73,40 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
     onCancle,
     ocid,
     property,
-    setProperty
+    setProperty,
+    characterProperty,
 }) => {
+    useEffect(() => {
+        if (toggle && characterProperty) {
+            //캐릭터에 저장된 정보를 input창에 업데이트함 (편의성)
+            setProperty(characterProperty);
+        }
+    }, [toggle]);
 
-    const onChange = (e : any, key : string) => {
+    const onChange = (e: any, key: string) => {
         const { value } = e.target;
         const numberValue = Number(value);
         setProperty((prev: any) => ({
-            ...prev,           // 이전 상태를 복사
-            [key]: numberValue       // 동적 키로 값을 설정
-          }));
+            ...prev, // 이전 상태를 복사
+            [key]: numberValue, // 동적 키로 값을 설정
+        }));
     };
 
-    console.log(property);
-
+    console.log(characterProperty);
 
     return (
         <Modal toggle={toggle}>
             <ModalHead>획득한 메소를 입력해주세요.</ModalHead>
-            {property && Object.keys(property).map((key : string) => (
-                <ModalContent key={key}>
-                    <Input value={property[key]} onChange={(e) => onChange(e,key)}/>
-                </ModalContent>
-            ))}
+            {property &&
+                Object.keys(property).map((key: string) => (
+                    <ModalContent key={key}>
+                        <div>{propertyToKorean[key]}</div>
+                        <Input
+                            value={property[key]}
+                            onChange={(e) => onChange(e, key)}
+                        />
+                    </ModalContent>
+                ))}
             <Head>
                 <Button
                     width="100px"

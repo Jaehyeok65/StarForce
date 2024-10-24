@@ -58,6 +58,7 @@ interface mesoinfo {
     setProperty: any;
     meso: any;
     erda: any;
+    characterProperty : any;
 }
 
 const MesoCharacterInfo: React.FC<mesoinfo> = ({
@@ -73,6 +74,7 @@ const MesoCharacterInfo: React.FC<mesoinfo> = ({
     setProperty,
     meso,
     erda,
+    characterProperty
 }) => {
     return (
         <React.Fragment>
@@ -130,6 +132,7 @@ const MesoCharacterInfo: React.FC<mesoinfo> = ({
                 onCancle={onCancle}
                 property={property}
                 setProperty={setProperty}
+                characterProperty={characterProperty}
             />
         </React.Fragment>
     );
