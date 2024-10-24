@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Modal from './Modal';
+import { Property, defaultProperty } from 'type/Property';
 
 const ModalContent = styled.div`
     display: grid;
@@ -45,70 +46,46 @@ const Head = styled.div`
 
 interface ModalPropertyProps {
     ocid: string;
-    mesoImage: string;
-    erdaImage: string;
     toggle: boolean;
-    meso: number;
-    erda: number;
-    onInputChange: any;
-    setMeso: any;
-    setErda: any;
-    setToggle: any;
-    onMesoPlus: (ocid: string, meso: number, erda: number) => void;
+    onMesoPlus: any;
     onCancle: any;
+    property : any;
+    setProperty : any;
 }
 
 const ModalProperty: React.FC<ModalPropertyProps> = ({
-    mesoImage,
-    erdaImage,
     toggle,
-    meso,
-    erda,
-    onInputChange,
-    setErda,
-    setMeso,
-    setToggle,
     onMesoPlus,
     onCancle,
     ocid,
+    property,
+    setProperty
 }) => {
+
+    const onChange = (e : any, key : string) => {
+        const { value } = e.target;
+        const numberValue = Number(value);
+        setProperty((prev: any) => ({
+            ...prev,           // 이전 상태를 복사
+            [key]: numberValue       // 동적 키로 값을 설정
+          }));
+    };
+
+    console.log(property);
+
 
     return (
         <Modal toggle={toggle}>
             <ModalHead>획득한 메소를 입력해주세요.</ModalHead>
-            <ModalContent>
-                <div>
-                    <img src={mesoImage} width="30px" alt="메소" />{' '}
-                    &nbsp;&nbsp;&nbsp;:
-                </div>
-                <div>
-                    <Input
-                        type="number"
-                        value={meso}
-                        onChange={(e) => onInputChange(e, setMeso)}
-                    />
-                </div>
-                <div>
-                    {meso && meso.toLocaleString()}
-                    &nbsp;메소
-                </div>
-                <div>
-                    <img src={erdaImage} width="35px" alt="조각" />{' '}
-                    &nbsp;&nbsp;:
-                </div>
-                <div>
-                    <Input
-                        type="number"
-                        value={erda}
-                        onChange={(e) => onInputChange(e, setErda)}
-                    />
-                </div>
-                <div>{erda && erda.toLocaleString()}&nbsp;개</div>
-            </ModalContent>
+            {property && Object.keys(property).map((key : string) => (
+                <ModalContent key={key}>
+                    <Input value={property[key]} onChange={(e) => onChange(e,key)}/>
+                </ModalContent>
+            ))}
             <Head>
                 <Button
                     width="100px"
-                    onClick={() => onMesoPlus(ocid, meso, erda)}
+                    onClick={() => onMesoPlus(ocid, property)}
                 >
                     적용하기
                 </Button>

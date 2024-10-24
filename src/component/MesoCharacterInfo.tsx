@@ -37,7 +37,6 @@ const Button = styled.button`
     white-space: nowrap;
 `;
 
-
 // Styled Components 정의
 const InputContainer = styled.div`
     font-size: 13px;
@@ -51,17 +50,14 @@ interface mesoinfo {
     setMesoToggle: any;
     data: any;
     onCharacterDelete: any;
-    meso: any;
-    erda: any;
     onClickCharacterInfo: any;
     onMesoPlus: any;
-    onInputChange: any;
-    setMeso: any;
-    setErda: any;
-    onCancle : any;
-    modalmeso : number;
-    modalerda : number;
-    formatting : any;
+    onCancle: any;
+    formatting: any;
+    property: any;
+    setProperty: any;
+    meso: any;
+    erda: any;
 }
 
 const MesoCharacterInfo: React.FC<mesoinfo> = ({
@@ -70,16 +66,13 @@ const MesoCharacterInfo: React.FC<mesoinfo> = ({
     setMesoToggle,
     ocid,
     onCharacterDelete,
-    meso,
-    erda,
     onClickCharacterInfo,
     onMesoPlus,
-    onInputChange,
-    setMeso,
-    setErda,
     onCancle,
-    modalmeso,
-    modalerda,
+    property,
+    setProperty,
+    meso,
+    erda,
 }) => {
     return (
         <React.Fragment>
@@ -125,25 +118,18 @@ const MesoCharacterInfo: React.FC<mesoinfo> = ({
                 <div>
                     <Button onClick={() => setMesoToggle(ocid)}>입력</Button>
                 </div>
-               
-                        <Button onClick={() => onCharacterDelete(ocid)}>
-                            <FaRegTrashCan />
-                        </Button>
-              
+
+                <Button onClick={() => onCharacterDelete(ocid)}>
+                    <FaRegTrashCan />
+                </Button>
             </Info>
             <ModalProperty
                 ocid={ocid}
-                mesoImage="https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png"
-                erdaImage="image/jogak.PNG"
                 toggle={mesoToggle}
-                meso={modalmeso}
-                erda={modalerda}
-                setToggle={setMesoToggle}
                 onMesoPlus={onMesoPlus}
                 onCancle={onCancle}
-                onInputChange={onInputChange}
-                setMeso={setMeso}
-                setErda={setErda}
+                property={property}
+                setProperty={setProperty}
             />
         </React.Fragment>
     );

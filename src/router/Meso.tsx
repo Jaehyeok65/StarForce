@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useMutation, useQueries } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { getOcidData, getCharacterData } from 'api/Maple';
 import moment from 'moment';
 import MesoCharacterInfo from 'component/MesoCharacterInfo';
@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { showAlert } from '../redux/action/index';
 import { storeArrayToLocalStorage } from 'component/Storage';
 import ModalProfit from 'component/ModalProfit';
+import { Property, defaultProperty } from 'type/Property';
 
 const Head = styled.div`
     display: flex;
@@ -90,13 +91,12 @@ const Inner = styled.div`
 const NavContainer = styled.div`
     display: flex;
     justify-content: space-between;
-    margin-bottom : 10%;
+    margin-bottom: 10%;
 `;
 
 const LienHeightContainer = styled.div`
     line-height: 30px;
 `;
-
 
 const LienHeightContainer3 = styled.div`
     line-height: 22px;
@@ -115,20 +115,17 @@ const ImageContainer = styled.div`
 `;
 
 interface meso {
-    meso: number; //획득한 메소
-    erda: number; //획득한 조각
-    done: boolean; //완료 여부
     ocid: string; //캐릭터를 식별하기 위한 키
     characterData: any; //등록된 캐릭터의 데이터
     mesoToggle: boolean;
+    property: Property;
 }
 
 const Meso = () => {
     const [day, setDay] = useState<any>(moment().format('YYYY-MM-DD'));
     const [name, setName] = useState<string>('');
     const [mesoArray, setMesoArray] = useState<meso[]>([]);
-    const [meso, setMeso] = useState<number>(0); //모달 창에서 변경될 state === 모달 창과 캐릭터 화면의 state를 분리함
-    const [erda, setErda] = useState<number>(0);
+    const [property, setProperty] = useState<Property>(defaultProperty);
     const [WeeklyMeso, setWeeklyMeso] = useState<number>(0);
     const [WeeklyErda, setWeeklyErda] = useState<number>(0);
     const [profitToggle, setProfitToggle] = useState<boolean>(false);
@@ -157,7 +154,7 @@ const Meso = () => {
 
     useEffect(() => {
         const newMesoArray = getMesoFromLocalStorageToDate(day); //LocalStorage에 저장된 배열을 가져옴
-        
+
         if (newMesoArray && Array.isArray(newMesoArray)) {
             //배열이라면
             setMesoArray(newMesoArray);
@@ -218,9 +215,7 @@ const Meso = () => {
                 if (isPrevWeek) {
                     const currentData = yesterdayData.data.map((char: any) => ({
                         ...char,
-                        done: false, // 새로운 날짜에 맞춰 초기화
-                        meso: 0,
-                        erda: 0,
+                        property: defaultProperty,
                     }));
                     setMesoToLocalStorageToDate(currentData, day);
                     return currentData;
@@ -241,9 +236,7 @@ const Meso = () => {
                     // 가장 많은 캐릭터 데이터를 불러옴
                     const currentData = largestDataSet.map((char: any) => ({
                         ...char,
-                        done: false, // 새로운 날짜에 맞춰 초기화
-                        meso: 0,
-                        erda: 0,
+                        property: defaultProperty,
                     }));
                     setMesoToLocalStorageToDate(currentData, day);
                     return currentData;
@@ -282,11 +275,9 @@ const Meso = () => {
                 //캐릭터가 추가된 경우에는 어떤 캐릭터를 입력했는지 보여주기 위해 검색창 초기화 생략
                 updatedMesoArray.push({
                     ocid: ocid,
-                    meso: 0,
-                    erda: 0,
-                    done: false,
                     characterData,
                     mesoToggle: false,
+                    property: defaultProperty,
                 });
                 dispatch(showAlert('캐릭터를 등록했습니다!', uuidv4(), 4000));
             }
@@ -322,7 +313,6 @@ const Meso = () => {
         });
     };
 
-
     const setMesoToggle = (ocid: string) => {
         //어느 캐릭터를 클릭했는지를 알아야하기 때문에 ocid를 매개변수로 받음
         const newMesoArray = [...mesoArray]; //불변성을 유지하며 state를 변경하기 위해 복사
@@ -345,22 +335,20 @@ const Meso = () => {
         OcidMutation.mutate(name);
     };
 
-    const onMesoPlus = (ocid: string, meso: any, erda: any) => {
+    const onMesoPlus = (ocid: string, property: Property) => {
         const newMesoArray = [...mesoArray];
         const index = mesoArray.findIndex((item) => item.ocid === ocid);
         const prev = mesoArray[index]; //이전 캐릭터의 재화 정보를 가져옴
         const next = {
             ...prev,
-            meso,
-            erda,
+            property,
             mesoToggle: !prev.mesoToggle,
         };
         newMesoArray[index] = next;
         setMesoArray(newMesoArray);
         onWeeklyErdaChange(newMesoArray);
         onWeeklyMesoChange(newMesoArray);
-        setMeso(0);
-        setErda(0);
+        setProperty(defaultProperty); //0으로 초기화
         setMesoToLocalStorageToDate(newMesoArray, day);
     };
 
@@ -378,13 +366,6 @@ const Meso = () => {
         }
     };
 
-    const onInputChange = (
-        e: React.ChangeEvent<HTMLInputElement>,
-        setState: any
-    ) => {
-        const { value } = e.target;
-        setState(Number(value));
-    };
 
     const onCancle = (ocid: string) => {
         const newMesoArray = [...mesoArray];
@@ -395,17 +376,15 @@ const Meso = () => {
             mesoToggle: !prev.mesoToggle,
         };
         newMesoArray[index] = next;
+        setProperty(defaultProperty);
         setMesoArray(newMesoArray);
-        setMeso(0);
-        setErda(0);
     };
 
     const onWeeklyMesoChange = (newMesoArray: any[]) => {
         if (newMesoArray) {
             let meso = 0;
             newMesoArray.forEach((item: any) => {
-                    meso += item.meso;
-                
+                meso += item.meso;
             });
             setWeeklyMeso(meso);
         }
@@ -415,13 +394,11 @@ const Meso = () => {
         if (newMesoArray) {
             let erda = 0;
             newMesoArray.forEach((item: any) => {
-                    erda += item.erda;
-                
+                erda += item.erda;
             });
             setWeeklyErda(erda);
         }
     };
-
 
     const formatKoreanNumber = (number: number) => {
         const oneEok = 100000000; // 1억
@@ -470,7 +447,13 @@ const Meso = () => {
                                 value={day}
                                 onChange={(e: any) => setDay(e.target.value)}
                             />
-                            <Button onClick={() => setProfitToggle((prev : any) => !prev)}>수익 조회</Button>
+                            <Button
+                                onClick={() =>
+                                    setProfitToggle((prev: any) => !prev)
+                                }
+                            >
+                                수익 조회
+                            </Button>
                         </NavInner>
                         <Nav>
                             <Inner>
@@ -512,24 +495,24 @@ const Meso = () => {
                                     setMesoToggle={setMesoToggle}
                                     data={info?.characterData}
                                     onCharacterDelete={onCharacterDelete}
-                                    meso={info.meso}
-                                    erda={info.erda}
+                                    meso={info?.property?.totalmeso}
+                                    erda={info?.property?.totalerda}
                                     onClickCharacterInfo={onClickCharacterInfo}
                                     onMesoPlus={onMesoPlus}
-                                    onInputChange={onInputChange}
-                                    setMeso={setMeso}
-                                    setErda={setErda}
                                     onCancle={onCancle}
-                                    modalmeso={meso}
-                                    modalerda={erda}
                                     formatting={formatKoreanNumber}
+                                    property={property}
+                                    setProperty={setProperty}
                                 />
                             ))}
                     </Section>
                     {(!mesoArray || mesoArray.length) === 0 && (
                         <Message>아직 등록된 캐릭터가 없습니다.</Message>
                     )}
-                    <ModalProfit toggle={profitToggle} setToggle={setProfitToggle} />
+                    <ModalProfit
+                        toggle={profitToggle}
+                        setToggle={setProfitToggle}
+                    />
                 </Back>
             </Background>
         </React.Fragment>
