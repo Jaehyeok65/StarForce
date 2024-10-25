@@ -45,16 +45,15 @@ const Head = styled.div`
 `;
 
 const propertyToKorean: any = {
-    meso: '메소',
-    erda: '조각',
-    gem: '코어 젬스톤',
-    innocent: '이노센트',
-    epicabillity: '에픽잠재',
-    editional: '에디셔널',
-    dew: '황혼의 이슬',
-    milk: '순록의 우유',
-    pure: '순백',
-    totalmeso: '총 메소',
+    meso: 'https://blog.kakaocdn.net/dn/b0X6lJ/btsudNKFlPl/3juzbOo44XtqIJkXTwGPq1/img.png',
+    erda: 'image/jogak.PNG',
+    gem: 'image/gem.PNG',
+    innocent: 'image/innocent.PNG',
+    epicabillity: 'image/epic.PNG',
+    editional: 'image/editional.PNG',
+    dew: 'https://maplestory.io/api/gms/200/item/2020015/icon?resize=2',
+    milk: 'https://maplestory.io/api/gms/200/item/2020013/icon?resize=2',
+    pure: 'image/pure.PNG',
 };
 
 interface ModalPropertyProps {
@@ -99,13 +98,23 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
             <ModalHead>획득한 메소를 입력해주세요.</ModalHead>
             {property &&
                 Object.keys(property).map((key: string) => (
-                    <ModalContent key={key}>
-                        <div>{propertyToKorean[key]}</div>
-                        <Input
-                            value={property[key]}
-                            onChange={(e) => onChange(e, key)}
-                        />
-                    </ModalContent>
+                    <div>
+                        {key !== 'totalmeso' && ( //totalmeso는 제외 === 캐릭터 창에 보여줄것이므로
+                            <ModalContent key={key}>
+                                <div>
+                                    <img
+                                        src={propertyToKorean[key]}
+                                        alt={key}
+                                        width="30px"
+                                    />
+                                </div>
+                                <Input
+                                    value={property[key]}
+                                    onChange={(e) => onChange(e, key)}
+                                />
+                            </ModalContent>
+                        )}
+                    </div>
                 ))}
             <Head>
                 <Button
