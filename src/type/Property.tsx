@@ -8,7 +8,6 @@ export interface Property {
     dew : number; //황혼의 이슬
     milk : number; //순록의 우유
     pure : number; //순백
-    totalmeso : number; //캐릭터 창에 보여질 메소
     [key: string]: any; // 인덱스 시그니처 추가
 };
 
@@ -35,7 +34,6 @@ export const defaultProperty : Property = {
     dew : 0,
     milk : 0,
     pure : 0,
-    totalmeso : 0,
 };
 
 export const defaultPropertyProfit : PropertyProfit = {

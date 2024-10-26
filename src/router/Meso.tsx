@@ -119,6 +119,8 @@ interface meso {
     characterData: any; //등록된 캐릭터의 데이터
     mesoToggle: boolean;
     property: Property;
+    meso : number;
+    erda : number;
 }
 
 const Meso = () => {
@@ -217,7 +219,10 @@ const Meso = () => {
                     const currentData = yesterdayData.data.map((char: any) => ({
                         ...char,
                         property: defaultProperty,
+                        meso : 0,
+                        erda : 0
                     }));
+                    console.log(currentData);
                     setMesoToLocalStorageToDate(currentData, day);
                     return currentData;
                 } else {
@@ -238,6 +243,8 @@ const Meso = () => {
                     const currentData = largestDataSet.map((char: any) => ({
                         ...char,
                         property: defaultProperty,
+                        meso : 0,
+                        erda : 0
                     }));
                     setMesoToLocalStorageToDate(currentData, day);
                     return currentData;
@@ -279,6 +286,8 @@ const Meso = () => {
                     characterData,
                     mesoToggle: false,
                     property: defaultProperty,
+                    meso : 0,
+                    erda : 0,
                 });
                 dispatch(showAlert('캐릭터를 등록했습니다!', uuidv4(), 4000));
             }
@@ -341,13 +350,11 @@ const Meso = () => {
         const index = mesoArray.findIndex((item) => item.ocid === ocid);
         const prev = mesoArray[index]; //이전 캐릭터의 재화 정보를 가져옴
         const totalmeso = getTotalMeso(property,propertyProfit);
-        const newproperty = {
-            ...property,
-            totalmeso
-        }
         const next = {
             ...prev,
-            property : newproperty,
+            property,
+            meso : totalmeso,
+            erda : property?.erda,
             mesoToggle: !prev.mesoToggle,
         };
         newMesoArray[index] = next;
@@ -514,8 +521,8 @@ const Meso = () => {
                                     setMesoToggle={setMesoToggle}
                                     data={info?.characterData}
                                     onCharacterDelete={onCharacterDelete}
-                                    meso={info?.property?.totalmeso}
-                                    erda={info?.property?.erda}
+                                    meso={info?.meso}
+                                    erda={info?.erda}
                                     onClickCharacterInfo={onClickCharacterInfo}
                                     onMesoPlus={onMesoPlus}
                                     onCancle={onCancle}
