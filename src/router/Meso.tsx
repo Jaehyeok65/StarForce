@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { showAlert } from '../redux/action/index';
 import { storeArrayToLocalStorage } from 'component/Storage';
 import ModalProfit from 'component/ModalProfit';
-import { Property, defaultProperty } from 'type/Property';
+import { Property, defaultProperty, PropertyProfit, defaultPropertyProfit } from 'type/Property';
 
 const Head = styled.div`
     display: flex;
@@ -126,6 +126,7 @@ const Meso = () => {
     const [name, setName] = useState<string>('');
     const [mesoArray, setMesoArray] = useState<meso[]>([]);
     const [property, setProperty] = useState<Property>(defaultProperty);
+    const [propertyProfit, setPropertyProfit] = useState<PropertyProfit>(defaultPropertyProfit);
     const [WeeklyMeso, setWeeklyMeso] = useState<number>(0);
     const [WeeklyErda, setWeeklyErda] = useState<number>(0);
     const [profitToggle, setProfitToggle] = useState<boolean>(false);
@@ -339,9 +340,14 @@ const Meso = () => {
         const newMesoArray = [...mesoArray];
         const index = mesoArray.findIndex((item) => item.ocid === ocid);
         const prev = mesoArray[index]; //이전 캐릭터의 재화 정보를 가져옴
+        const totalmeso = getTotalMeso(property,propertyProfit);
+        const newproperty = {
+            ...property,
+            totalmeso
+        }
         const next = {
             ...prev,
-            property,
+            property : newproperty,
             mesoToggle: !prev.mesoToggle,
         };
         newMesoArray[index] = next;
@@ -350,7 +356,20 @@ const Meso = () => {
         onWeeklyMesoChange(newMesoArray);
         setProperty(defaultProperty); //0으로 초기화
         setMesoToLocalStorageToDate(newMesoArray, day);
+        localStorage.setItem('propertyProfit',JSON.stringify(propertyProfit)); //메소 가치를 입력해둔 것을 로컬스토리지에 저장
     };
+
+    const getTotalMeso = (property : Property, propertyProfit : PropertyProfit) => {
+        let totalmeso = 0;
+
+        Object.keys(propertyProfit).forEach((key : string) => { //propertyProfit을 기준으로 배열화를 하여 더함
+            if(key !== 'erda') { //조각은 totalmeso 집계에서 제외함
+                totalmeso = totalmeso + property[key] * propertyProfit[key];
+            };
+        })
+        
+        return totalmeso;
+    }
 
     const onCharacterDelete = (ocid: string) => {
         const confirm = window.confirm('데이터를 삭제하시겠습니까?');
@@ -504,6 +523,8 @@ const Meso = () => {
                                     property={property}
                                     setProperty={setProperty}
                                     characterProperty={info?.property}
+                                    propertyProfit={propertyProfit}
+                                    setPropertyProfit={setPropertyProfit}
                                 />
                             ))}
                     </Section>

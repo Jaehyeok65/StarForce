@@ -5,10 +5,10 @@ import { Property, defaultProperty } from 'type/Property';
 
 const ModalContent = styled.div`
     display: grid;
-    grid-template-columns: 40% 60%;
+    grid-template-columns: 10% 30% 30%;
     gap: 40px;
     row-gap: 30px;
-    margin: 10% 20% 10% 20%;
+    margin: 10% 15% 10% 15%;
 
     > div {
         font-size: 14px;
@@ -33,7 +33,7 @@ const Button = styled.button<{ width: string }>`
 `;
 
 const Input = styled.input`
-    width: 100px;
+    width: 90px;
     border-radius: 12px;
     border: 1px solid gray;
 `;
@@ -64,6 +64,8 @@ interface ModalPropertyProps {
     property: any;
     setProperty: any;
     characterProperty: any;
+    propertyProfit : any;
+    setPropertyProfit : any;
 }
 
 const ModalProperty: React.FC<ModalPropertyProps> = ({
@@ -74,11 +76,14 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
     property,
     setProperty,
     characterProperty,
+    propertyProfit,
+    setPropertyProfit
 }) => {
     useEffect(() => {
         if (toggle && characterProperty) {
             //캐릭터에 저장된 정보를 input창에 업데이트함 (편의성)
             setProperty(characterProperty);
+            getPropertyProfit();
         }
     }, [toggle]);
 
@@ -91,11 +96,26 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
         }));
     };
 
-    console.log(characterProperty);
+    const onProfitChange = (e : any, key : string) => {
+        const { value } = e.target;
+        const numberValue = Number(value);
+        setPropertyProfit((prev: any) => ({
+            ...prev, // 이전 상태를 복사
+            [key]: numberValue, // 동적 키로 값을 설정
+        }));
+    };
+
+    const getPropertyProfit = () => {
+        const prev = localStorage.getItem('propertyProfit');
+        if(prev) {
+            const next = JSON.parse(prev);
+            setPropertyProfit(next);
+        }
+    }
 
     return (
         <Modal toggle={toggle}>
-            <ModalHead>획득한 메소를 입력해주세요.</ModalHead>
+            <ModalHead>획득한 재화와 재화의 가치를 입력해주세요.</ModalHead>
             {property &&
                 Object.keys(property).map((key: string) => (
                     <div>
@@ -111,6 +131,10 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                                 <Input
                                     value={property[key]}
                                     onChange={(e) => onChange(e, key)}
+                                />
+                                <Input 
+                                    value={propertyProfit[key]}
+                                    onChange={(e) => onProfitChange(e, key)}
                                 />
                             </ModalContent>
                         )}
