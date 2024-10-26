@@ -20,6 +20,7 @@ const ModalHead = styled.div`
     display: flex;
     justify-content: center;
     margin-top: 10%;
+    margin-bottom: 10%;
 `;
 
 const Button = styled.button<{ width: string }>`
@@ -41,6 +42,7 @@ const Head = styled.div`
     display: flex;
     justify-content: center;
     margin-bottom: 10%;
+    margin-top : 5%;
 `;
 
 const propertyToKorean: any = {
