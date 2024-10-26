@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import Modal from './Modal';
-import { Property, defaultProperty } from 'type/Property';
 
 const ModalContent = styled.div`
     display: grid;
     grid-template-columns: 10% 30% 30%;
     gap: 40px;
     row-gap: 30px;
-    margin: 10% 15% 10% 15%;
+    margin: 3% 15% 3% 15%;
 
     > div {
         font-size: 14px;
@@ -64,8 +63,8 @@ interface ModalPropertyProps {
     property: any;
     setProperty: any;
     characterProperty: any;
-    propertyProfit : any;
-    setPropertyProfit : any;
+    propertyProfit: any;
+    setPropertyProfit: any;
 }
 
 const ModalProperty: React.FC<ModalPropertyProps> = ({
@@ -77,7 +76,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
     setProperty,
     characterProperty,
     propertyProfit,
-    setPropertyProfit
+    setPropertyProfit,
 }) => {
     useEffect(() => {
         if (toggle && characterProperty) {
@@ -96,7 +95,7 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
         }));
     };
 
-    const onProfitChange = (e : any, key : string) => {
+    const onProfitChange = (e: any, key: string) => {
         const { value } = e.target;
         const numberValue = Number(value);
         setPropertyProfit((prev: any) => ({
@@ -107,11 +106,11 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
 
     const getPropertyProfit = () => {
         const prev = localStorage.getItem('propertyProfit');
-        if(prev) {
+        if (prev) {
             const next = JSON.parse(prev);
             setPropertyProfit(next);
         }
-    }
+    };
 
     return (
         <Modal toggle={toggle}>
@@ -132,10 +131,19 @@ const ModalProperty: React.FC<ModalPropertyProps> = ({
                                     value={property[key]}
                                     onChange={(e) => onChange(e, key)}
                                 />
-                                <Input 
+                                <Input
                                     value={propertyProfit[key]}
                                     onChange={(e) => onProfitChange(e, key)}
                                 />
+                            </ModalContent>
+                        )}
+                        {key !== 'totalmeso' && ( //totalmeso는 제외 === 캐릭터 창에 보여줄것이므로
+                            <ModalContent key={key}>
+                                <div></div>
+                                <div>{property[key].toLocaleString()}</div>
+                                <div>
+                                    {propertyProfit[key].toLocaleString()}
+                                </div>
                             </ModalContent>
                         )}
                     </div>
