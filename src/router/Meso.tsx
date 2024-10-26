@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueries } from '@tanstack/react-query';
 import { getOcidData, getCharacterData } from 'api/Maple';
 import moment from 'moment';
 import MesoCharacterInfo from 'component/MesoCharacterInfo';
@@ -10,7 +10,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { showAlert } from '../redux/action/index';
 import { storeArrayToLocalStorage } from 'component/Storage';
 import ModalProfit from 'component/ModalProfit';
-import { Property, defaultProperty, PropertyProfit, defaultPropertyProfit } from 'type/Property';
+import {
+    Property,
+    defaultProperty,
+    PropertyProfit,
+    defaultPropertyProfit,
+} from 'type/Property';
 
 const Head = styled.div`
     display: flex;
@@ -119,8 +124,8 @@ interface meso {
     characterData: any; //등록된 캐릭터의 데이터
     mesoToggle: boolean;
     property: Property;
-    meso : number;
-    erda : number;
+    meso: number;
+    erda: number;
 }
 
 const Meso = () => {
@@ -128,7 +133,9 @@ const Meso = () => {
     const [name, setName] = useState<string>('');
     const [mesoArray, setMesoArray] = useState<meso[]>([]);
     const [property, setProperty] = useState<Property>(defaultProperty);
-    const [propertyProfit, setPropertyProfit] = useState<PropertyProfit>(defaultPropertyProfit);
+    const [propertyProfit, setPropertyProfit] = useState<PropertyProfit>(
+        defaultPropertyProfit
+    );
     const [WeeklyMeso, setWeeklyMeso] = useState<number>(0);
     const [WeeklyErda, setWeeklyErda] = useState<number>(0);
     const [profitToggle, setProfitToggle] = useState<boolean>(false);
@@ -154,6 +161,60 @@ const Meso = () => {
             setMesoArrayFromCharacterData(data, data?.ocid);
         },
     });
+
+    // useEffect에서 localStorage에서 BossArray로 렌더링하기 때문에 BossArray가 렌더링되었을때만 쿼리 실행
+    const queryResults: any = useQueries({
+        queries:
+            mesoArray.length > 0
+                ? mesoArray.map((item: any) => ({
+                      queryKey: ['characterData', item.ocid],
+                      queryFn: () =>
+                          getCharacterData(
+                              item.ocid,
+                              moment().format('YYYY-MM-DD')
+                          ),
+                      staleTime: 1000 * 60 * 5,
+                      cacheTime: 1000 * 60 * 10,
+                      retry: 1,
+                      refetchOnWindowFocus: false,
+                  }))
+                : [], // 빈 배열일 경우 쿼리도 빈 배열
+    });
+
+    const allQueriesSuccessful = queryResults.every(
+        (query: any) => query.isSuccess
+    );
+
+    useEffect(() => {
+        //로컬스토리지에서 데이터를 업데이트 하는 용도 == 의존성에 allQueriesSuccesful만을 둠
+        if (
+            allQueriesSuccessful &&
+            mesoArray &&
+            Array.isArray(mesoArray) &&
+            mesoArray.length > 0
+        ) {
+            const updatedState = onCharacterStateUpdate(
+                queryResults,
+                mesoArray
+            );
+            setMesoArray(updatedState);
+            setMesoToLocalStorageToDate(updatedState, day);
+        }
+    }, [allQueriesSuccessful]); // queryResults 대신 allQueriesSuccessful 사용
+
+    const onCharacterStateUpdate = (queryResults: any, mesoArray: any[]) => {
+        //목요일에 최신화를 할 때 캐릭터의 상태를 업데이트함 (레벨 정보, 등등)
+        const prevState = mesoArray;
+        //console.log(queryResults);
+        const nextState = prevState.map((item: any, index: number) => {
+            return {
+                ...item,
+                characterData: queryResults[index]?.data,
+            };
+        });
+
+        return nextState;
+    };
 
     useEffect(() => {
         const newMesoArray = getMesoFromLocalStorageToDate(day); //LocalStorage에 저장된 배열을 가져옴
@@ -219,8 +280,8 @@ const Meso = () => {
                     const currentData = yesterdayData.data.map((char: any) => ({
                         ...char,
                         property: defaultProperty,
-                        meso : 0,
-                        erda : 0
+                        meso: 0,
+                        erda: 0,
                     }));
                     console.log(currentData);
                     setMesoToLocalStorageToDate(currentData, day);
@@ -243,8 +304,8 @@ const Meso = () => {
                     const currentData = largestDataSet.map((char: any) => ({
                         ...char,
                         property: defaultProperty,
-                        meso : 0,
-                        erda : 0
+                        meso: 0,
+                        erda: 0,
                     }));
                     setMesoToLocalStorageToDate(currentData, day);
                     return currentData;
@@ -286,8 +347,8 @@ const Meso = () => {
                     characterData,
                     mesoToggle: false,
                     property: defaultProperty,
-                    meso : 0,
-                    erda : 0,
+                    meso: 0,
+                    erda: 0,
                 });
                 dispatch(showAlert('캐릭터를 등록했습니다!', uuidv4(), 4000));
             }
@@ -349,12 +410,12 @@ const Meso = () => {
         const newMesoArray = [...mesoArray];
         const index = mesoArray.findIndex((item) => item.ocid === ocid);
         const prev = mesoArray[index]; //이전 캐릭터의 재화 정보를 가져옴
-        const totalmeso = getTotalMeso(property,propertyProfit);
+        const totalmeso = getTotalMeso(property, propertyProfit);
         const next = {
             ...prev,
             property,
-            meso : totalmeso,
-            erda : property?.erda,
+            meso: totalmeso,
+            erda: property?.erda,
             mesoToggle: !prev.mesoToggle,
         };
         newMesoArray[index] = next;
@@ -363,20 +424,25 @@ const Meso = () => {
         onWeeklyMesoChange(newMesoArray);
         setProperty(defaultProperty); //0으로 초기화
         setMesoToLocalStorageToDate(newMesoArray, day);
-        localStorage.setItem('propertyProfit',JSON.stringify(propertyProfit)); //메소 가치를 입력해둔 것을 로컬스토리지에 저장
+        localStorage.setItem('propertyProfit', JSON.stringify(propertyProfit)); //메소 가치를 입력해둔 것을 로컬스토리지에 저장
     };
 
-    const getTotalMeso = (property : Property, propertyProfit : PropertyProfit) => {
+    const getTotalMeso = (
+        property: Property,
+        propertyProfit: PropertyProfit
+    ) => {
         let totalmeso = 0;
 
-        Object.keys(propertyProfit).forEach((key : string) => { //propertyProfit을 기준으로 배열화를 하여 더함
-            if(key !== 'erda') { //조각은 totalmeso 집계에서 제외함
+        Object.keys(propertyProfit).forEach((key: string) => {
+            //propertyProfit을 기준으로 배열화를 하여 더함
+            if (key !== 'erda') {
+                //조각은 totalmeso 집계에서 제외함
                 totalmeso = totalmeso + property[key] * propertyProfit[key];
-            };
-        })
-        
+            }
+        });
+
         return totalmeso;
-    }
+    };
 
     const onCharacterDelete = (ocid: string) => {
         const confirm = window.confirm('데이터를 삭제하시겠습니까?');
@@ -391,7 +457,6 @@ const Meso = () => {
             setMesoToLocalStorageToDate(SortedArray, day);
         }
     };
-
 
     const onCancle = (ocid: string) => {
         const newMesoArray = [...mesoArray];
