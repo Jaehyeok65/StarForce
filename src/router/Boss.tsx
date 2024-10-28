@@ -11,6 +11,7 @@ import { showAlert } from '../redux/action/index';
 import { DateToThursDay, storeArrayToLocalStorage } from 'component/Storage';
 import { array } from 'util/BossArray';
 import ModalBossProfit from 'component/ModalBossProfit';
+import ModalBossItem from 'component/ModalBossItem';
 
 const Background = styled.div`
     width: 60%;
@@ -84,9 +85,11 @@ const Section = styled.div`
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+    margin-top: 5%;
 
     @media screen and (max-width: 1300px) {
         grid-template-columns: repeat(2, 1fr);
+        margin-top: 10%;
     }
 `;
 
@@ -123,6 +126,8 @@ const Boss = () => {
         DateToThursDay(moment().format('YYYY-MM-DD'))
     );
     const [bossProfitToggle, setBossProfitToggle] = useState<boolean>(false);
+    const [bossItemToggle, setBossItemToggle] = useState<boolean>(false);
+    const [BossItem, setBossItem] = useState<any[]>([]);
 
     const navigate = useNavigate();
 
@@ -649,12 +654,18 @@ const Boss = () => {
                     </form>
                     <NavContainer>
                         <NavInner>
-                        <input
+                            <input
                                 type="date"
                                 value={day}
                                 onChange={onDateChange}
                             />
-                            <Button onClick={() => setBossProfitToggle((prev : any) => !prev)}>수익 조회</Button>
+                            <Button
+                                onClick={() =>
+                                    setBossProfitToggle((prev: any) => !prev)
+                                }
+                            >
+                                수익 조회
+                            </Button>
                             <Button
                                 onClick={() =>
                                     onWeeklyBossInitialize(BossArray)
@@ -662,6 +673,7 @@ const Boss = () => {
                             >
                                 보스 처치 기록 초기화
                             </Button>
+                            <Button onClick={() => setBossItemToggle((prev) => !prev)}>보스 드랍 아이템</Button>
                         </NavInner>
                         <Nav>
                             <Inner>
@@ -703,6 +715,7 @@ const Boss = () => {
                                         `${WeeklyDoneCharacter} / ${BossArray.length} 캐릭터`}
                                 </LienHeightContainer2>
                             </Inner>
+                            <Inner>{BossItem.length > 0 ? '보스 아이템' : '획득한 보스 아이템이 없습니다'}</Inner>
                         </Nav>
                     </NavContainer>
                     <Section>
@@ -734,7 +747,11 @@ const Boss = () => {
                     {(!BossArray || BossArray.length) === 0 && (
                         <Message>아직 등록된 캐릭터가 없습니다.</Message>
                     )}
-                    <ModalBossProfit toggle={bossProfitToggle} setToggle={setBossProfitToggle}/>
+                    <ModalBossProfit
+                        toggle={bossProfitToggle}
+                        setToggle={setBossProfitToggle}
+                    />
+                    <ModalBossItem toggle={bossItemToggle}/>
                 </Back>
             </Background>
         </React.Fragment>

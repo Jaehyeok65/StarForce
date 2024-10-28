@@ -348,3 +348,26 @@ export const array: any[] = [
         extreme: true,
     },
 ];
+
+interface BossItemType {
+    [key : string] : string;
+}
+
+export const BossItem : BossItemType = {
+    '거공' : 'image/거공.PNG',
+    '고근' : 'image/고근.PNG',
+    '루컨마' : 'image/루컨마.PNG',
+    '마깃안' : 'image/마깃안.PNG',
+    '몽벨' : 'image/몽벨.PNG',
+    '커포링' : 'image/커포링.PNG',
+    '블랙하트' : 'image/블랙하트.PNG',
+    '마도서' : 'image/마도서.PNG',
+    '창뱃' : 'image/창뱃.PNG',
+    '데이브레이크' : 'image/데이브레이크.PNG',
+    '트왈마' : 'image/트왈마.PNG',
+    '가엔링' : 'image/가엔링.PNG',
+    '에스텔라' : 'image/에스텔라.PNG',
+    '프악공' : 'image/프악공.PNG',
+    '프펫공' : ' image/프펫공.PNG',
+    '매지컬' : 'image/매지컬.PNG',
+};
