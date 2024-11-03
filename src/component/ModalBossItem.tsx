@@ -77,29 +77,6 @@ const ImageContainer = styled.div<{ $difficulty?: string; $checked?: boolean }>`
     cursor: pointer;
 
     > div:nth-child(2) {
-        position: absolute;
-        bottom: 10%; /* 이미지의 아래쪽에서 10% 위에 배치 */
-        right: 5%; /* 이미지의 오른쪽에서 10% 왼쪽에 배치 */
-        color: ${({ $difficulty }) => {
-            switch ($difficulty) {
-                case 'EASY':
-                    return 'white'; // 녹색
-                case 'NORMAL':
-                    return 'white'; // 노란색
-                case 'HARD':
-                    return 'red'; // 오렌지색
-                case 'EXTREME':
-                    return 'red'; // 빨간색
-                default:
-                    return '#8B6331'; // 기본 색상
-            }
-        }};
-        font-size: 15px;
-        font-weight: bold;
-        z-index: 10; /* 텍스트가 이미지 위에 오도록 설정 */
-    }
-
-    > div:nth-child(3) {
         opacity: ${({ $checked }) => ($checked ? 1 : 0)};
         position: absolute;
         top: 50%; /* 이미지 중앙에 배치 */
@@ -126,18 +103,24 @@ const Image = styled.img<{ $checked?: boolean }>`
     }
 `;
 
-const ModalBossItem = ({ toggle } : { toggle : boolean}) => {
+const ModalBossItem = ({
+    toggle,
+    setToggle,
+}: {
+    toggle: boolean;
+    setToggle: any;
+}) => {
     return (
         <Modal toggle={toggle}>
             <ModalHead>금주에 획득한 아이템을 체크해주세요</ModalHead>
             <ModalContent>
                 {Object.keys(BossItem).map((key: any) => (
                     <div key={key}>
-                        <ImageContainer
-                        >
+                        <ImageContainer $checked={true}>
                             <Image
                                 src={BossItem[key]}
                                 alt={key}
+                                $checked={true}
                             />
                             <div>
                                 <FaCheck />
@@ -148,7 +131,12 @@ const ModalBossItem = ({ toggle } : { toggle : boolean}) => {
             </ModalContent>
             <Head>
                 <Button $width="100px">적용하기</Button>
-                <Button $width="100px">닫기</Button>
+                <Button
+                    $width="100px"
+                    onClick={() => setToggle((prev: any) => !prev)}
+                >
+                    닫기
+                </Button>
             </Head>
         </Modal>
     );
