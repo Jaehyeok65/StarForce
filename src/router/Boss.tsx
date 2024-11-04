@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { showAlert } from '../redux/action/index';
 import { DateToThursDay, storeArrayToLocalStorage } from 'component/Storage';
-import { array } from 'util/BossArray';
+import { array, BossItem } from 'util/BossArray';
 import ModalBossProfit from 'component/ModalBossProfit';
 import ModalBossItem from 'component/ModalBossItem';
 
@@ -127,7 +127,7 @@ const Boss = () => {
     );
     const [bossProfitToggle, setBossProfitToggle] = useState<boolean>(false);
     const [bossItemToggle, setBossItemToggle] = useState<boolean>(false);
-    const [BossItem, setBossItem] = useState<any[]>([]);
+    const [bossItem, setBossItem] = useState<any[]>(BossItem);
 
     const navigate = useNavigate();
 
@@ -307,8 +307,34 @@ const Boss = () => {
         return nextState;
     };
 
+    const getBossItemFromLocalStorageToDate = (day: string) => {
+        //day가 변경될 때마다 BossItem을 가져옴
+        const prev = localStorage.getItem('bossmeso');
+        if (prev) {
+            //이전 데이터가 존재한다면 파싱
+            const next = JSON.parse(prev);
+            const currentWeekBossItem = next.filter(
+                (item: any) => item.date === day
+            );
+            if (
+                currentWeekBossItem &&
+                Array.isArray(currentWeekBossItem) &&
+                currentWeekBossItem.length > 0 &&
+                currentWeekBossItem[0]?.bossItem
+            ) {
+                //데이터가 있는 경우
+                const nextbossItem = currentWeekBossItem[0]?.bossItem;
+                setBossItem(nextbossItem);
+            } else {
+                //데이터가 없는 경우 기본 배열로 리렌더링함
+                setBossItem(BossItem);
+            }
+        }
+    };
+
     useEffect(() => {
         const newBossArray = getBossFromLocalStorageToDate(day); //LocalStorage에 저장된 배열을 가져옴
+        getBossItemFromLocalStorageToDate(day); //LocalStorage에 저장된 보스 아이템을 가졍모
         if (newBossArray && Array.isArray(newBossArray)) {
             //배열이라면
             setBossArray(newBossArray);
@@ -637,6 +663,46 @@ const Boss = () => {
         }
     };
 
+    const onBossItemChange = (clickedItem: string) => {
+        const newBossItem = [...bossItem]; //기존 배열을 복사
+        const ItemIndex = newBossItem.findIndex(
+            (item) => item.name === clickedItem
+        ); //클릭된 아이템의 이름과 똑같은 아이템의 인덱스를 찾음
+        const Item = bossItem[ItemIndex];
+        const newItem = {
+            ...Item,
+            checked: !Item.checked,
+        };
+        newBossItem[ItemIndex] = newItem;
+        setBossItem(newBossItem);
+    };
+
+    const onAddBossItem = () => {
+        //로컬스토리지에 저장해야함
+        const prev = localStorage.getItem('bossmeso'); //기존의
+        if (prev) {
+            const next = JSON.parse(prev);
+            const newArray = [...next]; //변경하기 위한 배열 복사
+            const currentWeekIndex = next.findIndex(
+                (item: any) => item.date === day
+            ); //date에 해당하는 index를 찾음
+            if (currentWeekIndex > 0) {
+                //해당 날짜의 데이터가 존재할 경우
+                const newCurrentWeekData = {
+                    ...next[currentWeekIndex],
+                    bossItem,
+                };
+                newArray[currentWeekIndex] = newCurrentWeekData;
+                localStorage.setItem('bossmeso', JSON.stringify(newArray));
+                setBossItemToggle((prev) => !prev);
+            } else {
+                //해당 날짜의 데이터가 존재하지 않을 경우
+                window.alert('해당 날짜의 데이터가 존재하지 않습니다!');
+                setBossItemToggle((prev) => !prev);
+            }
+        }
+    };
+
     return (
         <React.Fragment>
             <Background>
@@ -673,7 +739,13 @@ const Boss = () => {
                             >
                                 보스 처치 기록 초기화
                             </Button>
-                            <Button onClick={() => setBossItemToggle((prev) => !prev)}>보스 드랍 아이템</Button>
+                            <Button
+                                onClick={() =>
+                                    setBossItemToggle((prev) => !prev)
+                                }
+                            >
+                                보스 드랍 아이템
+                            </Button>
                         </NavInner>
                         <Nav>
                             <Inner>
@@ -715,7 +787,11 @@ const Boss = () => {
                                         `${WeeklyDoneCharacter} / ${BossArray.length} 캐릭터`}
                                 </LienHeightContainer2>
                             </Inner>
-                            <Inner>{BossItem.length > 0 ? '보스 아이템' : '획득한 보스 아이템이 없습니다'}</Inner>
+                            <Inner>
+                                {bossItem?.length > 0
+                                    ? '보스 아이템'
+                                    : '획득한 보스 아이템이 없습니다'}
+                            </Inner>
                         </Nav>
                     </NavContainer>
                     <Section>
@@ -751,7 +827,13 @@ const Boss = () => {
                         toggle={bossProfitToggle}
                         setToggle={setBossProfitToggle}
                     />
-                    <ModalBossItem toggle={bossItemToggle}/>
+                    <ModalBossItem
+                        bossItem={bossItem}
+                        toggle={bossItemToggle}
+                        setToggle={setBossItemToggle}
+                        onAddBossItem={onAddBossItem}
+                        onBossItemChange={onBossItemChange}
+                    />
                 </Back>
             </Background>
         </React.Fragment>

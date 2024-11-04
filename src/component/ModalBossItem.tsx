@@ -106,31 +106,35 @@ const Image = styled.img<{ $checked?: boolean }>`
 const ModalBossItem = ({
     toggle,
     setToggle,
+    bossItem,
+    onAddBossItem,
+    onBossItemChange
 }: {
     toggle: boolean;
     setToggle: any;
+    bossItem : any;
+    onAddBossItem : any;
+    onBossItemChange : any;
 }) => {
     return (
         <Modal toggle={toggle}>
             <ModalHead>금주에 획득한 아이템을 체크해주세요</ModalHead>
             <ModalContent>
-                {Object.keys(BossItem).map((key: any) => (
-                    <div key={key}>
-                        <ImageContainer $checked={true}>
-                            <Image
-                                src={BossItem[key]}
-                                alt={key}
-                                $checked={true}
-                            />
-                            <div>
-                                <FaCheck />
-                            </div>
-                        </ImageContainer>
-                    </div>
+                {bossItem?.map((item: any) => (
+                    <ImageContainer key={item.name} $checked={item.checked} onClick={() => onBossItemChange(item.name)}>
+                        <Image
+                            src={item.src}
+                            alt={item.name}
+                            $checked={item.checked}
+                        />
+                        <div>
+                            <FaCheck />
+                        </div>
+                    </ImageContainer>
                 ))}
             </ModalContent>
             <Head>
-                <Button $width="100px">적용하기</Button>
+                <Button $width="100px" onClick={onAddBossItem}>적용하기</Button>
                 <Button
                     $width="100px"
                     onClick={() => setToggle((prev: any) => !prev)}

@@ -353,21 +353,22 @@ interface BossItemType {
     [key : string] : string;
 }
 
-export const BossItem : BossItemType = {
-    '거공' : 'image/거공.PNG',
-    '고근' : 'image/고근.PNG',
-    '루컨마' : 'image/루컨마.PNG',
-    '마깃안' : 'image/마깃안.PNG',
-    '몽벨' : 'image/몽벨.PNG',
-    '커포링' : 'image/커포링.PNG',
-    '블랙하트' : 'image/블랙하트.PNG',
-    '마도서' : 'image/마도서.PNG',
-    '창뱃' : 'image/창뱃.PNG',
-    '데이브레이크' : 'image/데이브레이크.PNG',
-    '트왈마' : 'image/트왈마.PNG',
-    '가엔링' : 'image/가엔링.PNG',
-    '에스텔라' : 'image/에스텔라.PNG',
-    '프악공' : 'image/프악공.PNG',
-    '프펫공' : ' image/프펫공.PNG',
-    '매지컬' : 'image/매지컬.PNG',
-};
+
+export const BossItem = [
+    {name : '거공', src : 'image/거공.PNG', checked : false},
+    {name : '고근' , src : 'image/고근.PNG', checked : false},
+    {name : '루컨마' , src : 'image/루컨마.PNG', checked : false},
+    {name : '마깃안' , src : 'image/마깃안.PNG', checked : false},
+    {name : '몽벨' , src : 'image/몽벨.PNG', checked : false},
+    {name : '커포링' , src : 'image/커포링.PNG', checked : false},
+    {name : '블랙하트' , src : 'image/블랙하트.PNG', checked : false},
+    {name : '마도서' , src : 'image/마도서.PNG', checked : false},
+    {name : '창뱃' , src : 'image/창뱃.PNG', checked : false},
+    {name : '데이브레이크' , src : 'image/데이브레이크.PNG', checked : false},
+    {name : '트왈마' , src : 'image/트왈마.PNG', checked : false},
+    {name : '가엔링' , src : 'image/가엔링.PNG', checked : false},
+    {name : '에스텔라' , src : 'image/에스텔라.PNG', checked : false},
+    {name : '프악공' , src : 'image/프악공.PNG', checked : false},
+    {name : '프펫공' , src : 'image/프펫공.PNG', checked : false},
+    {name : '매지컬' , src : 'image/매지컬.PNG', checked : false},
+]
