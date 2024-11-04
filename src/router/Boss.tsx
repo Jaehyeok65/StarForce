@@ -81,6 +81,11 @@ const Inner = styled.div`
     display: flex;
 `;
 
+const ImageInner = styled.div`
+    display : flex;
+    gap : 7px;
+`;
+
 const Section = styled.div`
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -703,6 +708,8 @@ const Boss = () => {
         }
     };
 
+    const setBossItemImage = () => {};
+
     return (
         <React.Fragment>
             <Background>
@@ -787,11 +794,23 @@ const Boss = () => {
                                         `${WeeklyDoneCharacter} / ${BossArray.length} 캐릭터`}
                                 </LienHeightContainer2>
                             </Inner>
-                            <Inner>
-                                {bossItem?.length > 0
-                                    ? '보스 아이템'
+                            <ImageInner>
+                                {bossItem?.length > 0 && bossItem?.some((item: any) => item.checked)
+                                    ? bossItem.map((item: any) => {
+                                          if (item.checked) {
+                                              return (
+                                                  <img
+                                                      src={item.src}
+                                                      alt={item.name}
+                                                      key={item.name}
+                                                      width='27px'
+                                                  />
+                                              );
+                                          }
+                                          return null;
+                                      })
                                     : '획득한 보스 아이템이 없습니다'}
-                            </Inner>
+                            </ImageInner>
                         </Nav>
                     </NavContainer>
                     <Section>
