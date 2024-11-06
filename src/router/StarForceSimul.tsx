@@ -348,32 +348,89 @@ const StarForce = () => {
 
         setCalculating((prev) => !prev);
 
-        const worker = new Worker(`${process.env.PUBLIC_URL}/worker1.js`);
+        const startTime = Date.now();
 
-        worker.postMessage({
-            starcatch: starcatch,
-            event: event,
-            simulateguard: simulateguard,
-            spare: spare,
-            discount: discount,
-            level: level,
-            start: start,
-            goal: goal,
-            result: result,
-            num: num,
-        });
+        const workerCount = 8;
 
-        worker.onmessage = (e) => {
-            if (typeof e.data === 'number') {
-                setProgress(e.data);
-            } else if (typeof e.data === 'object') {
-                onSetResult(e.data);
-                setProgress(0); //완료되었기 때문에 진행상황 다시 0으로 초기화
-                setTotalSimulate(num);
-                setToggle((prev) => !prev);
-                setCalculating((prev) => !prev);
-            }
+        const chunkSize = Math.ceil(num / workerCount); // 각 Worker가 처리할 작업량
+        let completedWorkers = 0;
+        let combinedResult = {
+            //4개의 Worker 결과를 합쳐서 보여줄 변수
+            success: 0,
+            currentmeso: 0,
+            fail: 0,
+            destorynum: 0,
+            reinforcenum: 0,
+            current: goal,
         };
+
+        let progressTracker = new Array(workerCount).fill(0); // 각 Worker의 진행률을 저장할 배열
+
+        const workers = new Array(workerCount).fill(null);
+
+        workers.forEach((_, i) => {
+            const worker = new Worker(`${process.env.PUBLIC_URL}/worker1.js`);
+
+            worker.postMessage({
+                starcatch: starcatch,
+                event: event,
+                simulateguard: simulateguard,
+                spare: spare,
+                discount: discount,
+                level: level,
+                start: start,
+                goal: goal,
+                result: result,
+                num: chunkSize,
+            });
+
+            worker.onmessage = (e) => {
+                if (typeof e.data === 'number') {
+                    progressTracker[i] = e.data;
+                    const overallProgress = Math.round(
+                        progressTracker.reduce((acc, val) => acc + val, 0) /
+                            workerCount
+                    );
+                    setProgress(overallProgress);
+                } else if (typeof e.data === 'object') {
+                    //각 Worker의 결과를 combinedResult 변수에 더함
+                    combinedResult.success += e.data.success;
+                    combinedResult.currentmeso += e.data.currentmeso;
+                    combinedResult.fail += e.data.fail;
+                    combinedResult.destorynum += e.data.destorynum;
+                    combinedResult.reinforcenum += e.data.reinforcenum;
+
+                    completedWorkers++;
+
+                    if (completedWorkers === workerCount) {
+                        //모든 워커의 작업이 끝났다면 결과 출력
+                        onSetResult(combinedResult);
+                        setProgress(0);
+                        setTotalSimulate(num);
+                        setToggle((prev) => !prev);
+                        setCalculating((prev) => !prev);
+
+                        const endTime = Date.now();
+                        const elapsedTimeInSeconds =
+                            (endTime - startTime) / 1000;
+                        console.log(
+                            `시뮬레이션 완료까지 걸린 시간: ${elapsedTimeInSeconds}초`
+                        );
+                        window.alert(
+                            `시뮬레이션 완료! 걸린 시간: ${elapsedTimeInSeconds.toFixed(
+                                2
+                            )}초`
+                        );
+                    }
+                }
+            };
+
+            worker.onerror = (error) => {
+                console.error('Worker 오류:', error.message);
+                setCalculating((prev) => !prev);
+                worker.terminate();
+            };
+        });
     };
 
     const onSetResult = (result: simulateresult) => {
@@ -513,14 +570,14 @@ const StarForce = () => {
         return 0;
     };
 
-    const onCheckedItem = () : number => {
+    const onCheckedItem = (): number => {
         const tmp = window.localStorage.getItem('simul');
         if (tmp) {
             const item = JSON.parse(tmp);
             if (Array.isArray(item)) {
                 let checked = 0;
                 item.forEach((items) => {
-                    if(items.done) {
+                    if (items.done) {
                         checked = checked + 1;
                     }
                 });
@@ -528,16 +585,16 @@ const StarForce = () => {
             }
         }
         return 0;
-    }
+    };
 
-    const onUnCheckedItem = () : number => {
+    const onUnCheckedItem = (): number => {
         const tmp = window.localStorage.getItem('simul');
         if (tmp) {
             const item = JSON.parse(tmp);
             if (Array.isArray(item)) {
                 let checked = 0;
                 item.forEach((items) => {
-                    if(!items.done) {
+                    if (!items.done) {
                         checked = checked + 1;
                     }
                 });
@@ -545,7 +602,7 @@ const StarForce = () => {
             }
         }
         return 0;
-    }
+    };
 
     const onUpdateSimulateConumeMeso = (num: number, consumemeso: number) => {
         const tmp = window.localStorage.getItem('simul');

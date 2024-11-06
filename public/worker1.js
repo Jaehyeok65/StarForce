@@ -250,7 +250,7 @@ self.onmessage = (e) => {
         };
     };
 
-    const onSimulating = (result, num) => {
+    /*const onSimulating = (result, num) => {
         for (let i = 0; i < num; i++) {
             const progress = onProgress(i, num);
             onRetrunProgress(progress, array);
@@ -258,6 +258,47 @@ self.onmessage = (e) => {
             result = onSimulateResultAdd(result, next);
         }
 
+        return result;
+    };*/
+
+   const onSimulating = (result, num) => {
+        let i = 0;
+    
+        // 4회씩 반복하는 루프 언롤링
+        for (; i <= num - 4; i += 4) {
+            // 첫 번째 시뮬레이션
+            const progress1 = onProgress(i, num);
+            onRetrunProgress(progress1, array);
+            const next1 = simulate(start, goal);
+            result = onSimulateResultAdd(result, next1);
+    
+            // 두 번째 시뮬레이션
+            const progress2 = onProgress(i + 1, num);
+            onRetrunProgress(progress2, array);
+            const next2 = simulate(start, goal);
+            result = onSimulateResultAdd(result, next2);
+    
+            // 세 번째 시뮬레이션
+            const progress3 = onProgress(i + 2, num);
+            onRetrunProgress(progress3, array);
+            const next3 = simulate(start, goal);
+            result = onSimulateResultAdd(result, next3);
+    
+            // 네 번째 시뮬레이션
+            const progress4 = onProgress(i + 3, num);
+            onRetrunProgress(progress4, array);
+            const next4 = simulate(start, goal);
+            result = onSimulateResultAdd(result, next4);
+        }
+    
+        // 남은 반복 처리 (num이 4의 배수가 아닐 경우)
+        for (; i < num; i++) {
+            const progress = onProgress(i, num);
+            onRetrunProgress(progress, array);
+            const next = simulate(start, goal);
+            result = onSimulateResultAdd(result, next);
+        }
+    
         return result;
     };
 
