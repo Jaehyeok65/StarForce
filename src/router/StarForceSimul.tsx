@@ -348,8 +348,6 @@ const StarForce = () => {
 
         setCalculating((prev) => !prev);
 
-        const startTime = Date.now();
-
         const workerCount = 8;
 
         const chunkSize = Math.ceil(num / workerCount); // 각 Worker가 처리할 작업량
@@ -409,18 +407,6 @@ const StarForce = () => {
                         setTotalSimulate(num);
                         setToggle((prev) => !prev);
                         setCalculating((prev) => !prev);
-
-                        const endTime = Date.now();
-                        const elapsedTimeInSeconds =
-                            (endTime - startTime) / 1000;
-                        console.log(
-                            `시뮬레이션 완료까지 걸린 시간: ${elapsedTimeInSeconds}초`
-                        );
-                        window.alert(
-                            `시뮬레이션 완료! 걸린 시간: ${elapsedTimeInSeconds.toFixed(
-                                2
-                            )}초`
-                        );
                     }
                 }
             };
